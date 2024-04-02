@@ -7,9 +7,9 @@ export class FilterManager {
             return;
         }
         this.filters = {
-            Client: true,
-            Manager: true,
-            Employee: true
+            Program: true,
+            Project: true,
+            Task: true
         };
         this.onFilterChangeCallback = onFilterChangeCallback;
         this.initFiltersUI();

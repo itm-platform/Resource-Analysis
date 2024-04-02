@@ -1,4 +1,8 @@
 // flexibleTable.js
+// `type` and `children` are hardcoded and that's'okay. But `name` or any other columns shouldn't.
+// The flexibleTable.js should be able to render any data structure with any number of columns, receiving in the constructor which columns to render. It should 
+// also update the columns upon changes.
+// Currently the filter manager filters only rows. It should be able to filter columns as well.
 import data from './flexibleTableDataSample.js';
 
 export class FlexibleTable {

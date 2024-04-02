@@ -1,37 +1,37 @@
 export default [
     {
-      type: "Client",
-      name: "Client A",
+      type: "Program",
+      name: "Program A",
       children: [
         {
-          type: "Manager",
-          name: "Manager A1",
+          type: "Project",
+          name: "Project A1",
           children: [
-            { type: "Employee", name: "Employee A1" },
-            { type: "Employee", name: "Employee A2" }
+            { type: "Task", name: "Task A1" },
+            { type: "Task", name: "Task A2" }
             
           ] 
         }
       ]
     },
     {
-      type: "Client",
-      name: "Client B",
+      type: "Program",
+      name: "Program B",
       children: [
         {
-          type: "Manager",
-          name: "Manager B1",
+          type: "Project",
+          name: "Project B1",
           children: [
-            { type: "Employee", name: "Employee B1" },
-            { type: "Employee", name: "Employee B2" }
+            { type: "Task", name: "Task B1" },
+            { type: "Task", name: "Task B2" }
           ]
         },
         {
-          type: "Manager",
-          name: "Manager B2",
+          type: "Project",
+          name: "Project B2",
           children: [
-            { type: "Employee", name: "Employee B3" },
-            { type: "Employee", name: "Employee B4" }
+            { type: "Task", name: "Task B3" },
+            { type: "Task", name: "Task B4" }
           ]
         }
       ]
