@@ -1,16 +1,44 @@
 // flexibleTable.js
 import data from './flexibleTableDataSample.js';
-function generateTable(data, containerId) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = ''; // Clear previous table
-    const table = document.createElement('table');
-    table.setAttribute('border', '1');
-    container.appendChild(table);
+export class FlexibleTable {
+    constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        this.data = data;
+        this.initFilters();
+        this.generateTable(data);
+    }
 
-    const generateRows = (items, parentRowId = '', level = 0) => {
+    initFilters() {
+        const filterContainer = document.createElement('div');
+        ['Client', 'Manager', 'Employee'].forEach(type => {
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = type;
+            checkbox.checked = true;
+            checkbox.addEventListener('change', () => this.applyFilter());
+            label.appendChild(checkbox);
+            label.append(` ${type}`);
+            filterContainer.appendChild(label);
+        });
+        const button = document.createElement('button');
+        button.textContent = 'Apply Filters';
+        button.addEventListener('click', () => this.applyFilter());
+        filterContainer.appendChild(button);
+        this.container.appendChild(filterContainer);
+    }
+
+    generateTable() {
+        this.table = document.createElement('table');
+        this.table.setAttribute('border', '1');
+        this.container.appendChild(this.table);
+        this.generateRows(this.data);
+    }
+
+    generateRows(items, parentRowId = '', level = 0) {
         items.forEach((item, index) => {
             const rowId = `${parentRowId}${index}`;
-            let row = table.insertRow(-1);
+            let row = this.table.insertRow(-1);
             row.setAttribute('data-id', rowId);
             row.setAttribute('data-type', item.type);
             row.classList.add('indent');
@@ -19,29 +47,31 @@ function generateTable(data, containerId) {
             let cell = row.insertCell(0);
             cell.textContent = item.name;
             cell.classList.add('clickable');
-            cell.setAttribute('onclick', `toggleRow('${rowId}')`);
 
             if (item.children && item.children.length > 0) {
-                generateRows(item.children, `${rowId}-`, level + 1);
+                cell.addEventListener('click', () => this.toggleRow(rowId));
+                this.generateRows(item.children, `${rowId}-`, level + 1);
             }
         });
-    };
+    }
 
-    generateRows(data);
+    toggleRow(rowId) {
+        const rows = this.table.querySelectorAll(`tr[data-id^="${rowId}-"]`);
+        rows.forEach(row => {
+            row.style.display = row.style.display === 'none' ? '' : 'none';
+        });
+    }
+
+    applyFilter() {
+        const visibilitySettings = {
+            Client: document.getElementById('Client').checked,
+            Manager: document.getElementById('Manager').checked,
+            Employee: document.getElementById('Employee').checked
+        };
+
+        this.table.querySelectorAll('tr[data-type]').forEach(row => {
+            const type = row.getAttribute('data-type');
+            row.style.display = visibilitySettings[type] ? '' : 'none';
+        });
+    }
 }
-
-function toggleRow(rowId) {
-    const rows = document.querySelectorAll(`[data-id^="${rowId}-"]`);
-    rows.forEach(row => {
-        row.style.display = row.style.display === 'none' ? '' : 'none';
-    });
-}
-
-function applyFilter(visibilitySettings) {
-    document.querySelectorAll('tr[data-type]').forEach(row => {
-        const type = row.getAttribute('data-type');
-        row.style.display = visibilitySettings[type] ? '' : 'none';
-    });
-}
-
-window.onload = () => generateTable(data, 'tableContainer');

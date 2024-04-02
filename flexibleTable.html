@@ -10,24 +10,14 @@
 </head>
 <body>
 
-<div>
-  <label><input type="checkbox" id="Client" checked> Client</label>
-  <label><input type="checkbox" id="Manager" checked> Manager</label>
-  <label><input type="checkbox" id="Employee" checked> Employee</label>
-  <button onclick="updateFilters()">Apply Filters</button>
-</div>
 
 <div id="tableContainer"></div>
 
-<script src="flexibleTable.js" type="module"></script>
-
-<script> function updateFilters() {
-    const visibilitySettings = {
-      Client: document.getElementById('Client').checked,
-      Manager: document.getElementById('Manager').checked,
-      Employee: document.getElementById('Employee').checked
-    };
-    applyFilter(visibilitySettings);
-  }</script>
+<script type="module">
+    import { FlexibleTable } from './flexibleTable.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      new FlexibleTable('tableContainer');
+    });
+  </script>
 </body>
 </html>
