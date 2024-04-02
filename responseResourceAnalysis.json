@@ -1,0 +1,155 @@
+{"Intervals": [
+    {
+        "IntervalId": 1,
+        "IntervalName": "08/29/2022",
+        "StartDate": "2022-08-29T00:00:00",
+        "EndDate": "2022-08-29T23:59:59"
+    },
+    {
+        "IntervalId": 2,
+        "IntervalName": "08/30/2022",
+        "StartDate": "2022-08-30T00:00:00",
+        "EndDate": "2022-08-30T23:59:59"
+    }],
+    "Entities": [
+        {
+            "EntityType": "project",
+            "Id": "project1",
+            "Name": "Project 1",
+            "Program": {
+                "Id": "program1",
+                "Name": "Program 1"
+            },
+            "WorkItems": [
+                {
+                    "Id": "task1",
+                    "Name": "Task 1",
+                    "AssignedEfforts": [
+                        {
+                            "UserId": "user1",
+                            "Intervals": [
+                                {
+                                    "IntervalId": "1",
+                                    "EstimatedEffort": 240,
+                                    "ActualEffort": 230,
+                                    "Capacity": 720
+                                },
+                                {
+                                    "IntervalId": "2",
+                                    "EstimatedEffort": 240,
+                                    "ActualEffort": 230,
+                                    "Capacity": 720
+                                }
+                            ]
+                        },
+                        {
+                            "UserId": "user2",
+                            "Intervals": [
+                                {
+                                    "IntervalId": "1",
+                                    "EstimatedEffort": 240,
+                                    "ActualEffort": 230,
+                                    "Capacity": 720
+                                },
+                                {
+                                    "IntervalId": "2",
+                                    "EstimatedEffort": 0,
+                                    "ActualEffort":0,
+                                    "Capacity": 720
+                                }
+                            ]
+                        }
+                    ],                    
+                    "UnassignedEfforts": {
+                        "Category1": 60,
+                        "Category2": 60
+                    },
+                    "WorkItemTotals": {
+                        "TotalEstimatedEffort": 480,
+                        "TotalActualEffort": 460,
+                        "TotalUnassignedEffort": 120
+                    }
+                }
+            ],
+            "EntityTotals": {
+                "TotalEstimatedEffort": 480,
+                "TotalActualEffort": 460,
+                "TotalUnassignedEffort": 120
+            }
+        },
+        {
+            "EntityType": "service",
+            "Id": "service1",
+            "Name": "Service 1",
+            "WorkItems": [
+                {
+                    "Id": "activity1",
+                    "Name": "Activity 1",
+                    "AssignedEfforts": [
+                        {
+                            "UserId": "user1",
+                            "Intervals": [
+                                {
+                                    "IntervalId": "1",
+                                    "EstimatedEffort": 240,
+                                    "ActualEffort": 230,
+                                    "Capacity": 720
+                                },
+                                {
+                                    "IntervalId": "2",
+                                    "EstimatedEffort": 240,
+                                    "ActualEffort": 230,
+                                    "Capacity": 720
+                                }
+                            ]
+                        }
+                     ],
+                    "UnassignedEfforts": {}
+                }
+            ],
+            "EntityTotals": {
+                "TotalEstimatedEffort": 480,
+                "TotalActualEffort": 460,
+                "TotalUnassignedEffort": 0
+            }
+        }
+    ],
+    "EntitiesTotals": {
+        "TotalEstimatedEffort": 960,
+        "TotalActualEffort": 920,
+        "TotalUnassignedEffort": 120
+    },
+    "Users": [
+        {
+            "Id": "user1",
+            "Name": "User 1",
+            "UserImageUrl": "UploadData/PHOTO/16by16_30168.jpg",
+            "CategoryId":"category1",
+            "UserTotals": {
+                "TotalEstimatedEffort": 480,
+                "TotalActualEffort": 460
+            }
+        },
+        {
+            "Id": "user2",
+            "Name": "User 2",
+            "UserImageUrl": "UploadData/PHOTO/16by16_30169.jpg",
+            "CategoryId":"category1",
+            "UserTotals": {
+                "TotalEstimatedEffort": 240,
+                "TotalActualEffort": 230
+            }
+        }
+    ],
+    "Categories": [
+        {
+            "Id": "category1",
+            "Name": "Category 1",
+            "CategoryTotals": {
+                "TotalEstimatedEffort": 720,
+                "TotalActualEffort": 690
+            }
+        }
+    ]
+
+}
