@@ -1,3 +1,4 @@
+<!-- flexibleTable.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,14 +11,21 @@
 </head>
 <body>
 
-
-<div id="tableContainer"></div>
-
-<script type="module">
-    import { FlexibleTable } from './flexibleTable.js';
-    document.addEventListener('DOMContentLoaded', () => {
-      new FlexibleTable('tableContainer');
-    });
-  </script>
+    <div id="filtersDiv"></div> <!-- Target div for the filters -->
+    <div id="tableContainer"></div> <!-- Div for the table -->
+    
+    <script type="module">
+        import { FlexibleTable } from './flexibleTable.js';
+        import { FilterManager } from './filterManager.js';
+        document.addEventListener('DOMContentLoaded', () => {
+            const flexibleTable = new FlexibleTable('tableContainer', {
+                Client: true,
+                Manager: true,
+                Employee: true
+            });
+            new FilterManager('filtersDiv', (filters) => flexibleTable.updateFilters(filters));
+        });
+    </script>
+    
 </body>
 </html>
