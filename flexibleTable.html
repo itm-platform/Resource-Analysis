@@ -12,8 +12,8 @@
 <!-- flexibleTable.html -->
 <body>
 
-    <div id="filtersDiv"></div> <!-- Target div for the filters -->
-    <div id="tableContainer"></div> <!-- Div for the table -->
+    <div id="filtersDiv"></div>
+    <div id="tableContainer"></div>
     
     <script type="module">
         import { FlexibleTable } from './flexibleTable.js';
@@ -21,14 +21,20 @@
         import data from './flexibleTableDataSample.js';
 
         document.addEventListener('DOMContentLoaded', () => {
-            const initialFilters = {
-                Program: true,
-                Project: false,
-                Task: true
+            let options = {
+                columns: [
+                    { field: "name", display: true, title: "Name", type: "string", width: "70px" },
+                    { field: "client", display: true, title: "Client", type: "string", width: "100px" },
+                    
+                ],
+                filters: {
+                    rowFilters: { Program: true, Project: true, Task: true },
+                    // Column filters can be added in the future
+                }
             };
 
-            let filterManager = new FilterManager('filtersDiv', filters => {}, initialFilters);
-            let flexibleTable = new FlexibleTable('tableContainer', data, filterManager.filters);
+            let filterManager = new FilterManager('filtersDiv', filters => {}, options.filters.rowFilters);
+            let flexibleTable = new FlexibleTable('tableContainer', data, filterManager.filters, options.columns);
             
             filterManager.onFilterChangeCallback = (filters) => {
                 flexibleTable.updateFilters(filters);
@@ -37,5 +43,6 @@
     </script>
     
 </body>
+
 
 </html>

@@ -1,21 +1,27 @@
-{"Intervals": [
-    {
-        "IntervalId": 1,
-        "IntervalName": "08/29/2022",
-        "StartDate": "2022-08-29T00:00:00",
-        "EndDate": "2022-08-29T23:59:59"
-    },
-    {
-        "IntervalId": 2,
-        "IntervalName": "08/30/2022",
-        "StartDate": "2022-08-30T00:00:00",
-        "EndDate": "2022-08-30T23:59:59"
-    }],
+{
+    "Intervals": [
+        {
+            "IntervalId": 1,
+            "IntervalName": "08/29/2022",
+            "StartDate": "2022-08-29T00:00:00",
+            "EndDate": "2022-08-29T23:59:59"
+        },
+        {
+            "IntervalId": 2,
+            "IntervalName": "08/30/2022",
+            "StartDate": "2022-08-30T00:00:00",
+            "EndDate": "2022-08-30T23:59:59"
+        }
+    ],
     "Entities": [
         {
             "EntityType": "project",
             "Id": "project1",
             "Name": "Project 1",
+            "Client": {
+                "Id": "client1",
+                "Name": "Client 1"
+            },
             "Program": {
                 "Id": "program1",
                 "Name": "Program 1"
@@ -54,12 +60,12 @@
                                 {
                                     "IntervalId": "2",
                                     "EstimatedEffort": 0,
-                                    "ActualEffort":0,
+                                    "ActualEffort": 0,
                                     "Capacity": 720
                                 }
                             ]
                         }
-                    ],                    
+                    ],
                     "UnassignedEfforts": {
                         "Category1": 60,
                         "Category2": 60
@@ -81,10 +87,15 @@
             "EntityType": "service",
             "Id": "service1",
             "Name": "Service 1",
+            "Client": {
+                "Id": "client2",
+                "Name": "Client 2"
+            },
             "WorkItems": [
                 {
                     "Id": "activity1",
                     "Name": "Activity 1",
+                    "EntityType": "activity",
                     "AssignedEfforts": [
                         {
                             "UserId": "user1",
@@ -103,7 +114,7 @@
                                 }
                             ]
                         }
-                     ],
+                    ],
                     "UnassignedEfforts": {}
                 }
             ],
@@ -124,7 +135,7 @@
             "Id": "user1",
             "Name": "User 1",
             "UserImageUrl": "UploadData/PHOTO/16by16_30168.jpg",
-            "CategoryId":"category1",
+            "CategoryId": "category1",
             "UserTotals": {
                 "TotalEstimatedEffort": 480,
                 "TotalActualEffort": 460
@@ -134,7 +145,7 @@
             "Id": "user2",
             "Name": "User 2",
             "UserImageUrl": "UploadData/PHOTO/16by16_30169.jpg",
-            "CategoryId":"category1",
+            "CategoryId": "category1",
             "UserTotals": {
                 "TotalEstimatedEffort": 240,
                 "TotalActualEffort": 230
@@ -151,5 +162,4 @@
             }
         }
     ]
-
 }
