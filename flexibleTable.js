@@ -6,7 +6,7 @@
 import data from './flexibleTableDataSample.js';
 
 export class FlexibleTable {
-    constructor(containerId, filters) {
+    constructor(containerId, filters = {}) { 
         this.container = document.getElementById(containerId);
         this.data = data;
         this.filters = filters;
@@ -19,10 +19,9 @@ export class FlexibleTable {
         this.container.appendChild(this.table);
         this.renderRows(this.data);
     }
-
     renderRows(items, parentRowId = '', level = 0, parentVisible = true) {
         items.forEach((item, index) => {
-            let isVisible = this.filters[item.type];
+            let isVisible = this.filters.hasOwnProperty(item.type) ? this.filters[item.type] : true; // Default to true if filter is not defined
             if (!parentVisible && isVisible === false) {
                 isVisible = false;
             } else if (parentVisible && isVisible !== false) {

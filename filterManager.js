@@ -1,20 +1,11 @@
 // filterManager.js
 export class FilterManager {
-    constructor(targetDivId, onFilterChangeCallback) {
+    constructor(targetDivId, onFilterChangeCallback, initialFilters = {}) {
         this.targetDiv = document.getElementById(targetDivId);
-        if (!this.targetDiv) {
-            console.error(`The target div with ID '${targetDivId}' was not found.`);
-            return;
-        }
-        this.filters = {
-            Program: true,
-            Project: true,
-            Task: true
-        };
+        this.filters = initialFilters; // Initialize with provided filters
         this.onFilterChangeCallback = onFilterChangeCallback;
         this.initFiltersUI();
     }
-
     initFiltersUI() {
         const filterContainer = document.createElement('div');
         Object.keys(this.filters).forEach(type => {

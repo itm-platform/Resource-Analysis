@@ -9,6 +9,7 @@
   .indent { padding-left: 20px; }
 </style>
 </head>
+<!-- flexibleTable.html -->
 <body>
 
     <div id="filtersDiv"></div> <!-- Target div for the filters -->
@@ -17,15 +18,27 @@
     <script type="module">
         import { FlexibleTable } from './flexibleTable.js';
         import { FilterManager } from './filterManager.js';
+
         document.addEventListener('DOMContentLoaded', () => {
-            const flexibleTable = new FlexibleTable('tableContainer', {
-                Client: true,
-                Manager: true,
-                Employee: true
-            });
-            new FilterManager('filtersDiv', (filters) => flexibleTable.updateFilters(filters));
+            // Step 1: Initialize FilterManager first
+            const initialFilters = {
+                Program: true,
+                Project: false,
+                Task: true
+            };
+
+            let filterManager = new FilterManager('filtersDiv', filters => {}, initialFilters);
+            
+            // Step 2: Use FilterManager's filters to initialize FlexibleTable
+            let flexibleTable = new FlexibleTable('tableContainer', filterManager.filters);
+            
+            // Step 3: Ensure FilterManager updates FlexibleTable upon filter changes
+            filterManager.onFilterChangeCallback = (filters) => {
+                flexibleTable.updateFilters(filters);
+            };
         });
     </script>
     
 </body>
+
 </html>
