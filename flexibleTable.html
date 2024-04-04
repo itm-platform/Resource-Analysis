@@ -18,9 +18,9 @@
     <script type="module">
         import { FlexibleTable } from './flexibleTable.js';
         import { FilterManager } from './filterManager.js';
+        import data from './flexibleTableDataSample.js';
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Step 1: Initialize FilterManager first
             const initialFilters = {
                 Program: true,
                 Project: false,
@@ -28,11 +28,8 @@
             };
 
             let filterManager = new FilterManager('filtersDiv', filters => {}, initialFilters);
+            let flexibleTable = new FlexibleTable('tableContainer', data, filterManager.filters);
             
-            // Step 2: Use FilterManager's filters to initialize FlexibleTable
-            let flexibleTable = new FlexibleTable('tableContainer', filterManager.filters);
-            
-            // Step 3: Ensure FilterManager updates FlexibleTable upon filter changes
             filterManager.onFilterChangeCallback = (filters) => {
                 flexibleTable.updateFilters(filters);
             };

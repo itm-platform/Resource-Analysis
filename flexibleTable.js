@@ -3,10 +3,9 @@
 // The flexibleTable.js should be able to render any data structure with any number of columns, receiving in the constructor which columns to render. It should 
 // also update the columns upon changes.
 // Currently the filter manager filters only rows. It should be able to filter columns as well.
-import data from './flexibleTableDataSample.js';
 
 export class FlexibleTable {
-    constructor(containerId, filters = {}) { 
+    constructor(containerId, data, filters = {}) { 
         this.container = document.getElementById(containerId);
         this.data = data;
         this.filters = filters;
