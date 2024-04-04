@@ -19,6 +19,12 @@ export class FlexibleTable {
     renderHeader() {
         const header = this.table.createTHead();
         const headerRow = header.insertRow(0);
+        
+        // Add an empty cell at the beginning for the toggle column
+        const toggleHeaderCell = headerRow.insertCell();
+        toggleHeaderCell.textContent = ''; // This cell is intentionally left blank
+        
+        // Now loop through the rest of the columns as usual
         this.columns.forEach(column => {
             if (column.display) {
                 const cell = headerRow.insertCell();
@@ -27,42 +33,60 @@ export class FlexibleTable {
             }
         });
     }
+    
 
-    // Adjust renderRows to handle dynamic columns
-    renderRows(items, parentRowId = '', level = 0, parentVisible = true) {
-        items.forEach((item, index) => {
-            let isVisible = this.filters.hasOwnProperty(item.type) ? this.filters[item.type] : true;
-            if (!parentVisible && isVisible === false) {
-                isVisible = false;
-            } else if (parentVisible && isVisible !== false) {
-                isVisible = true;
-            }
+// Adjust renderRows to include toggle icons for rows with children
+renderRows(items, parentRowId = '', level = 0, parentVisible = true) {
+    items.forEach((item, index) => {
+        let isVisible = this.filters.hasOwnProperty(item.type) ? this.filters[item.type] : true;
+        isVisible = parentVisible ? isVisible : false;
 
-            const rowId = `${parentRowId}${index}`;
-            let row = this.table.insertRow(-1);
-            row.setAttribute('data-id', rowId);
-            row.setAttribute('data-type', item.type);
-            row.classList.add('indent');
-            row.style.paddingLeft = `${level * 20}px`;
-            row.style.display = isVisible ? '' : 'none';
+        const rowId = `${parentRowId}${index}`;
+        let row = this.table.insertRow(-1);
+        row.setAttribute('data-id', rowId);
+        row.setAttribute('data-type', item.type);
+        row.classList.add('indent');
+        row.style.paddingLeft = `${level * 20}px`;
+        row.style.display = isVisible ? '' : 'none';
 
-            // Loop through columns for each item
-            this.columns.forEach(column => {
-                if (column.display) {
-                    let cell = row.insertCell();
-                    cell.textContent = item[column.field]; // Use column.field to dynamically fill data
-                    if (column.field === 'name') {
-                        cell.classList.add('clickable');
-                    }
+        // Add a cell at the beginning for the toggle button if there are children
+        let toggleCell = row.insertCell();
+        if (item.children && item.children.length > 0) {
+            toggleCell.innerHTML = isVisible ? '🔽' : '▶';
+            toggleCell.classList.add('toggle-cell');
+            toggleCell.addEventListener('click', () => this.toggleRow(rowId, toggleCell));
+        }
+
+        // Loop through columns for each item
+        this.columns.forEach(column => {
+            if (column.display) {
+                let cell = row.insertCell();
+                cell.textContent = item[column.field];
+                if (column.field === 'name') {
+                    cell.classList.add('clickable');
                 }
-            });
-
-            if (item.children && item.children.length > 0) {
-                row.cells[0].addEventListener('click', () => this.toggleRow(rowId)); // Assuming the first cell is always 'clickable'
-                this.renderRows(item.children, `${rowId}-`, level + 1, isVisible);
             }
         });
-    }
+
+        if (item.children && item.children.length > 0) {
+            this.renderRows(item.children, `${rowId}-`, level + 1, isVisible);
+        }
+    });
+}
+
+// Adjust toggleRow to also update the toggle icon
+toggleRow(rowId, toggleCell) {
+    const rows = this.table.querySelectorAll(`tr[data-id^="${rowId}-"]`);
+    let isAnyVisible = false; // Flag to check if any child row is initially visible
+    rows.forEach(row => {
+        if (row.style.display !== 'none') isAnyVisible = true;
+        row.style.display = row.style.display === 'none' ? '' : 'none';
+    });
+
+    // Update the toggle icon based on visibility
+    toggleCell.innerHTML = isAnyVisible ? '▶' : '🔽';
+}
+
 
     updateFilters(newFilters) {
         this.filters = newFilters;
@@ -71,10 +95,4 @@ export class FlexibleTable {
     }
     
 
-    toggleRow(rowId) {
-        const rows = this.table.querySelectorAll(`tr[data-id^="${rowId}-"]`);
-        rows.forEach(row => {
-            row.style.display = row.style.display === 'none' ? '' : 'none';
-        });
-    }
 }
