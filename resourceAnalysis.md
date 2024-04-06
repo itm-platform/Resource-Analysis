@@ -1,24 +1,21 @@
 I am with ITM Platform and this is the initial specification for the "Resource Analysis" feature. 
-Attached is the response JSON.
-Give me an example of a table representing the frontend, in MD format, following the JSON response.
+
 
 
 ## Resource Analysis Backend
-The endpoint `/resourceAnalysis` will return the estimated and actual efforts of users in tasks, that can be summarized by project .
+The endpoint `/resourceAnalysis` will return the estimated and actual efforts of users in tasks.
 ### Definitions
+There are the main concepts we will use throughout the document.
 Properties between `< >` denote optional
-- Entity: a program, project or task
-- Project: Has the properties `{Id, Name, <Program:{Id, Name}>, <Client:{Id, Name}>,<StartDate>, <EndDate>}`
-- Task: Has the propertied `{Id, Name, ProjectId, <StartDate>, <EndDate>}`
-- Service: Similar to projects, has the properties `{Id, Name, <Program:{Id, Name}>, <StartDate>, <EndDate>}` Onwards, when we say Project, it can also be a Service
-- Activity: Similar to a task, but for services `{Id, Name, ServiceId, <StartDate>, <EndDate>}` Onwards, when we say task, we also include service activities.
-- User: They are assigned to a task, indirectly to projects. `{Id, Name, Category}`
+- Entity: A project or a service. Has the properties `{Id, Name, <Program:{Id, Name}>, <Client:{Id, Name}>,<StartDate>, <EndDate>}`
+- WorkItem: A task or activity. Has the properties `{Id, Name, {Entity}Id, <StartDate>, <EndDate>}`
 - Category: Professional category a user has `{Id, Name}`
 - Estimated effort, in minutes: It can apply to a user in a task ("assigned effort") or to a category in a task or a project ("unassigned effort"). The first version will only focus on *assigned effort*, not dealing with *unassigned effort*.
 - Capacity, in minutes: working time per user per day. 
 - Interval: Accumulates efforts and capacities in time periods (day, week, month, or quarter)
 ### Request (payload)
- `intervals`:  the backend will perform the effort accumulation calculations.
+ `intervals`:  optional; when omitted it will return totals. See the [Resources API](https://developers.itmplatform.com/documentation/#resource-capacity-get-resource-capacity-get)
+ 
 In this example, we are requesting five weeks starting on 2024-01-01. The response will give us the efforts and capacity summarized for weeks 1 to 5.
 ```json
  {"intervals": {
@@ -29,18 +26,25 @@ In this example, we are requesting five weeks starting on 2024-01-01. The respon
 }
 ```
 
-**Filter** determines which entities and users are requested. Filters can apply to entities and users. It's general form is:
-```js
-filter:{project, service, task, activity, user}
-```
+**Filter** determines which entities and users are requested. Filters can apply to entities and users. 
+
+1. The general form is:
+    ```js
+    filter:{project, service, task, activity, user}
+    ```
+1. When a filter is applied, it will return the main property. For example, `"ExternalClient.Id":{"$in":[*]}`  will return the `ExternalClient` property.
+    > ⚠️ Confirm the format `"$in":[*]` works. This is the way to include properties in the filter.
+1. If no filters are present, it will return all active entities and their users.
+
+
 Examples
-All projects ad services of the program Ids 12 and 23
+All projects and services of the program Ids 12 and 23
 ```json
 "filter":{"project":{
-			"ProgramId":{"$in":[12, 23]}
+			"Program.Id":{"$in":[12, 23]}
 		},
 		"service":{
-			"ProgramId":{"$in":[12, 23]}
+			"Program.Id":{"$in":[12, 23]}
 		}
 ```
 
@@ -48,21 +52,58 @@ Projects whose start date is within a range and are assigned to clients 21 and 2
 ```json
 "filter":{"project":{
 			"StartDate":{"$bt":["2023-09-01","2023-11-30"]},
-			"ClientId":{"$in":[21, 223]}
+			"Client.Id":{"$in":[21, 223]}
 	}}
 ```
 
-Tasks with a startdate bewween some values and only users of category 21
+Tasks with a start date between some values and only users of category 21
 ```json
 "filter":{"task":{
 			"StartDate":{"$bt":["2023-09-01","2023-11-30"]}
 		},
 		 "user":{
-			 "CategoryId": {"$in":[21}}
+			 "Category.Id": {"$in":[21}}
 		}
 ```
 ### Response
-Attached JSON
+```js
+{
+    Intervals?: [{ IntervalId, IntervalName, StartDate, EndDate }],
+    Entities: [
+        {
+            Id, Name, EntityType:{'project', 'service'}, 
+            EntitySubType?:{'waterfall', 'agile',} 
+            RequestedProperty?: { Id, Name },
+            WorkItems: [
+                {
+                    Id, Name,
+                    AssignedEfforts: [
+                        {
+                            UserId,
+                            Intervals?: [{ IntervalId, EstimatedEffort, ActualEffort, Capacity }],
+                            UserWorkItemTotals: { TotalEstimatedEffort, TotalActualEffort }
+                        },
+                    ],
+                    UnassignedEfforts: { CategoryN: Integer, ...others},
+                    WorkItemTotals: { TotalEstimatedEffort, TotalActualEffort, TotalUnassignedEffort }
+                },
+            ],
+            EntityTotals: { TotalEstimatedEffort, TotalActualEffort, TotalUnassignedEffort }
+        },
+    ],
+    Users: [
+        { Id, Name, UserImageUrl, CategoryId },
+    ],
+    Categories: [
+        { Id, Name },
+    ]
+}
+```
+- `Intervals` will be present if the request includes intervals. 
+- Totals (such as `UserWorkItemTotals`, `WorkItemTotals`, and `EntityTotals`) will not consider intervals; they are the totals. (beware of double calculations)
+- `ActualEffort` refers to the accepted effort. Consider adding reported.
+
+[See JSON](./responseResourceAnalysis.json)
 
 ## Effort Analysis Frontend
 #### Rows
