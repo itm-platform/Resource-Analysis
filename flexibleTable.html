@@ -1,19 +1,26 @@
 <!-- flexibleTable.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Flexible Table with Dynamic Filters</title>
-<style>
-  .clickable { cursor: pointer; }
-  .indent { padding-left: 20px; }
-</style>
+    <meta charset="UTF-8">
+    <title>Flexible Table with Dynamic Filters</title>
+    <style>
+        .clickable {
+            cursor: pointer;
+        }
+
+        .indent {
+            padding-left: 20px;
+        }
+    </style>
 </head>
+
 <body>
 
     <div id="filtersDiv"></div>
     <div id="tableContainer" style="width: 80%;"></div>
-    
+
     <script type="module">
         import { FlexibleTable } from './flexibleTable.js';
         import { FilterManager } from './filterManager.js';
@@ -22,25 +29,36 @@
         document.addEventListener('DOMContentLoaded', () => {
             let options = {
                 columns: [
-                    { field: "name", display: true, title: "Name", type: "string", width: "70px" },
-                    { field: "client", display: true, title: "Client", type: "string", width: "100px" },
-                    
+                    {
+                        group: "Name",
+                        columns: [
+                            { field: "name", display: true, title: "Name", type: "string", width: "70px" }
+                        ]
+                    },
+                    {
+                        group: "Commercial",
+                        columns: [
+                            { field: "client", display: true, title: "Client", type: "string", width: "100px" },
+                            { field: "contact", display: true, title: "Contact", type: "string", width: "100px" }
+                        ]
+                    }
                 ],
                 filters: {
-                    rowFilters: { Program: true, Project: true, Task: true, User:false },
+                    rowFilters: { Program: true, Project: true, Task: true, User: true },
                     // Column filters can be added in the future
                 }
             };
 
-            let filterManager = new FilterManager('filtersDiv', filters => {}, options.filters.rowFilters);
+
+            let filterManager = new FilterManager('filtersDiv', filters => { }, options.filters.rowFilters);
             let flexibleTable = new FlexibleTable('tableContainer', data, filterManager.filters, options.columns);
-            
+
             filterManager.onFilterChangeCallback = (filters) => {
                 flexibleTable.updateFilters(filters);
             };
         });
     </script>
-    
+
 </body>
 
 

@@ -8,6 +8,7 @@ export default [
                 type: "Project",
                 name: "Project A1",
                 client: "Client A",
+                contact: "Contact A",
                 children: [
                     {
                         type: "Task", name: "Task A1",
