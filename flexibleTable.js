@@ -41,6 +41,10 @@ export class FlexibleTable {
             row.setAttribute('data-id', rowId);
             row.setAttribute('data-type', item.type);
 
+            if (!isVisible) {
+                row.style.display = 'none'; // Directly apply 'display: none' for hidden rows.
+            }
+
             // Adjusted logic to handle toggle icon and custom rendering
             this.columns.forEach((column, columnIndex) => {
                 let cell = row.insertCell();
