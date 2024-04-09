@@ -12,7 +12,7 @@
 <body>
 
     <div id="filtersDiv"></div>
-    <div id="tableContainer"></div>
+    <div id="tableContainer" style="width: 80%;"></div>
     
     <script type="module">
         import { FlexibleTable } from './flexibleTable.js';
@@ -27,7 +27,7 @@
                     
                 ],
                 filters: {
-                    rowFilters: { Program: true, Project: true, Task: true },
+                    rowFilters: { Program: true, Project: false, Task: true },
                     // Column filters can be added in the future
                 }
             };

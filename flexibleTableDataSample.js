@@ -9,18 +9,20 @@ export default [
                 name: "Project A1",
                 client: "Client A",
                 children: [
-                    { type: "Task", name: "Task A1",
-                    children: [
-                        { type: "User", name: "User 1" }, // No render means default display
-                        {
-                            type: "User", 
-                            name: "User 2", 
-                            render: { 
-                                name: renderUserName("User 2"),
-                                client: renderClientName("Client A") 
-                            },
-                            client: "Client A"
-                    }]},
+                    {
+                        type: "Task", name: "Task A1",
+                        children: [
+                            { type: "User", name: "User 1" }, // No render means default display
+                            {
+                                type: "User",
+                                name: "User 2",
+                                render: {
+                                    name: renderUserName("User 2"),
+                                    client: renderClientName("Client A")
+                                },
+                                client: "Client A"
+                            }]
+                    },
                     { type: "Task", name: "Task A2" }
 
                 ]
