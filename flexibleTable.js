@@ -1,10 +1,9 @@
 // flexibleTable.js
 export class FlexibleTable {
-    constructor(containerId, data, filters = {}, columns = []) {
+    constructor(containerId, dataset, filters = {}) {
         this.container = document.getElementById(containerId);
-        this.data = data;
+        this.dataset = dataset; // The entire new dataset including groups and rows
         this.filters = filters;
-        this.columns = columns; // New: Column definitions
         this.generateTable();
     }
 
@@ -20,127 +19,74 @@ export class FlexibleTable {
         this.tbody = document.createElement('tbody');
         this.table.appendChild(this.tbody);
 
-        // Modify the call to renderRows to use tbody for inserting rows
-        this.renderRows(this.data);
+        // Render rows with the new data structure
+        this.renderRows(this.dataset.rows);
     }
 
     renderHeader() {
         const header = this.table.createTHead();
-        const groupRow = header.insertRow();
-        let hasGroups = false; // Flag to track if we have any groups
+        const headerRow = header.insertRow();
 
-        // Check if we have groups with more than one column
-        this.columns.forEach(group => {
-            if (group.columns.length > 1) {
-                hasGroups = true;
-            }
+        // Add an empty cell for the first column for the toggle/indentation/name
+        headerRow.insertCell();
+
+        // Iterate over each group to create headers
+        this.dataset.groups.forEach(group => {
+            const cell = headerRow.insertCell();
+            cell.textContent = group.name;
+            cell.setAttribute('colspan', group.columns.length);
         });
 
-        // Only create the group headers if we have groups with more than one column
-        if (hasGroups) {
-            this.columns.forEach(group => {
-                if (group.columns.length > 1) {
-                    const groupCell = groupRow.insertCell();
-                    groupCell.textContent = group.group;
-                    groupCell.setAttribute('colspan', group.columns.length);
-                } else {
-                    // For groups with one column, insert an empty cell to maintain structure
-                    groupRow.insertCell();
-                }
-            });
-        }
+        // Second row for individual columns
+        const columnRow = header.insertRow();
+        // Again, add an empty cell for the first column
+        columnRow.insertCell();
 
-        // Always create the individual column headers
-        const headerRow = header.insertRow();
-        this.columns.forEach(group => {
+        this.dataset.groups.forEach(group => {
             group.columns.forEach(column => {
-                if (column.display) {
-                    const cell = headerRow.insertCell();
-                    cell.textContent = column.title;
-                    cell.style.width = column.width;
-                }
+                const cell = columnRow.insertCell();
+                cell.textContent = column.name;
             });
         });
     }
 
     renderRows(items, parentRowId = '', level = 0, parentVisible = true) {
-        // Determine if an item is visible based on filters and parent visibility
-        const isVisible = (item) => {
-            let visibility = this.filters.hasOwnProperty(item.type) ? this.filters[item.type] : true;
-            return parentVisible && visibility;
-        };
-
-        const createRow = (item, index) => {
-            const rowId = `${parentRowId}${index}`;
-            let row = this.tbody.insertRow(-1);
-            row.setAttribute('data-id', rowId);
-            row.setAttribute('data-type', item.type);
-
-            if (!isVisible(item)) {
-                row.style.display = 'none';
-            }
-
-            return row;
-        };
-
-        const fillCell = (cell, item, column, level, isFirstColumn) => {
-            let content = '';
-            if (isFirstColumn && this._itemHasChildren(item)) {
-                content = createToggleIcon(item, level, cell);
-            }
-
-            content += item.render && item.render[column.field] ? item.render[column.field] : item[column.field] || '';
-
-            if (isFirstColumn && !this._itemHasChildren(item)) {
-                content = `<span style="margin-left: ${5 * level + 20}px">${content}</span>`;
-            }
-
-            let contentSpan = document.createElement('span');
-            contentSpan.innerHTML = content;
-            cell.appendChild(contentSpan);
-        };
-
-        const createToggleIcon = (item, level, cell) => {
-            let isVisibleItem = isVisible(item);
-            let toggleSpan = document.createElement('span');
-            toggleSpan.className = 'toggle-icon';
-            toggleSpan.style.marginLeft = `${5 * level}px`;
-            toggleSpan.innerHTML = isVisibleItem ? '🔽' : '▶️';
-            toggleSpan.onclick = () => this.toggleRow(cell.parentElement.getAttribute('data-id'), toggleSpan);
-            cell.appendChild(toggleSpan);
-
-            return ''; 
-        };
-
         items.forEach((item, index) => {
-            let row = createRow(item, index);
+            if (!this.filters.hasOwnProperty(item.type) || this.filters[item.type]) {
+                const rowId = `${parentRowId}${index}`;
+                const row = this.tbody.insertRow();
+                row.setAttribute('data-id', rowId);
+                row.setAttribute('data-type', item.type);
+                if (!parentVisible) {
+                    row.style.display = 'none';
+                }
 
-            this.columns.forEach((group, groupIndex) => {
-                group.columns.forEach((column, columnIndex) => {
-                    let cell = row.insertCell();
-                    const isFirstColumn = columnIndex === 0 && groupIndex === 0;
-                    fillCell(cell, item, column, level, isFirstColumn);
+                // First cell for name with toggle/indentation
+                const nameCell = row.insertCell();
+                nameCell.innerHTML = item.render || item.name;
+                nameCell.style.paddingLeft = `${level * 20}px`; // Adjust the level of indentation
+                if (item.children && item.children.length > 0) {
+                    this._addToggleIcon(nameCell, true, rowId);
+                }
+
+                this.dataset.groups.forEach(group => {
+                    const groupValues = item.values.find(value => value.groupId === group.id);
+                    if (groupValues) {
+                        groupValues.values.forEach(value => {
+                            const cell = row.insertCell();
+                            cell.innerHTML = value.render || value.value;
+                        });
+                    }
                 });
-            });
 
-            if (this._itemHasChildren(item)) {
-                this.renderRows(item.children, `${row.getAttribute('data-id')}-`, level + 1, isVisible(item));
+                if (item.children) {
+                    this.renderRows(item.children, `${rowId}-`, level + 1, parentVisible && this.filters[item.type]);
+                }
             }
         });
     }
 
-
-    _itemHasChildren(item) {
-        return item.children && item.children.length > 0;
-    }
-
-    _addToggleIcon(toggleCell, isVisible, rowId) {
-        toggleCell.innerHTML = isVisible ? '🔽' : '▶️';
-        toggleCell.classList.add('toggle-cell', 'clickable');
-        toggleCell.addEventListener('click', () => this.toggleRow(rowId, toggleCell));
-    }
-
-    toggleRow(rowId, toggleIcon) {
+    toggleRow(rowId, toggleCell) {
         const rows = this.table.querySelectorAll(`tr[data-id^="${rowId}-"]`);
         let isAnyVisible = Array.from(rows).some(row => row.style.display !== 'none');
 
@@ -148,16 +94,24 @@ export class FlexibleTable {
             row.style.display = row.style.display === 'none' ? '' : 'none';
         });
 
-        toggleIcon.innerHTML = isAnyVisible ? '▶️' : '🔽';
+        this._updateToggleIcon(toggleCell, !isAnyVisible);
     }
 
+    _addToggleIcon(cell, isVisible, rowId) {
+        const toggleSpan = document.createElement('span');
+        toggleSpan.innerHTML = isVisible ? '🔽' : '▶️';
+        toggleSpan.style.marginRight = '5px';
+        toggleSpan.onclick = () => this.toggleRow(rowId, toggleSpan);
+        cell.insertBefore(toggleSpan, cell.firstChild);
+    }
 
+    _updateToggleIcon(toggleSpan, isVisible) {
+        toggleSpan.innerHTML = isVisible ? '🔽' : '▶️';
+    }
 
     updateFilters(newFilters) {
         this.filters = newFilters;
-        this.container.innerHTML = ''; 
-        this.generateTable(); 
+        this.container.innerHTML = '';
+        this.generateTable();
     }
-
-
 }

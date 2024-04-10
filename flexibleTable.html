@@ -17,49 +17,65 @@
 </head>
 
 <body>
-
-    <div id="filtersDiv"></div>
+    <div id="filtersDiv">
+        <!-- Dropdown for selecting the data file -->
+        <select id="dataFileSelector">
+            <option value="intervalsByEntity">Intervals by Entity</option>
+            <option value="TotalsByEntity">Totals by Entity</option>
+        </select>
+    </div>
     <div id="tableContainer" style="width: 80%;"></div>
 
     <script type="module">
         import { FlexibleTable } from './flexibleTable.js';
         import { FilterManager } from './filterManager.js';
-        import data from './dataSamples/flexibleTableDataSample.js';
-
-        document.addEventListener('DOMContentLoaded', () => {
-            let options = {
-                columns: [
-                    {
-                        group: "Name",
-                        columns: [
-                            { field: "name", display: true, title: "Name", type: "string", width: "70px" }
-                        ]
-                    },
-                    {
-                        group: "Commercial",
-                        columns: [
-                            { field: "client", display: true, title: "Client", type: "string", width: "100px" },
-                            { field: "contact", display: true, title: "Contact", type: "string", width: "100px" }
-                        ]
-                    }
-                ],
-                filters: {
-                    rowFilters: { Program: true, Project: true, Task: true, User: true },
-                    // Column filters can be added in the future
-                }
-            };
-
-
-            let filterManager = new FilterManager('filtersDiv', filters => { }, options.filters.rowFilters);
-            let flexibleTable = new FlexibleTable('tableContainer', data, filterManager.filters, options.columns);
-
+    
+        const dataFileSelector = document.getElementById('dataFileSelector');
+        let currentDataModule = './dataSamples/intervalsByEntity.js'; // Default data module
+    
+        // Initialize FilterManager outside the data loading function
+        let options = {
+            filters: {
+                rowFilters: { Program: true, Project: true, Task: true, User: true },
+            }
+        };
+    
+        let filterManager = new FilterManager('filtersDiv', filters => {}, options.filters.rowFilters);
+        let flexibleTable;
+    
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadDataAndInitializeTable(currentDataModule);
+    
+            dataFileSelector.addEventListener('change', async (event) => {
+                const selectedOption = event.target.value;
+                currentDataModule = `./dataSamples/${selectedOption}.js`;
+                await loadDataAndInitializeTable(currentDataModule);
+            });
+        });
+    
+        async function loadDataAndInitializeTable(dataModulePath) {
+            const { default: data } = await import(dataModulePath);
+    
+            // Clear existing content in the tableContainer
+            const tableContainer = document.getElementById('tableContainer');
+            while (tableContainer.firstChild) {
+                tableContainer.removeChild(tableContainer.firstChild);
+            }
+    
+            // Reuse filterManager and only reset if necessary
+            // This place is where you might want to update or reset filters based on new data
+    
+            // Initialize or reinitialize the FlexibleTable as needed
+            flexibleTable = new FlexibleTable('tableContainer', data, filterManager.filters);
+    
             filterManager.onFilterChangeCallback = (filters) => {
                 flexibleTable.updateFilters(filters);
             };
-        });
+        }
     </script>
-
+    
 </body>
+
 
 
 </html>
