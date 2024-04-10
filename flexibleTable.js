@@ -13,7 +13,14 @@ export class FlexibleTable {
         this.table.setAttribute('border', '1');
         this.table.style.width = '100%';
         this.container.appendChild(this.table);
-        this.renderHeader(); // New: Render the table header based on column definitions
+
+        this.renderHeader();
+
+        // Create and append the tbody element
+        this.tbody = document.createElement('tbody');
+        this.table.appendChild(this.tbody);
+
+        // Modify the call to renderRows to use tbody for inserting rows
         this.renderRows(this.data);
     }
 
@@ -62,21 +69,24 @@ export class FlexibleTable {
             let visibility = this.filters.hasOwnProperty(item.type) ? this.filters[item.type] : true;
             return parentVisible && visibility;
         };
-    
+
         // Create and style the row for an item
+        // Adjusted part of the renderRows method
         const createRow = (item, index) => {
             const rowId = `${parentRowId}${index}`;
-            let row = this.table.insertRow(-1);
+            // Insert row into this.tbody instead of this.table
+            let row = this.tbody.insertRow(-1);
             row.setAttribute('data-id', rowId);
             row.setAttribute('data-type', item.type);
-    
+
             if (!isVisible(item)) {
                 row.style.display = 'none';
             }
-    
+
             return row;
         };
-    
+
+
         // Add content to a cell
         const fillCell = (cell, item, column, level, isFirstColumn) => {
             let content = '';
@@ -84,20 +94,20 @@ export class FlexibleTable {
                 // Toggle icon for items with children in the "name" column
                 content = createToggleIcon(item, level, cell);
             }
-    
+
             // Apply custom rendering or default content
             content += item.render && item.render[column.field] ? item.render[column.field] : item[column.field] || '';
-    
+
             // Adjust indentation for the first column without children
             if (isFirstColumn && !this._itemHasChildren(item)) {
                 content = `<span style="margin-left: ${5 * level + 20}px">${content}</span>`;
             }
-    
+
             let contentSpan = document.createElement('span');
             contentSpan.innerHTML = content;
             cell.appendChild(contentSpan);
         };
-    
+
         // Create a toggle icon for rows with children
         const createToggleIcon = (item, level, cell) => {
             let isVisibleItem = isVisible(item);
@@ -107,14 +117,14 @@ export class FlexibleTable {
             toggleSpan.innerHTML = isVisibleItem ? '🔽' : '▶️';
             toggleSpan.onclick = () => this.toggleRow(cell.parentElement.getAttribute('data-id'), toggleSpan);
             cell.appendChild(toggleSpan);
-    
+
             return ''; // Return empty since toggleSpan is directly appended
         };
-    
+
         // Iterate through items to render rows
         items.forEach((item, index) => {
             let row = createRow(item, index);
-    
+
             this.columns.forEach((group, groupIndex) => {
                 group.columns.forEach((column, columnIndex) => {
                     let cell = row.insertCell();
@@ -122,13 +132,13 @@ export class FlexibleTable {
                     fillCell(cell, item, column, level, isFirstColumn);
                 });
             });
-    
+
             if (this._itemHasChildren(item)) {
                 this.renderRows(item.children, `${row.getAttribute('data-id')}-`, level + 1, isVisible(item));
             }
         });
     }
-    
+
 
     _itemHasChildren(item) {
         return item.children && item.children.length > 0;
