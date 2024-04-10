@@ -81,18 +81,17 @@ Tasks with a start date between some values and only users of category 21
                         {
                             UserId,
                             Intervals?: [{ IntervalId, EstimatedEffort, ActualEffort, Capacity }],
-                            UserWorkItemTotals: { TotalEstimatedEffort, TotalActualEffort }
+                            TotalUserWorkItemEffort: { EstimatedEffort, AcceptedEffort }
                         },
                     ],
                     UnassignedEfforts: { CategoryN: Integer, ...others},
-                    WorkItemTotals: { TotalEstimatedEffort, TotalActualEffort, TotalUnassignedEffort }
                 },
             ],
-            EntityTotals: { TotalEstimatedEffort, TotalActualEffort, TotalUnassignedEffort }
         },
     ],
     Users: [
-        { Id, Name, UserImageUrl, CategoryId },
+        { Id, Name, UserImageUrl, CategoryId,
+        UserTotals: { TotalEstimatedEffort, TotalActualEffort, TotalCapacity } },
     ],
     Categories: [
         { Id, Name },
@@ -101,7 +100,8 @@ Tasks with a start date between some values and only users of category 21
 ```
 - `Intervals` will be present if the request includes intervals. 
 - Totals (such as `UserWorkItemTotals`, `WorkItemTotals`, and `EntityTotals`) will not consider intervals; they are the totals. (beware of double calculations)
-- `ActualEffort` refers to the accepted effort. Consider adding reported.
+- `ActualEffort` refers to the reported effort, which can be by intervals
+- `AcceptedEffort` refers to the total accepted effort for the user in the task. It can be the same as `ActualEffort` or different.
 
 [See JSON](./responseResourceAnalysis.json)
 
