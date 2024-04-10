@@ -70,11 +70,8 @@ export class FlexibleTable {
             return parentVisible && visibility;
         };
 
-        // Create and style the row for an item
-        // Adjusted part of the renderRows method
         const createRow = (item, index) => {
             const rowId = `${parentRowId}${index}`;
-            // Insert row into this.tbody instead of this.table
             let row = this.tbody.insertRow(-1);
             row.setAttribute('data-id', rowId);
             row.setAttribute('data-type', item.type);
@@ -86,19 +83,14 @@ export class FlexibleTable {
             return row;
         };
 
-
-        // Add content to a cell
         const fillCell = (cell, item, column, level, isFirstColumn) => {
             let content = '';
             if (isFirstColumn && this._itemHasChildren(item)) {
-                // Toggle icon for items with children in the "name" column
                 content = createToggleIcon(item, level, cell);
             }
 
-            // Apply custom rendering or default content
             content += item.render && item.render[column.field] ? item.render[column.field] : item[column.field] || '';
 
-            // Adjust indentation for the first column without children
             if (isFirstColumn && !this._itemHasChildren(item)) {
                 content = `<span style="margin-left: ${5 * level + 20}px">${content}</span>`;
             }
@@ -108,7 +100,6 @@ export class FlexibleTable {
             cell.appendChild(contentSpan);
         };
 
-        // Create a toggle icon for rows with children
         const createToggleIcon = (item, level, cell) => {
             let isVisibleItem = isVisible(item);
             let toggleSpan = document.createElement('span');
@@ -118,10 +109,9 @@ export class FlexibleTable {
             toggleSpan.onclick = () => this.toggleRow(cell.parentElement.getAttribute('data-id'), toggleSpan);
             cell.appendChild(toggleSpan);
 
-            return ''; // Return empty since toggleSpan is directly appended
+            return ''; 
         };
 
-        // Iterate through items to render rows
         items.forEach((item, index) => {
             let row = createRow(item, index);
 
@@ -150,7 +140,6 @@ export class FlexibleTable {
         toggleCell.addEventListener('click', () => this.toggleRow(rowId, toggleCell));
     }
 
-    // Adjust toggleRow to also update the toggle icon
     toggleRow(rowId, toggleIcon) {
         const rows = this.table.querySelectorAll(`tr[data-id^="${rowId}-"]`);
         let isAnyVisible = Array.from(rows).some(row => row.style.display !== 'none');
@@ -159,7 +148,6 @@ export class FlexibleTable {
             row.style.display = row.style.display === 'none' ? '' : 'none';
         });
 
-        // Update the toggle icon based on visibility
         toggleIcon.innerHTML = isAnyVisible ? '▶️' : '🔽';
     }
 
@@ -167,8 +155,8 @@ export class FlexibleTable {
 
     updateFilters(newFilters) {
         this.filters = newFilters;
-        this.container.innerHTML = ''; // Clear the container instead of the table
-        this.generateTable(); // Regenerate table to reapply header and rows based on new filters
+        this.container.innerHTML = ''; 
+        this.generateTable(); 
     }
 
 
