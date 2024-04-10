@@ -57,59 +57,78 @@ export class FlexibleTable {
     }
 
     renderRows(items, parentRowId = '', level = 0, parentVisible = true) {
-        items.forEach((item, index) => {
-            let isVisible = this.filters.hasOwnProperty(item.type) ? this.filters[item.type] : true;
-            isVisible = parentVisible && isVisible;
-
+        // Determine if an item is visible based on filters and parent visibility
+        const isVisible = (item) => {
+            let visibility = this.filters.hasOwnProperty(item.type) ? this.filters[item.type] : true;
+            return parentVisible && visibility;
+        };
+    
+        // Create and style the row for an item
+        const createRow = (item, index) => {
             const rowId = `${parentRowId}${index}`;
             let row = this.table.insertRow(-1);
             row.setAttribute('data-id', rowId);
             row.setAttribute('data-type', item.type);
-
-            if (!isVisible) {
-                row.style.display = 'none'; // Directly apply 'display: none' for hidden rows.
+    
+            if (!isVisible(item)) {
+                row.style.display = 'none';
             }
-
+    
+            return row;
+        };
+    
+        // Add content to a cell
+        const fillCell = (cell, item, column, level, isFirstColumn) => {
+            let content = '';
+            if (isFirstColumn && this._itemHasChildren(item)) {
+                // Toggle icon for items with children in the "name" column
+                content = createToggleIcon(item, level, cell);
+            }
+    
+            // Apply custom rendering or default content
+            content += item.render && item.render[column.field] ? item.render[column.field] : item[column.field] || '';
+    
+            // Adjust indentation for the first column without children
+            if (isFirstColumn && !this._itemHasChildren(item)) {
+                content = `<span style="margin-left: ${5 * level + 20}px">${content}</span>`;
+            }
+    
+            let contentSpan = document.createElement('span');
+            contentSpan.innerHTML = content;
+            cell.appendChild(contentSpan);
+        };
+    
+        // Create a toggle icon for rows with children
+        const createToggleIcon = (item, level, cell) => {
+            let isVisibleItem = isVisible(item);
+            let toggleSpan = document.createElement('span');
+            toggleSpan.className = 'toggle-icon';
+            toggleSpan.style.marginLeft = `${5 * level}px`;
+            toggleSpan.innerHTML = isVisibleItem ? '🔽' : '▶️';
+            toggleSpan.onclick = () => this.toggleRow(cell.parentElement.getAttribute('data-id'), toggleSpan);
+            cell.appendChild(toggleSpan);
+    
+            return ''; // Return empty since toggleSpan is directly appended
+        };
+    
+        // Iterate through items to render rows
+        items.forEach((item, index) => {
+            let row = createRow(item, index);
+    
             this.columns.forEach((group, groupIndex) => {
                 group.columns.forEach((column, columnIndex) => {
                     let cell = row.insertCell();
-
-                    let cellContent = '';
                     const isFirstColumn = columnIndex === 0 && groupIndex === 0;
-                    if (isFirstColumn && this._itemHasChildren(item)) {
-                        // Toggle icon for items with children, in the "name" column
-                        let toggleSpan = document.createElement('span');
-                        toggleSpan.className = 'toggle-icon';
-                        toggleSpan.style.marginLeft = `${5 * level}px`;
-                        toggleSpan.innerHTML = isVisible ? '🔽' : '▶️';
-                        toggleSpan.onclick = () => this.toggleRow(rowId, toggleSpan); // Attach event listener
-                        cell.appendChild(toggleSpan);
-                    }
-
-                    // Rendering cell content, considering custom render functions
-                    if (item.render && item.render[column.field]) {
-                        cellContent = item.render[column.field];
-                    } else {
-                        cellContent += item[column.field] || '';
-                    }
-
-                    // Apply indentation if no toggle icon
-                    if (isFirstColumn && !this._itemHasChildren(item)) {
-                        cellContent = `<span style="margin-left: ${5 * level + 20}px">${cellContent}</span>`; // Adjusted indentation
-                    }
-
-                    // Create a container span for content to ensure consistent styling
-                    let contentSpan = document.createElement('span');
-                    contentSpan.innerHTML = cellContent;
-                    cell.appendChild(contentSpan);
+                    fillCell(cell, item, column, level, isFirstColumn);
                 });
             });
-
+    
             if (this._itemHasChildren(item)) {
-                this.renderRows(item.children, `${rowId}-`, level + 1, isVisible);
+                this.renderRows(item.children, `${row.getAttribute('data-id')}-`, level + 1, isVisible(item));
             }
         });
     }
+    
 
     _itemHasChildren(item) {
         return item.children && item.children.length > 0;
