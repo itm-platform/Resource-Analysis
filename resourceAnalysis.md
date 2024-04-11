@@ -71,8 +71,8 @@ Tasks with a start date between some values and only users of category 21
     Intervals?: [{ IntervalId, IntervalName, StartDate, EndDate }],
     Entities: [
         {
-            Id, Name, EntityType:{'project', 'service'}, 
-            EntitySubType?:{'waterfall', 'agile',} 
+            Id, Name, EntityType: 'project' | 'service', 
+            EntitySubType?:'waterfall' | 'agile',
             RequestedProperty?: { Id, Name },
             WorkItems: [
                 {

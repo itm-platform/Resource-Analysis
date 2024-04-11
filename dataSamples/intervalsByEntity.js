@@ -23,7 +23,7 @@ export default {
         {
             type: "project",
             name: "Project 1",
-            render: { func: "renderEntityName",  params: { name: "Project 1", EntityType: "project", EntitySubType: "waterfall"}},
+            render: { func: "renderEntityName",  params: { name: "Project 1", entityType: "project", entitySubType: "waterfall"}},
             values: [
                 {
                     groupId: 1,
@@ -189,13 +189,3 @@ export default {
 
     ]
 };
-
-function renderUserName(userName) {
-    return `<span class="user-icon">👤</span>${userName}`;
-}
-function renderProjectName(projectName) {
-    return `<span class="project-icon">📁</span>${projectName}`;
-}
-function renderDuration(duration) {
-    return `${duration / 60} h.`;
-}
