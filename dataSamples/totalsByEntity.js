@@ -11,13 +11,13 @@ export default {
         {
             type: "project",
             name: "Project 1",
-            render: renderProjectName("Project 1"),
+            render: { func: "renderEntityName",  params: { name: "Project 1", EntityType: "project", EntitySubType: "waterfall"}},
             values: [
                 {
                     groupId: 1,
                     values: [
-                        { columnId: "estimated", value: 18210, render: renderDuration(18210) },
-                        { columnId: "actual", value: 17505, render: renderDuration(17505) }
+                        { columnId: "estimated", value: 18210, render: { func: "renderDuration", params: { value: 18210}} },
+                        { columnId: "actual", value: 17505, render: { func: "renderDuration", params: { value: 17505}} }
                     ]
                 }
             ],
@@ -29,32 +29,32 @@ export default {
                         {
                             groupId: 1,
                             values: [
-                                { columnId: "estimated", value: 14310, render: renderDuration(14310) },
-                                { columnId: "actual", value: 14955, render: renderDuration(14955) }
+                                { columnId: "estimated", value: 14310, render: { func: "renderDuration", params: { value: 14310}} },
+                                { columnId: "actual", value: 14955, render: { func: "renderDuration", params: { value: 14955}} }
                             ]
                         }
                     ],
                     children: [
                         {
-                            type: "User", name: "User name 1", render: renderUserName("User name 1"),
+                            type: "User", name: "User name 1", render: { func: "renderUserName",  params: { name: "User name 1"}},
                             values: [
                                 {
                                     groupId: 1,
                                     values: [
-                                        { columnId: "estimated", value: 8400, render: renderDuration(8400) },
-                                        { columnId: "actual", value: 9645, render: renderDuration(9645) }
+                                        { columnId: "estimated", value: 8400, render: { func: "renderDuration", params: { value: 8400}} },
+                                        { columnId: "actual", value: 9645, render: { func: "renderDuration", params: { value: 9645}} }
                                     ]
                                 }
                             ]
                         },
                         {
-                            type: "User", name: "User name 2", render: renderUserName("User name 2"),
+                            type: "User", name: "User name 2", render: { func: "renderUserName",  params: { name: "User name 2"}},
                             values: [
                                 {
                                     groupId: 1,
                                     values: [
-                                        { columnId: "estimated", value: 5910, render: renderDuration(5910) },
-                                        { columnId: "actual", value: 5310, render: renderDuration(5310) }
+                                        { columnId: "estimated", value: 5910, render: { func: "renderDuration", params: { value: 5910}} },
+                                        { columnId: "actual", value: 5310, render: { func: "renderDuration", params: { value: 5310}} }
                                     ]
                                 }
                             ]
@@ -67,20 +67,20 @@ export default {
                         {
                             groupId: 1,
                             values: [
-                                { columnId: "estimated", value: 3900, render: renderDuration(3900) },
-                                { columnId: "actual", value: 2550, render: renderDuration(2550) }
+                                { columnId: "estimated", value: 3900, render: { func: "renderDuration", params: { value: 3900}} },
+                                { columnId: "actual", value: 2550, render: { func: "renderDuration", params: { value: 2550}} }
                             ]
                         }
                     ],
                     children: [
                         {
-                            type: "User", name: "User name 1", render: renderUserName("User name 1"),
+                            type: "User", name: "User name 1", render: { func: "renderUserName",  params: { name: "User name 1"}},
                             values: [
                                 {
                                     groupId: 1,
                                     values: [
-                                        { columnId: "estimated", value: 3900, render: renderDuration(3900) },
-                                        { columnId: "actual", value: 2550, render: renderDuration(2550) }
+                                        { columnId: "estimated", value: 3900, render: { func: "renderDuration", params: { value: 3900}} },
+                                        { columnId: "actual", value: 2550, render: { func: "renderDuration", params: { value: 2550}} }
                                     ]
                                 }
                             ]

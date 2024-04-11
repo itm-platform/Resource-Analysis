@@ -22,7 +22,18 @@ export class FlexiTable {
         // Render rows with the new data structure
         this.renderRows(this.dataset.rows);
     }
+    renderUserName(params) {
+        return `<span class="user-icon">👤</span>${params.name}`;
+    }
 
+    renderEntityName(params) {
+        return `<span class="project-icon">📁</span>${params.name}`;
+    }
+
+    renderDuration(params) {
+        // Use params.value directly, assuming duration is passed this way
+        return `${params.value / 60} h.`;
+    }
     renderHeader() {
         const header = this.table.createTHead();
         const headerRow = header.insertRow();
@@ -65,7 +76,16 @@ export class FlexiTable {
 
                 // First cell for name with toggle/indentation
                 const nameCell = row.insertCell();
-                nameCell.innerHTML = item.render || item.name;
+                if (item.render) {
+                    const renderFunc = this[item.render.func];
+                    if (renderFunc) {
+                        // Directly pass the params object to the render function
+                        nameCell.innerHTML = renderFunc.call(this, item.render.params);
+                    }
+                } else {
+                    // Fallback to direct content if no render function specified
+                    nameCell.innerHTML = item.name || '';
+                }
                 nameCell.style.paddingLeft = `${level * 20}px`; // Adjust the level of indentation
                 nameCell.classList.add('ftbl-name-cell');
                 if (item.children && item.children.length > 0) {
@@ -77,8 +97,15 @@ export class FlexiTable {
                     if (groupValues) {
                         groupValues.values.forEach(value => {
                             const cell = row.insertCell();
-                            cell.innerHTML = value.render || value.value;
-                            //add .ftbl-value-cell class to the cell
+                            if (value.render) {
+                                const renderFunc = this[value.render.func];
+                                if (renderFunc) {
+                                    // Pass the params object for value rendering
+                                    cell.innerHTML = renderFunc.call(this, value.render.params);
+                                }
+                            } else {
+                                cell.innerHTML = value.value;
+                            }
                             cell.classList.add('ftbl-value-cell');
                         });
                     }

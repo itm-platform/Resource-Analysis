@@ -17,7 +17,6 @@
             <option value="intervalsByUser">Intervals by User</option>
             <option value="TotalsByEntity">Totals by Entity</option>
             <option value="TotalsByUser">Totals by User</option>
-
         </select>
     </div>
     <div id="tableContainer" style="width: 80%;"></div>
@@ -29,7 +28,6 @@
         const dataFileSelector = document.getElementById('dataFileSelector');
         let currentDataModule = './dataSamples/intervalsByEntity.js'; // Default data module
     
-        // Initialize FilterManager outside the data loading function
         let options = {
             filters: {
                 rowFilters: { Program: true, Project: true, Task: true, User: true },
@@ -52,16 +50,10 @@
         async function loadDataAndInitializeTable(dataModulePath) {
             const { default: data } = await import(dataModulePath);
     
-            // Clear existing content in the tableContainer
             const tableContainer = document.getElementById('tableContainer');
             while (tableContainer.firstChild) {
                 tableContainer.removeChild(tableContainer.firstChild);
             }
-    
-            // Reuse filterManager and only reset if necessary
-            // This place is where you might want to update or reset filters based on new data
-    
-            // Initialize or reinitialize the FlexiTable as needed
             flexiTable = new FlexiTable('tableContainer', data, filterManager.filters);
     
             filterManager.onFilterChangeCallback = (filters) => {
