@@ -1,5 +1,5 @@
-// flexibleTable.js
-export class FlexibleTable {
+// flexiTable.js
+export class FlexiTable {
     constructor(containerId, dataset, filters = {}) {
         this.container = document.getElementById(containerId);
         this.dataset = dataset; // The entire new dataset including groups and rows
@@ -35,6 +35,7 @@ export class FlexibleTable {
             const cell = headerRow.insertCell();
             cell.textContent = group.name;
             cell.setAttribute('colspan', group.columns.length);
+            cell.classList.add('ftbl-header-group-cell');
         });
 
         // Second row for individual columns
@@ -46,6 +47,7 @@ export class FlexibleTable {
             group.columns.forEach(column => {
                 const cell = columnRow.insertCell();
                 cell.textContent = column.name;
+                cell.classList.add('ftbl-header-column-cell');
             });
         });
     }
@@ -65,6 +67,7 @@ export class FlexibleTable {
                 const nameCell = row.insertCell();
                 nameCell.innerHTML = item.render || item.name;
                 nameCell.style.paddingLeft = `${level * 20}px`; // Adjust the level of indentation
+                nameCell.classList.add('ftbl-name-cell');
                 if (item.children && item.children.length > 0) {
                     this._addToggleIcon(nameCell, true, rowId);
                 }
@@ -75,6 +78,8 @@ export class FlexibleTable {
                         groupValues.values.forEach(value => {
                             const cell = row.insertCell();
                             cell.innerHTML = value.render || value.value;
+                            //add .ftbl-value-cell class to the cell
+                            cell.classList.add('ftbl-value-cell');
                         });
                     }
                 });

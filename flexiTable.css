@@ -1,0 +1,27 @@
+/* flexiTable.css */
+.ftbl-header-group-cell, .ftbl-header-column-cell {
+    background-color: #eee;
+    text-align: center;
+    font-size: .8em;
+}
+
+
+.ftbl-value-cell {
+    text-align: right;
+    width: 4em; /* Default width for most cells */
+}
+
+.ftbl-name-cell {
+    text-align: left; 
+    width: 15em; /* Specific width for the first column/cell */
+}
+
+/* Ensure the header cells align with your column setup */
+.ftbl-header-group-cell:first-child, .ftbl-header-column-cell:first-child {
+    width: 10em; /* You may also need to adjust this for header cells if they align with the name column */
+}
+
+table {
+    /* border-collapse: collapse; */
+    border: 1px solid #ccc;
+}

@@ -1,19 +1,7 @@
 export default {
     groups: [
         {
-            id: 1, name: "01-01-2024",
-            columns: [
-                { id: "estimated", name: "Estimated" },
-                { id: "actual", name: "Actual" }]
-        },
-        {
-            id: 2, name: "08-02-2024",
-            columns: [
-                { id: "estimated", name: "Estimated" },
-                { id: "actual", name: "Actual" }]
-        },
-        {
-            id: 3, name: "Sum of Periods",
+            id: 1, name: "Total",
             columns: [
                 { id: "estimated", name: "Estimated" },
                 { id: "actual", name: "Actual" }]
@@ -28,21 +16,8 @@ export default {
                 {
                     groupId: 1,
                     values: [
-                        { columnId: "estimated", value: 2520, render: renderDuration(2520) },
-                        { columnId: "actual", value: 2040, render: renderDuration(2040) }
-                    ]
-                },
-                {
-                    groupId: 2,
-                    values: [
-                        { columnId: "estimated", value: 2520, render: renderDuration(2520) },
-                        { columnId: "actual", value: 2040, render: renderDuration(2040) }]
-                },
-                {
-                    groupId: 3,
-                    values: [
-                        { columnId: "estimated", value: 5040, render: renderDuration(5040) },
-                        { columnId: "actual", value: 4080, render: renderDuration(4080) }
+                        { columnId: "estimated", value: 18210, render: renderDuration(18210) },
+                        { columnId: "actual", value: 17505, render: renderDuration(17505) }
                     ]
                 }
             ],
@@ -54,22 +29,8 @@ export default {
                         {
                             groupId: 1,
                             values: [
-                                { columnId: "estimated", value: 1320, render: renderDuration(1320) },
-                                { columnId: "actual", value: 1320, render: renderDuration(1320) }
-                            ]
-                        },
-                        {
-                            groupId: 2,
-                            values: [
-                                { columnId: "estimated", value: 1320, render: renderDuration(1320) },
-                                { columnId: "actual", value: 1320, render: renderDuration(1320) }
-                            ]
-                        },
-                        {
-                            groupId: 3,
-                            values: [
-                                { columnId: "estimated", value: 2640, render: renderDuration(2640) },
-                                { columnId: "actual", value: 2640, render: renderDuration(2640) }
+                                { columnId: "estimated", value: 14310, render: renderDuration(14310) },
+                                { columnId: "actual", value: 14955, render: renderDuration(14955) }
                             ]
                         }
                     ],
@@ -80,22 +41,8 @@ export default {
                                 {
                                     groupId: 1,
                                     values: [
-                                        { columnId: "estimated", value: 600, render: renderDuration(600) },
-                                        { columnId: "actual", value: 540, render: renderDuration(540) }
-                                    ]
-                                },
-                                {
-                                    groupId: 2,
-                                    values: [
-                                        { columnId: "estimated", value: 600, render: renderDuration(600) },
-                                        { columnId: "actual", value: 540, render: renderDuration(540) }
-                                    ]
-                                },
-                                {
-                                    groupId: 3,
-                                    values: [
-                                        { columnId: "estimated", value: 1200, render: renderDuration(1200) },
-                                        { columnId: "actual", value: 1080, render: renderDuration(1080) }
+                                        { columnId: "estimated", value: 8400, render: renderDuration(8400) },
+                                        { columnId: "actual", value: 9645, render: renderDuration(9645) }
                                     ]
                                 }
                             ]
@@ -106,22 +53,8 @@ export default {
                                 {
                                     groupId: 1,
                                     values: [
-                                        { columnId: "estimated", value: 720, render: renderDuration(720) },
-                                        { columnId: "actual", value: 780, render: renderDuration(780) }
-                                    ]
-                                },
-                                {
-                                    groupId: 2,
-                                    values: [
-                                        { columnId: "estimated", value: 720, render: renderDuration(720) },
-                                        { columnId: "actual", value: 780, render: renderDuration(780) }
-                                    ]
-                                },
-                                {
-                                    groupId: 3,
-                                    values: [
-                                        { columnId: "estimated", value: 1440, render: renderDuration(1440) },
-                                        { columnId: "actual", value: 1560, render: renderDuration(1560) }
+                                        { columnId: "estimated", value: 5910, render: renderDuration(5910) },
+                                        { columnId: "actual", value: 5310, render: renderDuration(5310) }
                                     ]
                                 }
                             ]
@@ -134,22 +67,8 @@ export default {
                         {
                             groupId: 1,
                             values: [
-                                { columnId: "estimated", value: 1200, render: renderDuration(1200) },
-                                { columnId: "actual", value: 720, render: renderDuration(720) }
-                            ]
-                        },
-                        {
-                            groupId: 2,
-                            values: [
-                                { columnId: "estimated", value: 1200, render: renderDuration(1200) },
-                                { columnId: "actual", value: 720, render: renderDuration(720) }
-                            ]
-                        },
-                        {
-                            groupId: 3,
-                            values: [
-                                { columnId: "estimated", value: 2400, render: renderDuration(2400) },
-                                { columnId: "actual", value: 1440, render: renderDuration(1440) }
+                                { columnId: "estimated", value: 3900, render: renderDuration(3900) },
+                                { columnId: "actual", value: 2550, render: renderDuration(2550) }
                             ]
                         }
                     ],
@@ -160,29 +79,13 @@ export default {
                                 {
                                     groupId: 1,
                                     values: [
-                                        { columnId: "estimated", value: 1200, render: renderDuration(1200) },
-                                        { columnId: "actual", value: 720, render: renderDuration(720) }
-                                    ]
-                                },
-                                {
-                                    groupId: 2,
-                                    values: [
-                                        { columnId: "estimated", value: 1200, render: renderDuration(1200) },
-                                        { columnId: "actual", value: 720, render: renderDuration(720) }
-                                    ]
-                                },
-                                {
-                                    groupId: 3,
-                                    values: [
-                                        { columnId: "estimated", value: 2400, render: renderDuration(2400) },
-                                        { columnId: "actual", value: 1440, render: renderDuration(1440) }
+                                        { columnId: "estimated", value: 3900, render: renderDuration(3900) },
+                                        { columnId: "actual", value: 2550, render: renderDuration(2550) }
                                     ]
                                 }
                             ]
                         }]
                 }
-
-
 
             ]
         }

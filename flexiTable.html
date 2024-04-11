@@ -1,19 +1,12 @@
-<!-- flexibleTable.html -->
+<!-- flexiTable.html -->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <title>Flexible Table with Dynamic Filters</title>
-    <style>
-        .clickable {
-            cursor: pointer;
-        }
+    <link rel="stylesheet" href="flexiTable.css">
 
-        .indent {
-            padding-left: 20px;
-        }
-    </style>
 </head>
 
 <body>
@@ -21,13 +14,16 @@
         <!-- Dropdown for selecting the data file -->
         <select id="dataFileSelector">
             <option value="intervalsByEntity">Intervals by Entity</option>
+            <option value="intervalsByUser">Intervals by User</option>
             <option value="TotalsByEntity">Totals by Entity</option>
+            <option value="TotalsByUser">Totals by User</option>
+
         </select>
     </div>
     <div id="tableContainer" style="width: 80%;"></div>
 
     <script type="module">
-        import { FlexibleTable } from './flexibleTable.js';
+        import { FlexiTable } from './flexiTable.js';
         import { FilterManager } from './filterManager.js';
     
         const dataFileSelector = document.getElementById('dataFileSelector');
@@ -41,7 +37,7 @@
         };
     
         let filterManager = new FilterManager('filtersDiv', filters => {}, options.filters.rowFilters);
-        let flexibleTable;
+        let flexiTable;
     
         document.addEventListener('DOMContentLoaded', async () => {
             await loadDataAndInitializeTable(currentDataModule);
@@ -65,11 +61,11 @@
             // Reuse filterManager and only reset if necessary
             // This place is where you might want to update or reset filters based on new data
     
-            // Initialize or reinitialize the FlexibleTable as needed
-            flexibleTable = new FlexibleTable('tableContainer', data, filterManager.filters);
+            // Initialize or reinitialize the FlexiTable as needed
+            flexiTable = new FlexiTable('tableContainer', data, filterManager.filters);
     
             filterManager.onFilterChangeCallback = (filters) => {
-                flexibleTable.updateFilters(filters);
+                flexiTable.updateFilters(filters);
             };
         }
     </script>
