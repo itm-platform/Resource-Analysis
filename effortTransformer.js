@@ -2,46 +2,43 @@ export class EffortTransformer {
     constructor(data) {
         this.data = data;
     }
-
     transformToIntervalsByEntity() {
         const groups = this.buildIntervalGroups();
         const rows = this.buildEntitiesRows();
         return { groups, rows };
     }
-    // interval by user
-
     transformToIntervalsByUser() {
-        const groups = this.buildIntervalGroups();
+        const groups = this.buildIntervalGroups(true); // Pass true to include capacity
         const rows = this.buildUserRowsWithEntities();
         return { groups, rows };
     }
+    // interval by user
+
 
     buildUserRowsWithEntities() {
-        const userMap = this.buildUserMap();
         return this.data.Users.map(user => {
             const userRow = {
                 type: "user",
                 name: user.Name,
                 render: { func: "renderUserName", params: { name: user.Name } },
                 values: [],
-                children: this.aggregateUserEntities(user.Id, userMap)
+                children: this.aggregateUserEntities(user.Id)
             };
-            userRow.values = this.aggregateEntityValues(userRow.children);
+            userRow.values = this.aggregateUserValuesAcrossEntities(userRow.children);
             return userRow;
         });
     }
 
-    aggregateUserEntities(userId, userMap) {
+
+    aggregateUserEntities(userId) {
         let entities = [];
 
         this.data.Entities.forEach(entity => {
             entity.WorkItems.forEach(workItem => {
                 workItem.AssignedEfforts.forEach(assignedEffort => {
                     if (assignedEffort.UserId === userId) {
-                        const foundEntity = entities.find(e => e.name === entity.Name);
-                        if (foundEntity) {
-                            foundEntity.children.push(this.buildWorkItemRow(workItem, assignedEffort));
-                        } else {
+                        const entityIndex = entities.findIndex(e => e.name === entity.Name);
+                        if (entityIndex === -1) {
                             entities.push({
                                 type: entity.EntityType,
                                 name: entity.Name,
@@ -50,13 +47,14 @@ export class EffortTransformer {
                                 children: [this.buildWorkItemRow(workItem, assignedEffort)],
                                 values: []
                             });
+                        } else {
+                            entities[entityIndex].children.push(this.buildWorkItemRow(workItem, assignedEffort));
                         }
                     }
                 });
             });
         });
 
-        // Aggregate values for each entity
         entities.forEach(entity => {
             entity.values = this.aggregateWorkItemValues(entity.children);
         });
@@ -65,30 +63,31 @@ export class EffortTransformer {
     }
 
     buildWorkItemRow(workItem, assignedEffort) {
-        const workItemRow = {
+        return {
             type: "workItem",
             name: workItem.Name,
-            values: this.buildIntervalValues(assignedEffort.Intervals)
+            values: this.buildIntervalValuesWithCapacity(assignedEffort.Intervals)
         };
-        return workItemRow;
     }
 
     // interval by user
     
-    buildIntervalGroups() {
+    buildIntervalGroups(includeCapacity = false) {
         const intervals = this.data.Intervals || [];
         const groups = intervals.map(interval => ({
             id: interval.IntervalId,
             name: interval.IntervalName,
             columns: [
+                ...(includeCapacity ? [{ id: "capacity", name: "Capacity" }] : []),
                 { id: "estimated", name: "Estimated" },
                 { id: "actual", name: "Actual" }
-            ]
+            ] 
         }));
         groups.push({
             id: intervals.length + 1,
             name: "Sum of Periods",
             columns: [
+                ...(includeCapacity ? [{ id: "capacity", name: "Capacity" }] : []),
                 { id: "estimated", name: "Estimated" },
                 { id: "actual", name: "Actual" }
             ]
@@ -199,5 +198,38 @@ export class EffortTransformer {
                 render: { func: "renderDuration", params: { value: columns[columnId] } }
             }))
         }));
+    }
+    buildIntervalValuesWithCapacity(intervals) {
+        const intervalValues = intervals.map(interval => ({
+            groupId: parseInt(interval.IntervalId),
+            values: [
+                { columnId: "capacity", value: interval.Capacity, render: { func: "renderDuration", params: { value: interval.Capacity } } },
+                { columnId: "estimated", value: interval.EstimatedEffort, render: { func: "renderDuration", params: { value: interval.EstimatedEffort } } },
+                { columnId: "actual", value: interval.ActualEffort, render: { func: "renderDuration", params: { value: interval.ActualEffort } } }
+            ]
+        }));
+
+        // Sum values across all intervals for the summary group
+        const sumValues = intervals.reduce((acc, cur) => ({
+            capacity: acc.capacity + cur.Capacity,
+            estimated: acc.estimated + cur.EstimatedEffort,
+            actual: acc.actual + cur.ActualEffort
+        }), { capacity: 0, estimated: 0, actual: 0 });
+
+        intervalValues.push({
+            groupId: intervals.length + 1,
+            values: [
+                { columnId: "capacity", value: sumValues.capacity, render: { func: "renderDuration", params: { value: sumValues.capacity } } },
+                { columnId: "estimated", value: sumValues.estimated, render: { func: "renderDuration", params: { value: sumValues.estimated } } },
+                { columnId: "actual", value: sumValues.actual, render: { func: "renderDuration", params: { value: sumValues.actual } } }
+            ]
+        });
+
+        return intervalValues;
+    }
+    aggregateUserValuesAcrossEntities(entities) {
+        // Similar to other aggregation methods, summing values across all entity groups
+        const flatValues = entities.flatMap(entity => entity.values);
+        return this.sumValuesByGroup(flatValues);
     }
 }
