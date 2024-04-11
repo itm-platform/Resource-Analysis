@@ -85,7 +85,7 @@ export default {
                     ],
                     children: [
                         {
-                            type: "Task", name: "Task name 1",
+                            type: "workItem", name: "Task name 1",
                             values: [
                                 {
                                     groupId: 1,
@@ -116,7 +116,7 @@ export default {
 
                         },
                         {
-                            type: "Task", name: "Task name 2",
+                            type: "workItem", name: "Task name 2",
                             values: [
                                 {
                                     groupId: 1,
@@ -213,7 +213,7 @@ export default {
                 ],
                 children: [
                     {
-                        type: "Task", name: "Task name 1",
+                        type: "workItem", name: "Task name 1",
                         values: [
                             {
                                 groupId: 1,
@@ -277,7 +277,7 @@ export default {
                 ],
                 children: [
                     {
-                        type: "Task", name: "Task name 3",
+                        type: "workItem", name: "Task name 3",
                         values: [
                             {
                                 groupId: 1,
@@ -372,7 +372,7 @@ export default {
                     ],
                     children: [
                         {
-                            type: "Task", name: "Task name 3",
+                            type: "workItem", name: "Task name 3",
                             values: [
                                 {
                                     groupId: 1,

@@ -1,67 +1,4 @@
-<!-- flexiTable.html -->
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Flexible Table with Dynamic Filters</title>
-    <link rel="stylesheet" href="flexiTable.css">
-
-</head>
-
-<body>
-    <div id="filtersDiv">
-        <!-- Dropdown for selecting the data file -->
-        <select id="dataFileSelector">
-            <option value="intervalsByEntity">Intervals by Entity</option>
-            <option value="intervalsByUser">Intervals by User</option>
-            <option value="TotalsByEntity">Totals by Entity</option>
-            <option value="TotalsByUser">Totals by User</option>
-        </select>
-    </div>
-    <div id="tableContainer" style="width: 80%;"></div>
-
-    <div id="dataSet" style="font-family: monospace;"></div>
-    <script>
-        var obj1 = { name: "Alice", age: 25 };
-        var obj2 = { name: "Alice", age: 35 };
-      
-        var differences = DeepDiff.diff(obj1, obj2);
-      
-        console.log(differences);
-      </script>
-    <script type="module">
-        import { FlexiTable } from './flexiTable.js';
-        import { FilterManager } from './filterManager.js';
-
-        const dataFileSelector = document.getElementById('dataFileSelector');
-        const tableContainer = document.getElementById('tableContainer');
-        const dataSet = document.getElementById('dataSet');
-        const defaultDataFile = 'intervalsByEntity';
-        const basePath = './dataSamples/';
-        
-        // Retrieve or set the initial selected value
-        dataFileSelector.value = localStorage.getItem('selectedDataFile') || defaultDataFile;
-
-        const filterManager = new FilterManager('filtersDiv', filters => flexiTable.updateFilters(filters), {
-            Program: true, Project: true, Task: true, User: true
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            changeDataFile();
-            dataFileSelector.addEventListener('change', changeDataFile);
-        });
-
-        async function changeDataFile() {
-            const selectedOption = dataFileSelector.value;
-            localStorage.setItem('selectedDataFile', selectedOption);
-            const dataModulePath = `${basePath}${selectedOption}.js`;
-            const { default: data } = await import(dataModulePath);
-
-            // Clear previous table contents
-            tableContainer.innerHTML = '';
-            // Create a new FlexiTable instance
-            const flexiTable = new FlexiTable('tableContainer', {
+{
   "groups": [
     {
       "id": 1,
@@ -976,15 +913,4 @@
       ]
     }
   ]
-}, filterManager.filters);
-           
-        }
-    </script>
-    
-</body>
-
-
-
-
-
-</html>
+}

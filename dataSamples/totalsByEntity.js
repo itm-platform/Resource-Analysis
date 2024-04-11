@@ -23,7 +23,7 @@ export default {
             ],
             children: [
                 {
-                    type: "Task", name: "Task name 1",
+                    type: "workItem", name: "Task name 1",
                     // no render means it will display the 'name' property
                     values: [
                         {
@@ -61,7 +61,7 @@ export default {
                         }]
                 },
                 {
-                    type: "Task", name: "Task name 2",
+                    type: "workItem", name: "Task name 2",
                     // no render means it will display the 'name' property
                     values: [
                         {

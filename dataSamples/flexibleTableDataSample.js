@@ -11,7 +11,7 @@ export default [
                 contact: "Contact A",
                 children: [
                     {
-                        type: "Task", name: "Task A1",
+                        type: "workItem", name: "Task A1",
                         children: [
                             { type: "User", name: "User 1" }, // No render means default display
                             {
@@ -24,7 +24,7 @@ export default [
                                 client: "Client A"
                             }]
                     },
-                    { type: "Task", name: "Task A2" }
+                    { type: "workItem", name: "Task A2" }
 
                 ]
             }
@@ -39,16 +39,16 @@ export default [
                 name: "Project B1",
                 client: "Client B",
                 children: [
-                    { type: "Task", name: "Task B1" },
-                    { type: "Task", name: "Task B2" }
+                    { type: "workItem", name: "Task B1" },
+                    { type: "workItem", name: "Task B2" }
                 ]
             },
             {
                 type: "Project",
                 name: "Project B2",
                 children: [
-                    { type: "Task", name: "Task B3" },
-                    { type: "Task", name: "Task B4" }
+                    { type: "workItem", name: "Task B3" },
+                    { type: "workItem", name: "Task B4" }
                 ]
             }
         ]
