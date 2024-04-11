@@ -8,73 +8,7 @@ export class EffortTransformer {
         const rows = this.buildEntitiesRows();
         return { groups, rows };
     }
-    // interval by user
 
-    transformToIntervalsByUser() {
-        const groups = this.buildIntervalGroups();
-        const rows = this.buildUserRowsWithEntities();
-        return { groups, rows };
-    }
-
-    buildUserRowsWithEntities() {
-        const userMap = this.buildUserMap();
-        return this.data.Users.map(user => {
-            const userRow = {
-                type: "user",
-                name: user.Name,
-                render: { func: "renderUserName", params: { name: user.Name } },
-                values: [],
-                children: this.aggregateUserEntities(user.Id, userMap)
-            };
-            userRow.values = this.aggregateEntityValues(userRow.children);
-            return userRow;
-        });
-    }
-
-    aggregateUserEntities(userId, userMap) {
-        let entities = [];
-
-        this.data.Entities.forEach(entity => {
-            entity.WorkItems.forEach(workItem => {
-                workItem.AssignedEfforts.forEach(assignedEffort => {
-                    if (assignedEffort.UserId === userId) {
-                        const foundEntity = entities.find(e => e.name === entity.Name);
-                        if (foundEntity) {
-                            foundEntity.children.push(this.buildWorkItemRow(workItem, assignedEffort));
-                        } else {
-                            entities.push({
-                                type: entity.EntityType,
-                                name: entity.Name,
-                                subType: entity.EntitySubType,
-                                render: { func: "renderEntityName", params: { name: entity.Name, entityType: entity.EntityType, entitySubType: entity.EntitySubType } },
-                                children: [this.buildWorkItemRow(workItem, assignedEffort)],
-                                values: []
-                            });
-                        }
-                    }
-                });
-            });
-        });
-
-        // Aggregate values for each entity
-        entities.forEach(entity => {
-            entity.values = this.aggregateWorkItemValues(entity.children);
-        });
-
-        return entities;
-    }
-
-    buildWorkItemRow(workItem, assignedEffort) {
-        const workItemRow = {
-            type: "workItem",
-            name: workItem.Name,
-            values: this.buildIntervalValues(assignedEffort.Intervals)
-        };
-        return workItemRow;
-    }
-
-    // interval by user
-    
     buildIntervalGroups() {
         const intervals = this.data.Intervals || [];
         const groups = intervals.map(interval => ({

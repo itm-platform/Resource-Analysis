@@ -55,7 +55,7 @@ export default {
             children: [
                 { //LEFT OFF
                     type: "Project", name: "Project name 1",
-                    render: { func: "renderEntityName",  params: { name: "Project name 1", EntityType: "project", EntitySubType: "waterfall"}},
+                    render: { func: "renderEntityName",  params: { name: "Project name 1", entityType: "project", entitySubType: "waterfall"}},
                     values: [
                         {
                             groupId: 1,
@@ -184,7 +184,7 @@ export default {
             ],
             children: [{
                 type: "Project", name: "Project name 1",
-                render: { func: "renderEntityName",  params: { name: "Project name 1", EntityType: "project", EntitySubType: "waterfall"}},
+                render: { func: "renderEntityName",  params: { name: "Project name 1", entityType: "project", entitySubType: "waterfall"}},
                 values: [
                     {
                         groupId: 1,
@@ -248,7 +248,7 @@ export default {
             },
             {
                 type: "Project", name: "Project name 2",
-                render: { func: "renderEntityName",  params: { name: "Project name 2", EntityType: "project", EntitySubType: "waterfall"}},
+                render: { func: "renderEntityName",  params: { name: "Project name 2", entityType: "project", entitySubType: "waterfall"}},
                 values: [
                     {
                         groupId: 1,
@@ -343,7 +343,7 @@ export default {
             children: [
                 {
                     type: "Project", name: "Project name 2",
-                    render: { func: "renderEntityName",  params: { name: "Project name 2", EntityType: "project", EntitySubType: "waterfall"}},
+                    render: { func: "renderEntityName",  params: { name: "Project name 2", entityType: "project", entitySubType: "waterfall"}},
                     values: [
                         {
                             groupId: 1,
