@@ -3,6 +3,8 @@ import { EffortTransformer } from '../effortTransformer';
 import responseResourceAnalysis from './dataSamples/responseResourceAnalysis.js';
 import intervalsByEntity from './dataSamples/intervalsByEntity.js';
 import intervalsByUser from './dataSamples/intervalsByUser.js';
+import totalsByEntity from './dataSamples/totalsByEntity.js';
+import totalsByUser from './dataSamples/totalsByUser.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -29,5 +31,19 @@ describe('effortTransformer', () => {
         fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
         expect(result).toEqual(intervalsByUser);
     });
+
+    test('transformToTotalsByEntity', () => {
+        const result = effortTransformer.transformToTotalsByEntity();
+        const filePath = path.join(resultsDirPath, 'totalsByEntityTestResult.json');
+        fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
+        expect(result).toEqual(totalsByEntity);
+    });
+    test('transformToTotalsByUser', () => {
+        const result = effortTransformer.transformToTotalsByUser();
+        const filePath = path.join(resultsDirPath, 'totalsByUserTestResult.json');
+        fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
+        expect(result).toEqual(totalsByUser);
+    });
+           
 
 });

@@ -17,6 +17,138 @@ export class EffortTransformer {
         this._setCapacityToUndefinedForNonUsers(rows);
         return { groups, rows };
     }
+    transformToTotalsByEntity() {
+        const groups = [
+            {
+                id: 1, 
+                name: "Total",
+                columns: [
+                    { id: "estimated", name: "Estimated" },
+                    { id: "actual", name: "Actual" }
+                ]
+            }
+        ];
+    
+        const rows = this.data.Entities.map(entity => {
+            const workItemRows = entity.WorkItems.map(workItem => {
+                const userRows = workItem.AssignedEfforts.map(assignedEffort => {
+                    const user = this._getUserById(assignedEffort.UserId);
+                    const totals = assignedEffort.TotalUserWorkItemEffort;
+                    return {
+                        type: "User",
+                        name: user.Name,
+                        render: { func: "renderUserName", params: { name: user.Name } },
+                        values: [{
+                            groupId: 1,
+                            values: [
+                                { columnId: "estimated", value: totals.EstimatedEffort, render: { func: "renderDuration", params: { value: totals.EstimatedEffort } } },
+                                { columnId: "actual", value: totals.AcceptedEffort, render: { func: "renderDuration", params: { value: totals.AcceptedEffort } } }
+                            ]
+                        }]
+                    };
+                });
+    
+                const workItemTotals = this._aggregateWorkItemTotals(userRows);
+                return {
+                    type: "workItem",
+                    name: workItem.Name,
+                    values: workItemTotals,
+                    children: userRows
+                };
+            });
+    
+            const entityTotals = this._aggregateEntityTotals(workItemRows);
+            return {
+                type: entity.EntityType,
+                name: entity.Name,
+                render: { func: "renderEntityName", params: { name: entity.Name, EntityType: entity.EntityType, EntitySubType: entity.EntitySubType } },
+                values: entityTotals,
+                children: workItemRows
+            };
+        });
+    
+        return { groups, rows };
+    }
+    
+    _aggregateWorkItemTotals(userRows) {
+        return this._sumValuesByGroup(userRows.flatMap(user => user.values));
+    }
+    
+    _aggregateEntityTotals(workItemRows) {
+        return this._sumValuesByGroup(workItemRows.flatMap(workItem => workItem.values));
+    }
+    
+    _getUserById(userId) {
+        return this.data.Users.find(user => user.Id === userId) || { Name: `User ${userId}` };
+    }
+    
+    transformToTotalsByUser() {
+        const groups = [
+            {
+                id: 1, 
+                name: "Total",
+                columns: [
+                    { id: "estimated", name: "Estimated" },
+                    { id: "actual", name: "Actual" }
+                ]
+            }
+        ];
+    
+        const rows = this.data.Users.map(user => {
+            const userProjects = this._getUserProjects(user.Id);
+            const userTotals = this._sumValuesByGroup(userProjects.flatMap(project => project.values));
+            return {
+                type: "user",
+                name: user.Name,
+                render: { func: "renderUserName", params: { name: user.Name } },
+                values: userTotals,
+                children: userProjects
+            };
+        });
+    
+        return { groups, rows };
+    }
+    
+    _getUserProjects(userId) {
+        let projects = [];
+        
+        this.data.Entities.forEach(entity => {
+            const projectWorkItems = [];
+            entity.WorkItems.forEach(workItem => {
+                workItem.AssignedEfforts.forEach(assignedEffort => {
+                    if (assignedEffort.UserId === userId) {
+                        const workItemValues = [{
+                            groupId: 1,
+                            values: [
+                                { columnId: "estimated", value: assignedEffort.TotalUserWorkItemEffort.EstimatedEffort, render: { func: "renderDuration", params: { value: assignedEffort.TotalUserWorkItemEffort.EstimatedEffort } } },
+                                { columnId: "actual", value: assignedEffort.TotalUserWorkItemEffort.AcceptedEffort, render: { func: "renderDuration", params: { value: assignedEffort.TotalUserWorkItemEffort.AcceptedEffort } } }
+                            ]
+                        }];
+    
+                        projectWorkItems.push({
+                            type: "workItem",
+                            name: workItem.Name,
+                            values: workItemValues
+                        });
+                    }
+                });
+            });
+    
+            if (projectWorkItems.length > 0) {
+                const projectTotals = this._sumValuesByGroup(projectWorkItems.flatMap(workItem => workItem.values));
+                projects.push({
+                    type: "project",
+                    name: entity.Name,
+                    render: { func: "renderEntityName", params: { name: entity.Name, EntityType: entity.EntityType, EntitySubType: entity.EntitySubType } },
+                    values: projectTotals,
+                    children: projectWorkItems
+                });
+            }
+        });
+    
+        return projects;
+    }
+    
     _setCapacity0ToRepeatedIntervalAndUsers() {
         const seen = new Map();  // To store and track combinations of UserId and IntervalId
 
