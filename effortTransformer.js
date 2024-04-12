@@ -1,7 +1,30 @@
 export class EffortTransformer {
     constructor(data) {
         this.data = data;
+        this.setCapacity0ToRepeatedIntervalAndUsers();
     }
+
+    setCapacity0ToRepeatedIntervalAndUsers() {
+        const seen = new Map();  // To store and track combinations of UserId and IntervalId
+
+        this.data.Entities.forEach(entity => {
+            entity.WorkItems.forEach(workItem => {
+                workItem.AssignedEfforts.forEach(assignedEffort => {
+                    assignedEffort.Intervals.forEach(interval => {
+                        const key = assignedEffort.UserId + '-' + interval.IntervalId;
+                        if (!seen.has(key)) {
+                            // First encounter, keep the Capacity as is and mark as seen
+                            seen.set(key, true);
+                        } else {
+                            // Already seen, set Capacity to 0
+                            interval.Capacity = 0;
+                        }
+                    });
+                });
+            });
+        });
+    }
+
     transformToIntervalsByEntity() {
         const groups = this.buildIntervalGroups();
         const rows = this.buildEntitiesRows();
@@ -10,10 +33,34 @@ export class EffortTransformer {
     transformToIntervalsByUser() {
         const groups = this.buildIntervalGroups(true); // Pass true to include capacity
         const rows = this.buildUserRowsWithEntities();
+        this.setCapacityToUndefinedForNonUsers(rows);
         return { groups, rows };
     }
     // interval by user
-
+    setCapacityToUndefinedForNonUsers(rows) {
+        function updateCapacity(item) {
+            // Only process the items that are not of type 'user'
+            if (item.type !== 'user') {
+                item.values.forEach(group => {
+                    group.values.forEach(value => {
+                        if (value.columnId === 'capacity') {
+                            value.value = undefined;
+                            value.render.params.value = undefined;
+                        }
+                    });
+                });
+            }
+    
+            // Recurse into children if they exist
+            if (item.children && item.children.length > 0) {
+                item.children.forEach(child => updateCapacity(child));
+            }
+        }
+    
+        rows.forEach(row => {
+            updateCapacity(row);
+        });
+    }
 
     buildUserRowsWithEntities() {
         return this.data.Users.map(user => {

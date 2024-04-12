@@ -31,8 +31,7 @@ export class FlexiTable {
     }
 
     renderDuration(params) {
-        // Use params.value directly, assuming duration is passed this way
-        return `${params.value / 60} h.`;
+        return params.value ? `${params.value / 60} h.` : '';
     }
     renderHeader() {
         const header = this.table.createTHead();
