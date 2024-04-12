@@ -36,13 +36,13 @@ export default {
                             UserId: "user1",
                             Intervals: [
                                 {
-                                    IntervalId: "1",
+                                    IntervalId: 1,
                                     EstimatedEffort: 600,
                                     ActualEffort: 540,
                                     Capacity: 2400
                                 },
                                 {
-                                    IntervalId: "2",
+                                    IntervalId: 2,
                                     EstimatedEffort: 600,
                                     ActualEffort: 540,
                                     Capacity: 720
@@ -57,13 +57,13 @@ export default {
                             UserId: "user2",
                             Intervals: [
                                 {
-                                    IntervalId: "1",
+                                    IntervalId: 1,
                                     EstimatedEffort: 720,
                                     ActualEffort: 780,
                                     Capacity: 2400
                                 },
                                 {
-                                    IntervalId: "2",
+                                    IntervalId: 2,
                                     EstimatedEffort: 720,
                                     ActualEffort: 780,
                                     Capacity: 2400
@@ -88,13 +88,13 @@ export default {
                             UserId: "user1",
                             Intervals: [
                                 {
-                                    IntervalId: "1",
+                                    IntervalId: 1,
                                     EstimatedEffort: 1200,
                                     ActualEffort: 720,
                                     Capacity: 2400
                                 },
                                 {
-                                    IntervalId: "2",
+                                    IntervalId: 2,
                                     EstimatedEffort: 1200,
                                     ActualEffort: 720,
                                     Capacity: 720
@@ -135,13 +135,13 @@ export default {
                             UserId: "user2",
                             Intervals: [
                                 {
-                                    IntervalId: "1",
+                                    IntervalId: 1,
                                     EstimatedEffort: 780,
                                     ActualEffort: 1560,
                                     Capacity: 2400
                                 },
                                 {
-                                    IntervalId: "2",
+                                    IntervalId: 2,
                                     EstimatedEffort: 780,
                                     ActualEffort: 1560,
                                     Capacity: 2400
@@ -156,13 +156,13 @@ export default {
                             UserId: "user3",
                             Intervals: [
                                 {
-                                    IntervalId: "1",
+                                    IntervalId: 1,
                                     EstimatedEffort: 1800,
                                     ActualEffort: 600,
                                     Capacity: 2400
                                 },
                                 {
-                                    IntervalId: "2",
+                                    IntervalId: 2,
                                     EstimatedEffort: 1800,
                                     ActualEffort: 600,
                                     Capacity: 2400
