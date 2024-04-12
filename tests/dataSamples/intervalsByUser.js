@@ -53,7 +53,7 @@ export default {
                 }
             ],
             children: [
-                { //LEFT OFF
+                { 
                     type: "Project", name: "Project name 1",
                     render: { func: "renderEntityName",  params: { name: "Project name 1", entityType: "project", entitySubType: "waterfall"}},
                     values: [

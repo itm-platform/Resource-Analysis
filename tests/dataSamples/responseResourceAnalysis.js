@@ -97,7 +97,7 @@ export default {
                                     IntervalId: "2",
                                     EstimatedEffort: 1200,
                                     ActualEffort: 720,
-                                    Capacity: 2400
+                                    Capacity: 720
                                 }
                             ],
                             TotalUserWorkItemEffort: {
