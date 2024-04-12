@@ -11,53 +11,67 @@
 
 <body>
     <div id="filtersDiv">
-        <!-- Dropdown for selecting the data file -->
+        <!-- Dropdown for selecting the data method -->
         <select id="dataFileSelector">
             <option value="intervalsByEntity">Intervals by Entity</option>
             <option value="intervalsByUser">Intervals by User</option>
-            <option value="TotalsByEntity">Totals by Entity</option>
-            <option value="TotalsByUser">Totals by User</option>
+            <option value="totalsByEntity">Totals by Entity</option>
+            <option value="totalsByUser">Totals by User</option>
         </select>
     </div>
     <div id="tableContainer" style="width: 80%;"></div>
 
-    <div id="dataSet" style="font-family: monospace;"></div>
-
     <script type="module">
         import { FlexiTable } from './flexiTable.js';
         import { FilterManager } from './filterManager.js';
+        import responseResourceAnalysis from './tests/dataSamples/responseResourceAnalysis.js';
+        import { EffortTransformer } from './effortTransformer.js';
 
+        const effortTransformer = new EffortTransformer(responseResourceAnalysis);
         const dataFileSelector = document.getElementById('dataFileSelector');
         const tableContainer = document.getElementById('tableContainer');
         const dataSet = document.getElementById('dataSet');
-        const defaultDataFile = 'intervalsByEntity';
-        const basePath = './tests/dataSamples/';
+        const defaultDataMethod = 'transformToIntervalsByEntity';
 
-        // Retrieve or set the initial selected value
-        dataFileSelector.value = localStorage.getItem('selectedDataFile') || defaultDataFile;
+        // Retrieve or set the initial selected method
+        dataFileSelector.value = localStorage.getItem('selectedDataMethod') || defaultDataMethod;
 
         const filterManager = new FilterManager('filtersDiv', filters => flexiTable.updateFilters(filters), {
             Program: true, Project: true, Task: true, User: true
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-            changeDataFile();
-            dataFileSelector.addEventListener('change', changeDataFile);
+            changeDataMethod();
+            dataFileSelector.addEventListener('change', changeDataMethod);
         });
 
-        async function changeDataFile() {
-            const selectedOption = dataFileSelector.value;
-            localStorage.setItem('selectedDataFile', selectedOption);
-            const dataModulePath = `${basePath}${selectedOption}.js`;
-            const { default: data } = await import(dataModulePath);
+        async function changeDataMethod() {
+            const selectedMethod = dataFileSelector.value;
+            localStorage.setItem('selectedDataMethod', selectedMethod);
+
+            let data;
+            switch (selectedMethod) {
+                case 'intervalsByEntity':
+                    data = effortTransformer.transformToIntervalsByEntity();
+                    break;
+                case 'intervalsByUser':
+                    data = effortTransformer.transformToIntervalsByUser();
+                    break;
+                case 'totalsByEntity':
+                    data = effortTransformer.transformToTotalsByEntity();
+                    break;
+                case 'totalsByUser':
+                    data = effortTransformer.transformToTotalsByUser();
+                    break;
+            }
 
             // Clear previous table contents
             tableContainer.innerHTML = '';
             // Create a new FlexiTable instance
             const flexiTable = new FlexiTable('tableContainer', data, filterManager.filters);
-
         }
     </script>
 </body>
+
 
 </html>
