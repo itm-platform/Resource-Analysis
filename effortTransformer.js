@@ -1,6 +1,6 @@
 export class EffortTransformer {
     constructor(data) {
-        this.data = data;
+        this.data = JSON.parse(JSON.stringify(data));
         this._setCapacity0ToRepeatedIntervalAndUsers();
     }
 

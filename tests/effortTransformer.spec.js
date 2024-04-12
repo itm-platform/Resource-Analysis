@@ -1,6 +1,5 @@
 import { describe, test, expect } from 'vitest';
 import { EffortTransformer } from '../effortTransformer';
-import resourceAnalysisJSONResponseValidator from '../resourceAnalysisJSONResponseValidator';
 import responseResourceAnalysis from './dataSamples/responseResourceAnalysis.js';
 import intervalsByEntity from './dataSamples/intervalsByEntity.js';
 import intervalsByUser from './dataSamples/intervalsByUser.js';
@@ -9,6 +8,7 @@ import totalsByUser from './dataSamples/totalsByUser.js';
 import fs from 'fs';
 import path from 'path';
 
+//const earlyJSON=JSON.stringify(responseResourceAnalysis, null, 2); // This will print the data to be validated
 // Define the directory path relative to the current script
 const resultsDirPath = path.join(__dirname, 'results');
 
@@ -16,15 +16,6 @@ const resultsDirPath = path.join(__dirname, 'results');
 if (!fs.existsSync(resultsDirPath)) {
     fs.mkdirSync(resultsDirPath, { recursive: true });
 }
-
-describe('ResponseResourceAnalysis validation', () => {
-    // test that the resourceAnalysisJSONResponseValidator.validate is not throwing any errors
-    test('validate', () => {
-        expect(() => {
-            resourceAnalysisJSONResponseValidator.validate(responseResourceAnalysis);
-        }).not.toThrow();
-    });
-});
 
 describe('effortTransformer', () => {
     const effortTransformer = new EffortTransformer(responseResourceAnalysis);

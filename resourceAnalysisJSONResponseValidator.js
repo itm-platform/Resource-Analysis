@@ -6,8 +6,8 @@ export default {
     
         const userCapacities = {};
     
-        // Validate Entities and WorkItems
         response.Entities.forEach(entity => {
+            console.log(`Checking entity with Id: ${entity.Id} and Name: ${entity.Name}`);
             if (!entity.Id || !entity.Name) {
                 throw new Error('Each entity must have an "Id" and "Name".');
             }
@@ -19,11 +19,13 @@ export default {
             }
     
             entity.WorkItems.forEach(workItem => {
+                console.log(`Checking work item with Id: ${workItem.Id} and Name: ${workItem.Name}`);
                 if (!workItem.Id || !workItem.Name) {
                     throw new Error('Each work item must have an "Id" and "Name".');
                 }
     
                 workItem.AssignedEfforts.forEach(effort => {
+                    console.log(`Checking effort for user: ${effort.UserId}`);
                     if (!effort.TotalUserWorkItemEffort) {
                         throw new Error('All users per work item must have "TotalUserWorkItemEffort".');
                     }
@@ -32,15 +34,23 @@ export default {
                     }
     
                     effort.Intervals.forEach(interval => {
+                        console.log(`Checking interval with Id: ${interval.IntervalId}`);
                         const key = `${effort.UserId}_${interval.IntervalId}`;
-                        if (userCapacities[key] !== undefined) {
-                            if (userCapacities[key] !== interval.Capacity) {
-                                throw new Error(`Inconsistency found: User ${effort.UserId} has capacities ${userCapacities[key]} and ${interval.Capacity} for IntervalId ${interval.IntervalId} across different work items. Difference found in work item with Id ${workItem.Id} and Name "${workItem.Name}".`);
-                            }
-                        } else {
-                            userCapacities[key] = interval.Capacity; // Initialize if not already set
+                        if (interval.Capacity === undefined) {
+                            console.error(`Missing capacity for user ${effort.UserId} at interval ${interval.IntervalId}`);
+                            throw new Error('Capacity data is missing');
+                        }
+                    
+                        console.log(`Checking capacity for key: ${key} with capacity: ${interval.Capacity}`);
+                        if (userCapacities[key] === undefined) {
+                            userCapacities[key] = interval.Capacity;
+                            console.log(`Set new capacity for key: ${key} to ${interval.Capacity}`);
+                        } else if (userCapacities[key] !== interval.Capacity) {
+                            console.error(`Inconsistency found for key: ${key}. Existing: ${userCapacities[key]}, New: ${interval.Capacity}`);
+                            throw new Error(`Inconsistency found: User ${effort.UserId} has capacities ${userCapacities[key]} and ${interval.Capacity} for IntervalId ${interval.IntervalId} across different work items. Difference found in work item with Id ${workItem.Id} and Name "${workItem.Name}".`);
                         }
                     });
+                    
                 });
             });
         });
