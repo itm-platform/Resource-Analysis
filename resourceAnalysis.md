@@ -1,4 +1,5 @@
 
+# ⚠️ Work in progress Do not use yet
 ## Resource Analysis Backend
 The endpoint `/resourceAnalysis` will return the estimated and actual efforts of users in tasks. It is similar to the existing `/resourceCapacity` but v2, admitting POST or URLEncoded Get (as we do with [/search](https://developers.itmplatform.com/documentation/#filter,-page,-sort-v2)
 
@@ -17,10 +18,10 @@ Properties between `< >` denote optional
 In this example, we are requesting five weeks starting on 2024-01-01. The response will give us the efforts and capacity summarized for weeks 1 to 5.
 ```json
  {"intervals": {
-            "startDate": "2024-01-01",
-            "intervalType": "week",
-            "noOfIntervals":5
-        }
+    "startDate": "2024-01-01",
+    "intervalType": "week",
+    "noOfIntervals":5
+   }
 }
 ```
 > 👉🏼 Note: In the existing `/resourceCapacity` we use numbers for `intervalType` which is misleading. 
@@ -39,30 +40,33 @@ In this example, we are requesting five weeks starting on 2024-01-01. The respon
 Examples
 All projects and services of the program Ids 12 and 23
 ```json
-"filter":{"project":{
-			"Program.Id":{"$in":[12, 23]}
-		},
-		"service":{
-			"Program.Id":{"$in":[12, 23]}
-		}
+"filter":{
+    "project":{
+		"Program.Id":{"$in":[12, 23]}
+	    },
+	"service":{
+		"Program.Id":{"$in":[12, 23]}
+	}
 ```
 
 Projects whose start date is within a range and are assigned to clients 21 and 223
 ```json
-"filter":{"project":{
-			"StartDate":{"$bt":["2023-09-01","2023-11-30"]},
-			"Client.Id":{"$in":[21, 223]}
+"filter":{
+    "project":{
+		"StartDate":{"$bt":["2023-09-01","2023-11-30"]},
+	    "Client.Id":{"$in":[21, 223]}
 	}}
 ```
 
 Tasks with a start date between some values and only users of category 21
 ```json
-"filter":{"task":{
-			"StartDate":{"$bt":["2023-09-01","2023-11-30"]}
-		},
-		 "user":{
-			 "Category.Id": {"$in":[21}}
-		}
+"filter":{
+    "task":{
+		"StartDate":{"$bt":["2023-09-01","2023-11-30"]}
+	},
+	"user":{
+		 "Category.Id": {"$in":[21}}
+	}
 ```
 ### Response
 You can see a [full example below](#response-example). The response will include the following properties:
