@@ -188,30 +188,18 @@ export default {
             Name: "User name 1",
             UserImageUrl: "UploadData/PHOTO/16by16_30168.jpg",
             CategoryId: "category1",
-            UserTotals: {
-                TotalEstimatedEffort: 480,
-                TotalActualEffort: 460
-            }
         },
         {
             Id: "user2",
             Name: "User name 2",
             UserImageUrl: "UploadData/PHOTO/16by16_30169.jpg",
             CategoryId: "category1",
-            UserTotals: {
-                TotalEstimatedEffort: 240,
-                TotalActualEffort: 230
-            }
         },
         {
             Id: "user3",
             Name: "User name 3",
             UserImageUrl: "UploadData/PHOTO/16by16_30170.jpg",
             CategoryId: "category2",
-            UserTotals: {
-                TotalEstimatedEffort: 240,
-                TotalActualEffort: 230
-            }
         }
     ],
     Categories: [

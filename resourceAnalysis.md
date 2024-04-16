@@ -1,20 +1,26 @@
 
-# ⚠️ Work in progress Do not use yet
 ## Resource Analysis Backend
-The endpoint `/resourceAnalysis` will return the estimated and actual efforts of users in tasks. It is similar to the existing `/resourceCapacity` but v2, admitting POST or URLEncoded Get (as we do with [/search](https://developers.itmplatform.com/documentation/#filter,-page,-sort-v2)
+The endpoint `/resourceAnalysis` will return the estimated and actual efforts of users in tasks. It is similar to the existing `/resourceCapacity` but v2, admitting POST or URLEncoded Get (as we do with [/search](https://developers.itmplatform.com/documentation/#filter,-page,-sort-v2))
 
 
 ### Definitions
 These are the main concepts we will use throughout the document.
 Properties between `< >` denote optional
-- Entity: A project or a service. Has the properties `{Id, Name, <Program:{Id, Name}>, <Client:{Id, Name}>,<StartDate>, <EndDate>}`
-- WorkItem: A task or activity. Has the properties `{Id, Name, {Entity}Id, <StartDate>, <EndDate>}`
-- Category: Professional category a user has `{Id, Name}`
-- Estimated effort, in minutes: It can apply to a user in a task ("assigned effort") or to a category in a task or a project ("unassigned effort").
-- Capacity, in minutes: working time per user per day. 
-- Interval: Accumulates efforts and capacities in time periods (day, week, month, or quarter)
+- `Entity`: A project or a service. Has the properties `{Id, Name, <Program:{Id, Name}>, <Client:{Id, Name}>,<xx:{Id, Name}>,<StartDate>, <EndDate>}`
+- `WorkItem`: A task or activity. Has the properties `{Id, Name, {Entity}Id, <StartDate>, <EndDate>}`
+- `Category`: Professional category a user has `{Id, Name}`
+- `Estimated effort`, in minutes: It can apply to a user in a task ("assigned effort"), or to a category in a task or a project ("unassigned effort").
+- `Capacity`, in minutes: working time per user per day. 
+- `Interval`: Accumulates efforts and capacities in time periods (day, week, month, or quarter)
+- - `ActualEffort` refers to the reported effort, which can be by intervals
+- `AcceptedEffort` refers to the total accepted effort for the user in the task. It can be the same as `ActualEffort` or different.
+
 ### Request (payload)
- `intervals`:  optional; when omitted it will return totals.  
+#### `analysisMode` 
+Can be `intervals` or `totals`. Defaults to `totals`.
+
+#### `intervals` 
+Mandatory if `analysisMode` is `intervals`.   
 In this example, we are requesting five weeks starting on 2024-01-01. The response will give us the efforts and capacity summarized for weeks 1 to 5.
 ```json
  {"intervals": {
@@ -26,21 +32,25 @@ In this example, we are requesting five weeks starting on 2024-01-01. The respon
 ```
 > 👉🏼 Note: In the existing `/resourceCapacity` we use numbers for `intervalType` which is misleading. 
 
-**Filter** determines which entities and users are requested. Filters can apply to entities and users. 
+> 👉🏼 Note: Copy the current way of calculating intervals of `/resourceCapacity`: weeks are 7 days, months are sensitive to whether they have 28, 29, 03 or 31 days. 
+
+#### `Filter` 
+Optional. Determines which entities and users are requested. Filters can apply to entities and users. 
 
 1. The general form is:
     ```js
-    filter:{project, service, task, activity, user}
+    filter:{project, service, user}
     ```
-1. When a filter is applied, it will return the main property. For example, `"ExternalClient.Id":{"$in":[*]}`  will return the `ExternalClient` property.
-    > ⚠️ Confirm the format `"$in":[*]` works. This is the way to include properties in the filter.
-1. If no filters are present, it will return all active entities and their users.
+2. When a filter is applied, it will return the main property. For example, `"ExternalClient.Id":{"$in":[*]}`  will return the `ExternalClient:{Id, Name}` property.
+    > ⚠️ Confirm the format `"$in":[*]` works. This is the way to include properties in the response without filtering the,.
+3. If no filters are present, it will return all active entities and their users.
 
 
-Examples
+**Filter examples**
+
 All projects and services of the program Ids 12 and 23
 ```json
-"filter":{
+filter:{
     "project":{
 		"Program.Id":{"$in":[12, 23]}
 	    },
@@ -61,15 +71,14 @@ Projects whose start date is within a range and are assigned to clients 21 and 2
 Tasks with a start date between some values and only users of category 21
 ```json
 "filter":{
-    "task":{
-		"StartDate":{"$bt":["2023-09-01","2023-11-30"]}
-	},
 	"user":{
-		 "Category.Id": {"$in":[21}}
+		 "Category.Id": {"$in":[21]}}
 	}
 ```
+> 👉🏼 Note on filter and `analysisMode`: `totals`. The UI will force to filter entities by dates to prevent server overload. Depending on the final performance tests, we will decide whether to make filter mandatory and limited in the API.
+
 ### Response
-You can see a [full example below](#response-example). The response will include the following properties:
+The response structure will be the like so. You can see a [full example below](#response-examples). 
 ```js
 {
     Intervals?: [{ IntervalId, IntervalName, StartDate, EndDate }],
@@ -85,7 +94,7 @@ You can see a [full example below](#response-example). The response will include
                         {
                             UserId,
                             Intervals?: [{ IntervalId, EstimatedEffort, ActualEffort, Capacity }],
-                            TotalUserWorkItemEffort: { EstimatedEffort, AcceptedEffort }
+                            TotalUserWorkItemEffort?: { EstimatedEffort, AcceptedEffort }
                         },
                     ],
                     UnassignedEfforts: { CategoryN: Integer, ...others},
@@ -103,12 +112,17 @@ You can see a [full example below](#response-example). The response will include
 }
 ```
 Explanation:
-- `Intervals` will be present if the request includes intervals. StartDate and EndDate include time, although the time is always 00:00:00 for the start and 23:59:59 for the end.
+- `Intervals` will be present depending on `analysisMode`. StartDate and EndDate include time, although the time is always 00:00:00 for the start and 23:59:59 for the end.
 - Totals (such as `UserWorkItemTotals`, `WorkItemTotals`, and `EntityTotals`) will not consider intervals; they are the totals. (beware of double calculations)
-- `ActualEffort` refers to the reported effort, which can be by intervals
-- `AcceptedEffort` refers to the total accepted effort for the user in the task. It can be the same as `ActualEffort` or different.
 
-### Response example
+
+### Query approach
+For intervals, instead of using ITM.Tasks for running the queries, I suggest to look into the current `/resourceCapacity` endpoint. The reason is so fast, I think, is because it looks into the "effort" table rather than querying the project, then task, then user, then estimate and actuals. Just an option to explore, since performance here is paramount and it is well solved in `/resourceCapacity`.
+
+> ❓Are services in v2? If not, we can remove the `service` filter and offer the feature only for projects in the first version.
+
+
+### Response examples
 In this example we requested two week intervals. 
 ```js
 {
@@ -160,11 +174,7 @@ In this example we requested two week intervals.
                                     ActualEffort: 540,
                                     Capacity: 720
                                 }
-                            ],
-                            TotalUserWorkItemEffort: {
-                                EstimatedEffort: 8400,
-                                AcceptedEffort: 9645
-                            }
+                            ]
                         },
                         {
                             UserId: "user2",
@@ -181,11 +191,7 @@ In this example we requested two week intervals.
                                     ActualEffort: 780,
                                     Capacity: 2400
                                 }
-                            ],
-                            TotalUserWorkItemEffort: {
-                                EstimatedEffort: 5910,
-                                AcceptedEffort: 5298
-                            }
+                            ]
                         }
                     ],
                     UnassignedEfforts: {
@@ -212,11 +218,7 @@ In this example we requested two week intervals.
                                     ActualEffort: 720,
                                     Capacity: 720
                                 }
-                            ],
-                            TotalUserWorkItemEffort: {
-                                EstimatedEffort: 3900,
-                                AcceptedEffort: 2550
-                            }
+                            ]
                         }
                     ],
                     UnassignedEfforts: {
@@ -260,10 +262,6 @@ In this example we requested two week intervals.
                                     Capacity: 2400
                                 }
                             ],
-                            TotalUserWorkItemEffort: {
-                                EstimatedEffort: 7800,
-                                AcceptedEffort: 15600
-                            }
                         },
                         {
                             UserId: "user3",
@@ -281,6 +279,125 @@ In this example we requested two week intervals.
                                     Capacity: 2400
                                 }
                             ],
+                        }
+                    ],
+                    UnassignedEfforts: {
+                        Category1: 60,
+                        Category2: 60
+                    }
+                }
+            ]
+        }
+    ],
+    Users: [
+        {
+            Id: "user1",
+            Name: "User name 1",
+            UserImageUrl: "UploadData/PHOTO/16by16_30168.jpg",
+            CategoryId: "category1",
+        },
+        {
+            Id: "user2",
+            Name: "User name 2",
+            UserImageUrl: "UploadData/PHOTO/16by16_30169.jpg",
+            CategoryId: "category1",
+        },
+        {
+            Id: "user3",
+            Name: "User name 3",
+            UserImageUrl: "UploadData/PHOTO/16by16_30170.jpg",
+            CategoryId: "category2",
+        }
+    ],
+    Categories: [
+        {
+            Id: "category1",
+            Name: "Category 1",
+        }
+    ]
+}
+```
+
+In this example we requested totals. 
+```js
+{
+    Entities: [
+        {
+            EntityType: "project",
+            EntitySubType: "waterfall",
+            Id: "project1",
+            Name: "Project name 1",
+            WorkItems: [
+                {
+                    Id: "task1",
+                    Name: "Task name 1",
+                    AssignedEfforts: [
+                        {
+                            UserId: "user1",
+                            TotalUserWorkItemEffort: {
+                                EstimatedEffort: 8400,
+                                AcceptedEffort: 9645
+                            }
+                        },
+                        {
+                            UserId: "user2",
+                            TotalUserWorkItemEffort: {
+                                EstimatedEffort: 5910,
+                                AcceptedEffort: 5298
+                            }
+                        }
+                    ],
+                    UnassignedEfforts: {
+                        Category1: 60,
+                        Category2: 60
+                    }
+                },
+                {
+                    Id: "task2",
+                    Name: "Task name 2",
+                    AssignedEfforts: [
+                        {
+                            UserId: "user1",
+                            TotalUserWorkItemEffort: {
+                                EstimatedEffort: 3900,
+                                AcceptedEffort: 2550
+                            }
+                        }
+                    ],
+                    UnassignedEfforts: {
+                        Category1: 60,
+                        Category2: 60
+                    }
+                }
+            ]
+        },
+        {
+            EntityType: "project",
+            EntitySubType: "waterfall",
+            Id: "project2",
+            Name: "Project name 2",
+            Client: {
+                Id: "client1",
+                Name: "Client 1"
+            },
+            Program: {
+                Id: "program1",
+                Name: "Program 1"
+            },
+            WorkItems: [
+                {
+                    Id: "task3",
+                    Name: "Task name 3",
+                    AssignedEfforts: [
+                        {
+                            UserId: "user2",
+                            TotalUserWorkItemEffort: {
+                                EstimatedEffort: 7800,
+                                AcceptedEffort: 15600
+                            }
+                        },
+                        {
+                            UserId: "user3",
                             TotalUserWorkItemEffort: {
                                 EstimatedEffort: 18000,
                                 AcceptedEffort: 6000
@@ -301,40 +418,24 @@ In this example we requested two week intervals.
             Name: "User name 1",
             UserImageUrl: "UploadData/PHOTO/16by16_30168.jpg",
             CategoryId: "category1",
-            UserTotals: {
-                TotalEstimatedEffort: 480,
-                TotalActualEffort: 460
-            }
         },
         {
             Id: "user2",
             Name: "User name 2",
             UserImageUrl: "UploadData/PHOTO/16by16_30169.jpg",
             CategoryId: "category1",
-            UserTotals: {
-                TotalEstimatedEffort: 240,
-                TotalActualEffort: 230
-            }
         },
         {
             Id: "user3",
             Name: "User name 3",
             UserImageUrl: "UploadData/PHOTO/16by16_30170.jpg",
             CategoryId: "category2",
-            UserTotals: {
-                TotalEstimatedEffort: 240,
-                TotalActualEffort: 230
-            }
         }
     ],
     Categories: [
         {
             Id: "category1",
             Name: "Category 1",
-            CategoryTotals: {
-                TotalEstimatedEffort: 720,
-                TotalActualEffort: 690
-            }
         }
     ]
 }
