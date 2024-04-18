@@ -23,6 +23,7 @@ export class FilterManager {
     }
 
     updateFilter(type, value) {
+        console.log(`Filter ${type} changed to ${value}`);
         this.filters[type] = value;
         this.onFilterChangeCallback(this.filters);
     }

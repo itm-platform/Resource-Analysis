@@ -8,6 +8,7 @@ export class FlexiTable {
     }
 
     generateTable() {
+        console.log(this.dataset);
         this.table = document.createElement('table');
         this.table.setAttribute('border', '1');
         this.table.style.width = '100%';
@@ -141,8 +142,10 @@ export class FlexiTable {
     }
 
     updateFilters(newFilters) {
-        this.filters = newFilters;
-        this.container.innerHTML = '';
-        this.generateTable();
+        console.log("Updating filters: ", newFilters);
+        this.filters = newFilters; // Update the internal filter state
+        this.container.innerHTML = ''; // Properly clear the container
+        this.generateTable(); // Regenerate the table with the new filter settings
     }
+    
 }

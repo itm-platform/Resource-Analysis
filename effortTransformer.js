@@ -15,9 +15,9 @@ export class EffortTransformer {
                         return assignedEfforts.map(effort => {
                             const values = this._buildIntervalValues(effort.Intervals);
                             const userRow = {
-                                type: "User",
-                                name: userMap.get(effort.UserId) || `User ${effort.UserId}`, // Corrected to use mapped user names
-                                render: { func: "renderUserName", params: { name: userMap.get(effort.UserId) || `User ${effort.UserId}` } },
+                                type: "user",
+                                name: userMap.get(effort.UserId) || `user ${effort.UserId}`, // Corrected to use mapped user names
+                                render: { func: "renderUserName", params: { name: userMap.get(effort.UserId) || `user ${effort.UserId}` } },
                                 values
                             };
                             return userRow;
@@ -101,12 +101,12 @@ export class EffortTransformer {
             const mapEntity = (workItem) => {
                 const mapAssignedEffortsToUserRowForTotalsByEntity=(workItem, assignedEffort) =>{
                     const getUserById = (userId) => {
-                        return this.data.Users.find(user => user.Id === userId) || { Name: `User ${userId}` };
+                        return this.data.Users.find(user => user.Id === userId) || { Name: `user ${userId}` };
                     };
                     const user = getUserById(assignedEffort.UserId);
                     const totals = assignedEffort.TotalUserWorkItemEffort;
                     return {
-                        type: "User",
+                        type: "user",
                         name: user.Name,
                         render: { func: "renderUserName", params: { name: user.Name } },
                         values: [{

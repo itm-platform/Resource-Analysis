@@ -87,7 +87,7 @@
           ],
           "children": [
             {
-              "type": "User",
+              "type": "user",
               "name": "User name 1",
               "render": {
                 "func": "renderUserName",
@@ -124,7 +124,7 @@
               ]
             },
             {
-              "type": "User",
+              "type": "user",
               "name": "User name 2",
               "render": {
                 "func": "renderUserName",
@@ -194,7 +194,7 @@
           ],
           "children": [
             {
-              "type": "User",
+              "type": "user",
               "name": "User name 1",
               "render": {
                 "func": "renderUserName",
@@ -305,7 +305,7 @@
           ],
           "children": [
             {
-              "type": "User",
+              "type": "user",
               "name": "User name 2",
               "render": {
                 "func": "renderUserName",
@@ -342,7 +342,7 @@
               ]
             },
             {
-              "type": "User",
+              "type": "user",
               "name": "User name 3",
               "render": {
                 "func": "renderUserName",

@@ -21,34 +21,33 @@
     </div>
     <div id="tableContainer" style="width: 80%;"></div>
 
+    <script>var flexiTable;</script>
+
     <script type="module">
         import { FlexiTable } from './flexiTable.js';
         import { FilterManager } from './filterManager.js';
         import responseResourceAnalysis from './tests/dataSamples/responseResourceAnalysis.js';
         import { EffortTransformer } from './effortTransformer.js';
-
+    
         const effortTransformer = new EffortTransformer(responseResourceAnalysis);
         const dataFileSelector = document.getElementById('dataFileSelector');
         const tableContainer = document.getElementById('tableContainer');
-        const dataSet = document.getElementById('dataSet');
+    
         const defaultDataMethod = 'transformToIntervalsByEntity';
-
-        // Retrieve or set the initial selected method
         dataFileSelector.value = localStorage.getItem('selectedDataMethod') || defaultDataMethod;
-
-        const filterManager = new FilterManager('filtersDiv', filters => flexiTable.updateFilters(filters), {
-            Program: true, Project: true, Task: true, User: true
-        });
-
+    
+        let flexiTable; // Declare variable outside to have broader scope
+        let filterManager; // Declare variable outside to delay its creation
+    
         document.addEventListener('DOMContentLoaded', () => {
-            changeDataMethod();
+            changeDataMethod(); // Initialize everything in this method
             dataFileSelector.addEventListener('change', changeDataMethod);
         });
-
+    
         async function changeDataMethod() {
             const selectedMethod = dataFileSelector.value;
             localStorage.setItem('selectedDataMethod', selectedMethod);
-
+    
             let data;
             switch (selectedMethod) {
                 case 'intervalsByEntity':
@@ -64,13 +63,24 @@
                     data = effortTransformer.transformToTotalsByUser();
                     break;
             }
-
-            // Clear previous table contents
-            tableContainer.innerHTML = '';
-            // Create a new FlexiTable instance
-            const flexiTable = new FlexiTable('tableContainer', data, filterManager.filters);
+    
+            tableContainer.innerHTML = ''; // Clear previous table contents
+    
+            flexiTable = new FlexiTable('tableContainer', data); // Re-create the flexiTable instance here
+            
+            window.flexiTable = flexiTable; // Assign to window object to access from outside
+            // Initialize filterManager here after flexiTable has been instantiated
+            if (!filterManager) {
+                filterManager = new FilterManager('filtersDiv', filters => flexiTable.updateFilters(filters), {
+                   project: true, workItem: true, user: true
+                });
+            } else {
+                // Update filters directly if flexiTable is already created and just needs an update
+                filterManager.updateCallback(filters => flexiTable.updateFilters(filters));
+            }
         }
     </script>
+    
 </body>
 
 
