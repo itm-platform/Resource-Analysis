@@ -16,7 +16,7 @@ export default {
       },
       {
         "id": 2,
-        "name": "08-02-2024",
+        "name": "08-01-2024",
         "columns": [
           {
             "id": "estimated",
@@ -216,7 +216,7 @@ export default {
             ],
             "children": [
               {
-                "type": "User",
+                "type": "user",
                 "name": "User name 1",
                 "render": {
                   "func": "renderUserName",
@@ -303,7 +303,7 @@ export default {
                 ]
               },
               {
-                "type": "User",
+                "type": "user",
                 "name": "User name 2",
                 "render": {
                   "func": "renderUserName",
@@ -473,7 +473,7 @@ export default {
             ],
             "children": [
               {
-                "type": "User",
+                "type": "user",
                 "name": "User name 1",
                 "render": {
                   "func": "renderUserName",
@@ -735,7 +735,7 @@ export default {
             ],
             "children": [
               {
-                "type": "User",
+                "type": "user",
                 "name": "User name 2",
                 "render": {
                   "func": "renderUserName",
@@ -822,7 +822,7 @@ export default {
                 ]
               },
               {
-                "type": "User",
+                "type": "user",
                 "name": "User name 3",
                 "render": {
                   "func": "renderUserName",

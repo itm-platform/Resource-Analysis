@@ -8,7 +8,7 @@ export default {
         },
         {
             IntervalId: 2,
-            IntervalName: "08-02-2024",
+            IntervalName: "08-01-2024",
             StartDate: "2022-08-30T00:00:00",
             EndDate: "2022-08-30T23:59:59"
         }

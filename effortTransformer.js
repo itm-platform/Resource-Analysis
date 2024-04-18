@@ -1,10 +1,10 @@
 export class EffortTransformer {
     constructor(data) {
         this.data = JSON.parse(JSON.stringify(data));
-        this._setCapacity0ToRepeatedIntervalAndUsers();
     }
 
     transformToIntervalsByEntity() {
+        this._setCapacity0ToRepeatedIntervalAndUsers();
         const groups = this._buildIntervalGroups();
 
         const buildEntitiesRows=()=> {
@@ -50,6 +50,7 @@ export class EffortTransformer {
         return { groups, rows };
     }
     transformToIntervalsByUser() {
+        this._setCapacity0ToRepeatedIntervalAndUsers();
         const groups = this._buildIntervalGroups(true); // Pass true to include capacity
 
         const buildUserRowsWithEntities = () => {

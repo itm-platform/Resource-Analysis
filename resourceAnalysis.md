@@ -16,6 +16,36 @@ Properties between `< >` denote optional
 - `AcceptedEffort` refers to the total accepted effort for the user in the task. It can be the same as `ActualEffort` or different.
 
 ### Request (payload)
+Interval example:
+```json
+{
+    "analysisMode": "intervals",
+    "intervals": {
+        "startDate": "2024-01-01",
+        "intervalType": "week",
+        "noOfIntervals": 5
+    },
+    "filter": {
+        "project": {
+            "Program.Id": { "$in": [12, 23] }
+        },
+        "service": {
+            "Program.Id": { "$in": [12, 23] }
+        }
+    }
+}
+```	
+Totals example:
+```json
+{
+    "analysisMode": "totals",
+    "filter": {
+        "project": {
+            "StartDate": { "$bt": ["2023-09-01", "2023-11-30"] }
+        }
+    }
+}
+```
 #### `analysisMode` 
 Can be `intervals` or `totals`. Defaults to `totals`.
 
@@ -114,6 +144,19 @@ The response structure will be the like so. You can see a [full example below](#
 Explanation:
 - `Intervals` will be present depending on `analysisMode`. StartDate and EndDate include time, although the time is always 00:00:00 for the start and 23:59:59 for the end.
 - Totals (such as `UserWorkItemTotals`, `WorkItemTotals`, and `EntityTotals`) will not consider intervals; they are the totals. (beware of double calculations)
+
+#### Response testing
+The response must pass the validation. JS simplified example:
+```js
+const payload = {"analysisMode": "totals"};
+const result = await fetch('http://localhost:3000/resourceAnalysis', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+});
+const response = await result.json();
+resourceAnalysisJSONResponseValidator.validate(response);
+``` 
 
 
 ### Query approach

@@ -20,7 +20,7 @@ export default {
       },
       {
         "id": 2,
-        "name": "08-02-2024",
+        "name": "08-01-2024",
         "columns": [
           {
             "id": "capacity",

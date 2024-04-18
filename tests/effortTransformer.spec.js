@@ -1,6 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import { EffortTransformer } from '../effortTransformer';
-import responseResourceAnalysis from './dataSamples/responseResourceAnalysis.js';
+import responseResourceAnalysisIntervals from './dataSamples/responseResourceAnalysisIntervals.js';
+import responseResourceAnalysisTotals from './dataSamples/responseResourceAnalysisTotals.js';
 import intervalsByEntity from './dataSamples/intervalsByEntity.js';
 import intervalsByUser from './dataSamples/intervalsByUser.js';
 import totalsByEntity from './dataSamples/totalsByEntity.js';
@@ -18,8 +19,9 @@ if (!fs.existsSync(resultsDirPath)) {
 }
 
 describe('effortTransformer', () => {
-    const effortTransformer = new EffortTransformer(responseResourceAnalysis);
+    //const effortTransformer = new EffortTransformer(responseResourceAnalysisFull);
     test('transformToIntervalsByEntity', () => {
+        const effortTransformer = new EffortTransformer(responseResourceAnalysisIntervals);
         const result = effortTransformer.transformToIntervalsByEntity();
         const filePath = path.join(resultsDirPath, 'intervalsByEntityTestResult.json');
         fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
@@ -27,6 +29,7 @@ describe('effortTransformer', () => {
     });
 
     test('transformToIntervalsByUser', () => {
+        const effortTransformer = new EffortTransformer(responseResourceAnalysisIntervals);
         const result = effortTransformer.transformToIntervalsByUser();
         const filePath = path.join(resultsDirPath, 'intervalsByUserTestResult.json');
         fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
@@ -34,18 +37,20 @@ describe('effortTransformer', () => {
     });
 
     test('transformToTotalsByEntity', () => {
+        const effortTransformer = new EffortTransformer(responseResourceAnalysisTotals);
         const result = effortTransformer.transformToTotalsByEntity();
         const filePath = path.join(resultsDirPath, 'totalsByEntityTestResult.json');
         fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
         expect(result).toEqual(totalsByEntity);
     });
     test('transformToTotalsByUser', () => {
+        const effortTransformer = new EffortTransformer(responseResourceAnalysisTotals);
         const result = effortTransformer.transformToTotalsByUser();
         const filePath = path.join(resultsDirPath, 'totalsByUserTestResult.json');
         fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
         expect(result).toEqual(totalsByUser);
     });
-           
+
 
 });
 
