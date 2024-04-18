@@ -6,6 +6,7 @@ export class FilterManager {
         this.onFilterChangeCallback = onFilterChangeCallback;
         this.initFiltersUI();
     }
+    
     initFiltersUI() {
         const filterContainer = document.createElement('div');
         Object.keys(this.filters).forEach(type => {
@@ -26,5 +27,9 @@ export class FilterManager {
         console.log(`Filter ${type} changed to ${value}`);
         this.filters[type] = value;
         this.onFilterChangeCallback(this.filters);
+    }
+
+    updateFilterCallback(newCallback) {
+        this.onFilterChangeCallback = newCallback;
     }
 }
