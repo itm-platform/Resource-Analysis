@@ -1,9 +1,8 @@
 // filterManager.js
 export class FilterManager {
-    constructor(targetDivId, onFilterChangeCallback, initialFilters = {}) {
+    constructor(targetDivId, initialFilters = {}) {
         this.targetDiv = document.getElementById(targetDivId);
-        this.filters = initialFilters; // Initialize with provided filters
-        this.onFilterChangeCallback = onFilterChangeCallback;
+        this.filters = initialFilters; 
         this.initFiltersUI();
     }
     
@@ -28,8 +27,9 @@ export class FilterManager {
 
     updateFilter(type, value) {
         this.filters[type] = value;
-        this.onFilterChangeCallback(this.filters);
+        document.dispatchEvent(new CustomEvent('filtersUpdated', { detail: this.filters }));
     }
+    
 
     updateFilterCallback(newCallback) {
         this.onFilterChangeCallback = newCallback;

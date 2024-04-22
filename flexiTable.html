@@ -33,15 +33,16 @@
         const defaultDataMethod = 'transformToIntervalsByEntity';
         dataFileSelector.value = localStorage.getItem('selectedDataMethod') || defaultDataMethod;
 
-        let flexiTable; // Declare variable outside to have broader scope
-        let filterManager; // Declare variable outside to delay its creation
+        let flexiTable; 
+        let filterManager;
 
         document.addEventListener('DOMContentLoaded', () => {
-            changeDataMethod(); // Initialize everything in this method
+            changeDataMethod(); 
             dataFileSelector.addEventListener('change', changeDataMethod);
 
             const refreshButton = document.getElementById('refreshDataButton');
             refreshButton.addEventListener('click', () => {
+                // This is just to demonstrate how to refresh the data
                 document.dispatchEvent(new CustomEvent('dataUpdated', { detail: flexiTable.dataset }));
             });
         });
@@ -73,11 +74,11 @@
             tableContainer.innerHTML = ''; // Clear previous table contents
 
             flexiTable = new FlexiTable('tableContainer', data); // Re-create the flexiTable instance here
-            // Assign to window object to access from outside
-            window.flexiTable = flexiTable;
-            // empty the filtersDiv before creating a new filterManager
+            
+            window.flexiTable = flexiTable; // Assign to window object to access from outside. 
+            
             document.getElementById('filtersDiv').innerHTML = '';
-            filterManager = new FilterManager('filtersDiv', filters => flexiTable.updateFilters(filters), {
+            filterManager = new FilterManager('filtersDiv', {
                 project: true, workItem: true, user: true
             });
         }
