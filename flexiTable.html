@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <title>Flexible Table with Dynamic Filters</title>
     <link rel="stylesheet" href="flexiTable.css">
-
 </head>
 
 <body>
@@ -21,17 +20,14 @@
     <div id="filtersDiv"></div>
     <div id="tableContainer" style="width: 80%;"></div>
 
-    <script>var flexiTable;//debugging</script>
-
     <script type="module">
         import { FlexiTable } from './flexiTable.js';
         import { FilterManager } from './filterManager.js';
-        import responseResourceAnalysis from './tests/dataSamples/responseResourceAnalysisFull.js';
         import { EffortTransformer } from './effortTransformer.js';
 
-        const effortTransformer = new EffortTransformer(responseResourceAnalysis);
         const dataFileSelector = document.getElementById('dataFileSelector');
         const tableContainer = document.getElementById('tableContainer');
+        let effortTransformer;
 
         const defaultDataMethod = 'transformToIntervalsByEntity';
         dataFileSelector.value = localStorage.getItem('selectedDataMethod') || defaultDataMethod;
@@ -47,6 +43,10 @@
         async function changeDataMethod() {
             const selectedMethod = dataFileSelector.value;
             localStorage.setItem('selectedDataMethod', selectedMethod);
+            const responseModule = selectedMethod.includes('intervals') ? './tests/dataSamples/responseResourceAnalysisIntervals.js' : './tests/dataSamples/responseResourceAnalysisTotals.js';
+
+            const { default: responseData } = await import(responseModule);
+            effortTransformer = new EffortTransformer(responseData);
 
             let data;
             switch (selectedMethod) {
@@ -67,19 +67,16 @@
             tableContainer.innerHTML = ''; // Clear previous table contents
 
             flexiTable = new FlexiTable('tableContainer', data); // Re-create the flexiTable instance here
-
-            window.flexiTable = flexiTable; // Assign to window object to access from outside
-            // Initialize filterManager here after flexiTable has been instantiated
+            // Assign to window object to access from outside
+            window.flexiTable = flexiTable;
             // empty the filtersDiv before creating a new filterManager
             document.getElementById('filtersDiv').innerHTML = '';
             filterManager = new FilterManager('filtersDiv', filters => flexiTable.updateFilters(filters), {
                 project: true, workItem: true, user: true
             });
-
         }
     </script>
 
 </body>
-
 
 </html>
