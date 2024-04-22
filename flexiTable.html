@@ -16,6 +16,7 @@
         <option value="totalsByEntity">Totals by Entity</option>
         <option value="totalsByUser">Totals by User</option>
     </select>
+    <button id="refreshDataButton">Refresh Data</button>
 
     <div id="filtersDiv"></div>
     <div id="tableContainer" style="width: 80%;"></div>
@@ -38,6 +39,11 @@
         document.addEventListener('DOMContentLoaded', () => {
             changeDataMethod(); // Initialize everything in this method
             dataFileSelector.addEventListener('change', changeDataMethod);
+
+            const refreshButton = document.getElementById('refreshDataButton');
+            refreshButton.addEventListener('click', () => {
+                document.dispatchEvent(new CustomEvent('dataUpdated', { detail: flexiTable.dataset }));
+            });
         });
 
         async function changeDataMethod() {

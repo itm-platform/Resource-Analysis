@@ -3,8 +3,12 @@ export class FlexiTable {
     constructor(containerId, dataset, filters = {}) {
         this.container = document.getElementById(containerId);
         this.dataset = dataset; // The entire new dataset including groups and rows
-        this.filters = filters;
+        this.filters = filters || {};
         this.generateTable();
+
+         // Event listeners
+         document.addEventListener('filtersUpdated', this.updateFilters.bind(this));
+         document.addEventListener('dataUpdated', this.updateData.bind(this));
     }
 
     generateTable() {
@@ -13,16 +17,13 @@ export class FlexiTable {
         this.table.setAttribute('border', '1');
         this.table.style.width = '100%';
         this.container.appendChild(this.table);
-
         this.renderHeader();
-
-        // Create and append the tbody element
         this.tbody = document.createElement('tbody');
         this.table.appendChild(this.tbody);
-
-        // Render rows with the new data structure
         this.renderRows(this.dataset.rows);
     }
+
+
     renderUserName(params) {
         return `<span class="user-icon">👤</span>${params.name}`;
     }
@@ -141,11 +142,16 @@ export class FlexiTable {
         toggleSpan.innerHTML = isVisible ? '🔽' : '▶️';
     }
 
-    updateFilters(newFilters) {
-        console.log("Updating filters: ", newFilters);
-        this.filters = newFilters; // Update the internal filter state
-        this.container.innerHTML = ''; // Properly clear the container
-        this.generateTable(); // Regenerate the table with the new filter settings
+    updateData(event) {
+        this.dataset = event.detail;
+        this.container.innerHTML = '';
+        this.generateTable();
+    }
+
+    updateFilters(event) {
+        this.filters = event.detail;
+        this.container.innerHTML = '';
+        this.generateTable();
     }
     
 }

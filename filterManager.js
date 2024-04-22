@@ -15,7 +15,10 @@ export class FilterManager {
             checkbox.type = 'checkbox';
             checkbox.id = type;
             checkbox.checked = this.filters[type];
-            checkbox.addEventListener('change', () => this.updateFilter(type, checkbox.checked));
+            checkbox.addEventListener('change', () => {
+                this.updateFilter(type, checkbox.checked);
+                document.dispatchEvent(new CustomEvent('filtersUpdated', { detail: this.filters }));
+            });
             label.appendChild(checkbox);
             label.append(` ${type}`);
             filterContainer.appendChild(label);
@@ -24,7 +27,6 @@ export class FilterManager {
     }
 
     updateFilter(type, value) {
-        console.log(`Filter ${type} changed to ${value}`);
         this.filters[type] = value;
         this.onFilterChangeCallback(this.filters);
     }
