@@ -12,7 +12,6 @@ export class FlexiTable {
     }
 
     generateTable() {
-        console.log(this.dataset);
         this.table = document.createElement('table');
         this.table.setAttribute('border', '1');
         this.table.style.width = '100%';

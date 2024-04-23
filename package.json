@@ -2,11 +2,15 @@
   "name": "resource-analysis",
   "version": "1.0.0",
   "description": "",
-
+  "type": "module",
   "scripts": {
     "test": "vitest"
   },
-   "devDependencies": {
+  "devDependencies": {
     "vitest": "^1.4.0"
+  },
+  "dependencies": {
+    "happy-dom": "^14.7.1",
+    "jsdom": "^24.0.0"
   }
 }
