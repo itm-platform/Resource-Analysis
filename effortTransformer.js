@@ -3,7 +3,15 @@ export class EffortTransformer {
     constructor(data) {
         this.data = JSON.parse(JSON.stringify(data));
     }
-
+    _getUserById(userId) {
+        return this.data.Users.find(u => u.Id === userId) || {
+            Id: userId,
+            Name: `user ${userId}`,
+            UserImageUrl: '',
+            CategoryId: ''
+        };
+    }
+    
     transformToIntervalsByEntity() {
         this._setCapacity0ToRepeatedIntervalAndUsers();
         const groups = this._buildIntervalGroups();
@@ -13,16 +21,12 @@ export class EffortTransformer {
                 return workItems.map(workItem => {
                     const buildUserRows = (assignedEfforts) => {
                         return assignedEfforts.map(effort => {
-                            const user = this.data.Users.find(u => u.Id === effort.UserId) || {
-                                Id: effort.UserId,
-                                Name: `user ${effort.UserId}`,
-                                UserImageUrl: '',
-                                CategoryId: ''
-                            };
+                            const user = this._getUserById(effort.UserId);  // Replace here
                             const values = this._buildIntervalValues(effort.Intervals);
-                            return this._createUserRow(user, { values });
+                            return this._createUserRow(user, {values});
                         });
                     };
+                    
                     const userRows = buildUserRows(workItem.AssignedEfforts);
                     const workItemRow = {
                         type: "workItem",
@@ -104,12 +108,7 @@ export class EffortTransformer {
         const rows = this.data.Entities.map(entity => {
             const mapEntity = (workItem) => {
                 const userRows = workItem.AssignedEfforts.map(assignedEffort => {
-                    const user = this.data.Users.find(u => u.Id === assignedEffort.UserId) || {
-                        Id: assignedEffort.UserId,
-                        Name: `user ${assignedEffort.UserId}`,
-                        UserImageUrl: '',
-                        CategoryId: ''
-                    };
+                    const user = this._getUserById(assignedEffort.UserId);
                     const totals = assignedEffort.TotalUserWorkItemEffort;
                     const values = [{
                         groupId: 1,
