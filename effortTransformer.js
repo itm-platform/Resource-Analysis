@@ -20,9 +20,9 @@ export class EffortTransformer {
                                 CategoryId: ''
                             };
                             const values = this._buildIntervalValues(effort.Intervals);
-                            return this._createUserRow(user, {values});
+                            return this._createUserRow(user, { values });
                         });
-                    }
+                    };
                     const userRows = buildUserRows(workItem.AssignedEfforts);
                     const workItemRow = {
                         type: "workItem",
@@ -32,7 +32,7 @@ export class EffortTransformer {
                     };
                     return workItemRow;
                 });
-            }
+            };
             return this.data.Entities.map(entity => {
                 const workItems = buildWorkItemRows(entity.WorkItems);
                 const entityRow = {
@@ -52,7 +52,7 @@ export class EffortTransformer {
                 };
                 return entityRow;
             });
-        }
+        };
         const rows = buildEntitiesRows();
         return { groups, rows };
     }
@@ -60,16 +60,17 @@ export class EffortTransformer {
     transformToIntervalsByUser() {
         this._setCapacity0ToRepeatedIntervalAndUsers();
         const groups = this._buildIntervalGroups(true); // Pass true to include capacity
-
+    
         const buildUserRowsWithEntities = () => {
             return this.data.Users.map(user => {
                 const userProjects = this._aggregateUserEntities(user.Id);
                 const userTotals = this._aggregateUserValuesAcrossEntities(userProjects);
-                return this._createUserRow(user, {values: userTotals, children: userProjects});
+                return this._createUserRow(user, { values: userTotals, children: userProjects });
             });
         };
         const rows = buildUserRowsWithEntities();
-        const setCapacityToUndefinedForNonUsers= (rows) =>{
+        
+        const setCapacityToUndefinedForNonUsers = (rows) => {
             function updateCapacity(item) {
                 // Only process the items that are not of type 'user'
                 if (item.type !== 'user') {
@@ -82,21 +83,21 @@ export class EffortTransformer {
                         });
                     });
                 }
-    
+        
                 // Recurse into children if they exist
                 if (item.children && item.children.length > 0) {
                     item.children.forEach(child => updateCapacity(child));
                 }
             }
-    
+        
             rows.forEach(row => {
                 updateCapacity(row);
             });
-        }
+        };
         setCapacityToUndefinedForNonUsers(rows);
         return { groups, rows };
     }
-
+    
     transformToTotalsByEntity() {
         const groups = this._buildTotalsGroups();
     
@@ -120,7 +121,7 @@ export class EffortTransformer {
                     return this._createUserRow(user, { values });
                 });
     
-                const workItemTotals = this._aggregateTotals(userRows);
+                const workItemTotals = this._aggregateWorkItemValues(userRows);
                 return {
                     type: "workItem",
                     name: workItem.Name,
@@ -131,7 +132,7 @@ export class EffortTransformer {
     
             const workItemRows = entity.WorkItems.map(mapEntity);
     
-            const entityTotals = this._aggregateTotals(workItemRows);
+            const entityTotals = this._aggregateEntityValues(workItemRows);
             return {
                 type: entity.EntityType,
                 name: entity.Name,
@@ -197,31 +198,37 @@ export class EffortTransformer {
     
         return { groups, rows };
     }
-    
-    _createUserRow(user, additionalValues = {}) {
-        return {
-            type: "user",
-            id: user.Id,
-            name: user.Name,
-            imageUrl: user.UserImageUrl,
-            categoryId: user.CategoryId,
-            render: {
-                func: "renderUserName",
-                params: {
-                    name: user.Name,
-                    imageUrl: user.UserImageUrl,
-                    categoryId: user.CategoryId
-                }
-            },
-            ...additionalValues
-        };
-    }
-    
-
     _aggregateTotals(rows) {
         return this._sumValuesByGroup(rows.flatMap(row => row.values));
     }
-
+    _aggregateUserValues(userRows) {
+        return userRows.reduce((acc, row) => {
+            // Example of aggregating values; adjust according to actual structure and requirements
+            row.values.forEach(value => {
+                acc[value.columnId] = (acc[value.columnId] || 0) + value.value;
+            });
+            return acc;
+        }, {});
+    }
+    
+    _aggregateWorkItemValues(workItemRows) {
+        return workItemRows.reduce((acc, row) => {
+            row.values.forEach(value => {
+                acc[value.columnId] = (acc[value.columnId] || 0) + value.value;
+            });
+            return acc;
+        }, {});
+    }
+    
+    _aggregateEntityValues(entityRows) {
+        return entityRows.reduce((acc, row) => {
+            row.values.forEach(value => {
+                acc[value.columnId] = (acc[value.columnId] || 0) + value.value;
+            });
+            return acc;
+        }, {});
+    }
+    
     _setCapacity0ToRepeatedIntervalAndUsers() {
         const seen = new Map();  // To store and track combinations of UserId and IntervalId
 
@@ -242,7 +249,24 @@ export class EffortTransformer {
             });
         });
     }
-    
+    _createUserRow(user, additionalValues = {}) {
+        return {
+            type: "user",
+            id: user.Id,
+            name: user.Name,
+            imageUrl: user.UserImageUrl,
+            categoryId: user.CategoryId,
+            render: {
+                func: "renderUserName",
+                params: {
+                    name: user.Name,
+                    imageUrl: user.UserImageUrl,
+                    categoryId: user.CategoryId
+                }
+            },
+            ...additionalValues
+        };
+    }
     _buildWorkItemRow(workItem, assignedEffort) {
         const buildIntervalValuesWithCapacity=(intervals)=> {
             const intervalValues = intervals.map(interval => ({
