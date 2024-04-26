@@ -1,9 +1,10 @@
+// tests/UI/flexiTableUI.spec.js
 import { describe, test, expect, beforeEach } from 'vitest';
 import { FlexiTable } from '../../flexiTable.js';
 import { FilterManager } from '../../filterManager.js';
 import data from '../dataSamples/intervalsByEntity.js';
 
-describe('UI Tests for FlexiTable Application', () => {
+describe('UI Tests for flexiTable', () => {
   beforeEach(() => {
     // Setup the initial HTML structure
     document.body.innerHTML = `

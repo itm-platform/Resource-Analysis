@@ -25,3 +25,14 @@ table {
     /* border-collapse: collapse; */
     border: 1px solid #ccc;
 }
+
+.ftbl-caret {
+    height: 14px;
+    fill: #555;
+    cursor: pointer; /* Optional: adds a pointer cursor on hover */
+}
+
+.ftbl-caret:hover {
+    fill: #000;
+}
+

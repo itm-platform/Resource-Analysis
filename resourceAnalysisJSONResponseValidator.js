@@ -1,3 +1,4 @@
+// resourceAnalysisJSONResponseValidator.js
 export default {
     validate(response) {
         if (!response.Entities || !response.Users || !response.Categories) {
