@@ -2,7 +2,7 @@
 .ftbl-header-group-cell, .ftbl-header-column-cell {
     background-color: #eee;
     text-align: center;
-    font-size: .8em;
+    font-size: .9em;
 }
 
 
@@ -30,9 +30,32 @@ table {
     height: 14px;
     fill: #555;
     cursor: pointer; /* Optional: adds a pointer cursor on hover */
+    margin-right: 5px;
 }
 
 .ftbl-caret:hover {
     fill: #000;
 }
 
+.entity-icon{
+    margin-right: 5px;
+}
+
+/* Duplicated from ITM Platform as host */
+.initialsDP32 {
+    width: 30px;
+    height: 30px;
+    line-height: 2.3em;
+}
+.initialsDP {
+    border-radius: 50%;
+    margin-top: 1px;
+    margin-right: 5px;
+    cursor: default;
+    text-align: center;
+    color: #000;
+    font-weight: normal !important;
+    background-color: #EBEBEB !important;
+    text-transform: uppercase;
+    border: 1px solid #9c9c9c !important;
+}

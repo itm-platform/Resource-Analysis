@@ -1,6 +1,12 @@
 // flexiTable.js
+import { preloadImages, resolveImagePath } from './pathResolver.js';
+
 export class FlexiTable {
     constructor(containerId, dataset, filters = {}) {
+        preloadImages().catch(error => {
+            console.error("Failed to preload images:", error);
+        });
+        
         this.container = document.getElementById(containerId);
         this.dataset = dataset; // The entire new dataset including groups and rows
         this.filters = filters || {};
@@ -28,7 +34,20 @@ export class FlexiTable {
     }
 
     renderEntityName(params) {
-        return `<span class="project-icon">📁</span>${params.name}`;
+        const imageNameMap = {
+            'project': {
+                'waterfall': 'Waterfall.svg',
+                'agile': 'Agile.svg'
+            },
+            'service': 'Service.svg'
+        };
+
+        const entityType = params.entityType;
+        const entitySubType = params.entitySubType;
+        const imageName = imageNameMap[entityType]?.[entitySubType] || imageNameMap[entityType];
+
+        const imagePath = resolveImagePath(imageName);
+        return `<span class="entity-icon"><img src="${imagePath}" alt="${entitySubType || entityType}"></span>${params.name}`;
     }
 
     renderDuration(params) {
