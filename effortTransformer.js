@@ -16,8 +16,18 @@ export class EffortTransformer {
                             const values = this._buildIntervalValues(effort.Intervals);
                             const userRow = {
                                 type: "user",
-                                name: userMap.get(effort.UserId) || `user ${effort.UserId}`, // Corrected to use mapped user names
-                                render: { func: "renderUserName", params: { name: userMap.get(effort.UserId) || `user ${effort.UserId}` } },
+                                id: effort.UserId,
+                                name: userMap.get(effort.UserId)?.name || `user ${effort.UserId}`,
+                                imageUrl: userMap.get(effort.UserId)?.imageUrl,
+                                categoryId: userMap.get(effort.UserId)?.categoryId,
+                                render: { 
+                                    func: "renderUserName", 
+                                    params: { 
+                                        name: userMap.get(effort.UserId)?.name || `user ${effort.UserId}`,
+                                        imageUrl: userMap.get(effort.UserId)?.imageUrl,
+                                        categoryId: userMap.get(effort.UserId)?.categoryId
+                                    } 
+                                },
                                 values
                             };
                             return userRow;
@@ -39,7 +49,7 @@ export class EffortTransformer {
                     type: entity.EntityType,
                     name: entity.Name,
                     subType: entity.EntitySubType,
-                    render: { func: "renderEntityName", params: { name: entity.Name, EntityType: entity.EntityType, EntitySubType: entity.EntitySubType } },
+                    render: { func: "renderEntityName", params: { name: entity.Name, entityType: entity.EntityType, entitySubType: entity.EntitySubType } },
                     values: this._aggregateEntityValues(workItems),
                     children: workItems
                 };
@@ -57,8 +67,18 @@ export class EffortTransformer {
             return this.data.Users.map(user => {
                 const userRow = {
                     type: "user",
+                    id: user.Id, // Add user Id
                     name: user.Name,
-                    render: { func: "renderUserName", params: { name: user.Name } },
+                    imageUrl: user.UserImageUrl, // Add user image URL
+                    categoryId: user.CategoryId, // Add user category ID
+                    render: { 
+                        func: "renderUserName", 
+                        params: {
+                            name: user.Name,
+                            imageUrl: user.UserImageUrl, // Include in render params
+                            categoryId: user.CategoryId // Include in render params
+                        }
+                    },
                     values: [],
                     children: this._aggregateUserEntities(user.Id)
                 };
@@ -97,19 +117,31 @@ export class EffortTransformer {
 
     transformToTotalsByEntity() {
         const groups = this._buildTotalsGroups();
-
+    
         const rows = this.data.Entities.map(entity => {
             const mapEntity = (workItem) => {
-                const mapAssignedEffortsToUserRowForTotalsByEntity=(workItem, assignedEffort) =>{
+                const mapAssignedEffortsToUserRowForTotalsByEntity = (workItem, assignedEffort) => {
                     const getUserById = (userId) => {
-                        return this.data.Users.find(user => user.Id === userId) || { Name: `user ${userId}` };
+                        // Find the user or return default properties
+                        const defaultUser = { Id: userId, Name: `user ${userId}`, UserImageUrl: '', CategoryId: '' };
+                        return this.data.Users.find(user => user.Id === userId) || defaultUser;
                     };
                     const user = getUserById(assignedEffort.UserId);
                     const totals = assignedEffort.TotalUserWorkItemEffort;
                     return {
                         type: "user",
+                        id: user.Id,
                         name: user.Name,
-                        render: { func: "renderUserName", params: { name: user.Name } },
+                        imageUrl: user.UserImageUrl,
+                        categoryId: user.CategoryId,
+                        render: { 
+                            func: "renderUserName", 
+                            params: { 
+                                name: user.Name,
+                                imageUrl: user.UserImageUrl,
+                                categoryId: user.CategoryId
+                            }
+                        },
                         values: [{
                             groupId: 1,
                             values: [
@@ -120,7 +152,7 @@ export class EffortTransformer {
                     };
                 }
                 const userRows = workItem.AssignedEfforts.map(mapAssignedEffortsToUserRowForTotalsByEntity.bind(this, workItem));
-
+    
                 const workItemTotals = this._aggregateTotals(userRows);
                 return {
                     type: "workItem",
@@ -129,24 +161,26 @@ export class EffortTransformer {
                     children: userRows
                 };
             };
-
+    
             const workItemRows = entity.WorkItems.map(mapEntity);
-
+    
             const entityTotals = this._aggregateTotals(workItemRows);
             return {
                 type: entity.EntityType,
                 name: entity.Name,
-                render: { func: "renderEntityName", params: { name: entity.Name, EntityType: entity.EntityType, EntitySubType: entity.EntitySubType } },
+                render: { func: "renderEntityName", params: { name: entity.Name, entityType: entity.EntityType, entitySubType: entity.EntitySubType } },
                 values: entityTotals,
                 children: workItemRows
             };
         });
-
+    
         return { groups, rows };
     }
+    
 
     transformToTotalsByUser() {
         const groups = this._buildTotalsGroups();
+    
         const createWorkItemValueForTotals = (workItem, assignedEffort) => {
             const totals = assignedEffort.TotalUserWorkItemEffort;
             const values = [{
@@ -162,9 +196,10 @@ export class EffortTransformer {
                 values: values
             };
         };
+    
         const getUserProjectsForTotals = (userId) => {
             let projects = [];
-
+    
             this.data.Entities.forEach(entity => {
                 const projectWorkItems = entity.WorkItems.reduce((acc, workItem) => {
                     workItem.AssignedEfforts.filter(effort => effort.UserId === userId)
@@ -173,33 +208,44 @@ export class EffortTransformer {
                         });
                     return acc;
                 }, []);
-
+    
                 if (projectWorkItems.length > 0) {
                     const projectTotals = this._aggregateTotals(projectWorkItems);
                     projects.push({
                         type: "project",
                         name: entity.Name,
-                        render: { func: "renderEntityName", params: { name: entity.Name, EntityType: entity.EntityType, EntitySubType: entity.EntitySubType } },
+                        render: { func: "renderEntityName", params: { name: entity.Name, entityType: entity.EntityType, entitySubType: entity.EntitySubType } },
                         values: projectTotals,
                         children: projectWorkItems
                     });
                 }
             });
-
+    
             return projects;
         };
+    
         const rows = this.data.Users.map(user => {
             const userProjects = getUserProjectsForTotals(user.Id);
             const userTotals = this._aggregateTotals(userProjects);
             return {
                 type: "user",
+                id: user.Id, // Include user ID
                 name: user.Name,
-                render: { func: "renderUserName", params: { name: user.Name } },
+                imageUrl: user.UserImageUrl, // Include user image URL
+                categoryId: user.CategoryId, // Include user category ID
+                render: { 
+                    func: "renderUserName", 
+                    params: { 
+                        name: user.Name,
+                        imageUrl: user.UserImageUrl, // Include in render params
+                        categoryId: user.CategoryId // Include in render params
+                    }
+                },
                 values: userTotals,
                 children: userProjects
             };
         });
-
+    
         return { groups, rows };
     }
     
@@ -303,7 +349,11 @@ export class EffortTransformer {
     _buildUserMap() {
         const userMap = new Map();
         this.data.Users.forEach(user => {
-            userMap.set(user.Id, user.Name);
+            userMap.set(user.Id, {
+                name: user.Name,
+                imageUrl: user.UserImageUrl,
+                categoryId: user.CategoryId
+            });
         });
         return userMap;
     }

@@ -30,12 +30,11 @@ export class FlexiTable {
 
 
     renderUserName(params) {
-        //console.log(params);
+        console.log(params);
         return `<span class="user-icon">👤</span>${params.name}`;
     }
 
     renderEntityName(params) {
-        console.log(params);
         const imageNameMap = {
             'project': {
                 'waterfall': 'Waterfall.svg',
@@ -44,12 +43,10 @@ export class FlexiTable {
             'service': 'Service.svg'
         };
 
-        const entityType = params.EntityType;
-        const entitySubType = params.EntitySubType;
+        const entityType = params.entityType;
+        const entitySubType = params.entitySubType;
         const imageName = imageNameMap[entityType]?.[entitySubType] || imageNameMap[entityType];
-        console.log(`imageName: ${imageName}`);
         const imagePath = resolveImagePath(imageName);
-        console.log(`imagePath: ${imagePath}`);
         return `<span class="entity-icon"><img src="${imagePath}" alt="${entitySubType || entityType}"></span>${params.name}`;
     }
 
