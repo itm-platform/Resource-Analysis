@@ -1,3 +1,4 @@
+// effortTransformer.js
 export class EffortTransformer {
     constructor(data) {
         this.data = JSON.parse(JSON.stringify(data));
@@ -6,31 +7,20 @@ export class EffortTransformer {
     transformToIntervalsByEntity() {
         this._setCapacity0ToRepeatedIntervalAndUsers();
         const groups = this._buildIntervalGroups();
-
-        const buildEntitiesRows=()=> {
-            const buildWorkItemRows=(workItems)=> {
+    
+        const buildEntitiesRows = () => {
+            const buildWorkItemRows = (workItems) => {
                 return workItems.map(workItem => {
-                    const buildUserRows=(assignedEfforts) =>{
-                        const userMap = this._buildUserMap();
+                    const buildUserRows = (assignedEfforts) => {
                         return assignedEfforts.map(effort => {
-                            const values = this._buildIntervalValues(effort.Intervals);
-                            const userRow = {
-                                type: "user",
-                                id: effort.UserId,
-                                name: userMap.get(effort.UserId)?.name || `user ${effort.UserId}`,
-                                imageUrl: userMap.get(effort.UserId)?.imageUrl,
-                                categoryId: userMap.get(effort.UserId)?.categoryId,
-                                render: { 
-                                    func: "renderUserName", 
-                                    params: { 
-                                        name: userMap.get(effort.UserId)?.name || `user ${effort.UserId}`,
-                                        imageUrl: userMap.get(effort.UserId)?.imageUrl,
-                                        categoryId: userMap.get(effort.UserId)?.categoryId
-                                    } 
-                                },
-                                values
+                            const user = this.data.Users.find(u => u.Id === effort.UserId) || {
+                                Id: effort.UserId,
+                                Name: `user ${effort.UserId}`,
+                                UserImageUrl: '',
+                                CategoryId: ''
                             };
-                            return userRow;
+                            const values = this._buildIntervalValues(effort.Intervals);
+                            return this._createUserRow(user, {values});
                         });
                     }
                     const userRows = buildUserRows(workItem.AssignedEfforts);
@@ -49,7 +39,14 @@ export class EffortTransformer {
                     type: entity.EntityType,
                     name: entity.Name,
                     subType: entity.EntitySubType,
-                    render: { func: "renderEntityName", params: { name: entity.Name, entityType: entity.EntityType, entitySubType: entity.EntitySubType } },
+                    render: {
+                        func: "renderEntityName",
+                        params: {
+                            name: entity.Name,
+                            entityType: entity.EntityType,
+                            entitySubType: entity.EntitySubType
+                        }
+                    },
                     values: this._aggregateEntityValues(workItems),
                     children: workItems
                 };
@@ -59,31 +56,16 @@ export class EffortTransformer {
         const rows = buildEntitiesRows();
         return { groups, rows };
     }
+    
     transformToIntervalsByUser() {
         this._setCapacity0ToRepeatedIntervalAndUsers();
         const groups = this._buildIntervalGroups(true); // Pass true to include capacity
 
         const buildUserRowsWithEntities = () => {
             return this.data.Users.map(user => {
-                const userRow = {
-                    type: "user",
-                    id: user.Id, // Add user Id
-                    name: user.Name,
-                    imageUrl: user.UserImageUrl, // Add user image URL
-                    categoryId: user.CategoryId, // Add user category ID
-                    render: { 
-                        func: "renderUserName", 
-                        params: {
-                            name: user.Name,
-                            imageUrl: user.UserImageUrl, // Include in render params
-                            categoryId: user.CategoryId // Include in render params
-                        }
-                    },
-                    values: [],
-                    children: this._aggregateUserEntities(user.Id)
-                };
-                userRow.values = this._aggregateUserValuesAcrossEntities(userRow.children);
-                return userRow;
+                const userProjects = this._aggregateUserEntities(user.Id);
+                const userTotals = this._aggregateUserValuesAcrossEntities(userProjects);
+                return this._createUserRow(user, {values: userTotals, children: userProjects});
             });
         };
         const rows = buildUserRowsWithEntities();
@@ -120,38 +102,23 @@ export class EffortTransformer {
     
         const rows = this.data.Entities.map(entity => {
             const mapEntity = (workItem) => {
-                const mapAssignedEffortsToUserRowForTotalsByEntity = (workItem, assignedEffort) => {
-                    const getUserById = (userId) => {
-                        // Find the user or return default properties
-                        const defaultUser = { Id: userId, Name: `user ${userId}`, UserImageUrl: '', CategoryId: '' };
-                        return this.data.Users.find(user => user.Id === userId) || defaultUser;
+                const userRows = workItem.AssignedEfforts.map(assignedEffort => {
+                    const user = this.data.Users.find(u => u.Id === assignedEffort.UserId) || {
+                        Id: assignedEffort.UserId,
+                        Name: `user ${assignedEffort.UserId}`,
+                        UserImageUrl: '',
+                        CategoryId: ''
                     };
-                    const user = getUserById(assignedEffort.UserId);
                     const totals = assignedEffort.TotalUserWorkItemEffort;
-                    return {
-                        type: "user",
-                        id: user.Id,
-                        name: user.Name,
-                        imageUrl: user.UserImageUrl,
-                        categoryId: user.CategoryId,
-                        render: { 
-                            func: "renderUserName", 
-                            params: { 
-                                name: user.Name,
-                                imageUrl: user.UserImageUrl,
-                                categoryId: user.CategoryId
-                            }
-                        },
-                        values: [{
-                            groupId: 1,
-                            values: [
-                                { columnId: "estimated", value: totals.EstimatedEffort, render: { func: "renderDuration", params: { value: totals.EstimatedEffort } } },
-                                { columnId: "actual", value: totals.AcceptedEffort, render: { func: "renderDuration", params: { value: totals.AcceptedEffort } } }
-                            ]
-                        }]
-                    };
-                }
-                const userRows = workItem.AssignedEfforts.map(mapAssignedEffortsToUserRowForTotalsByEntity.bind(this, workItem));
+                    const values = [{
+                        groupId: 1,
+                        values: [
+                            { columnId: "estimated", value: totals.EstimatedEffort, render: { func: "renderDuration", params: { value: totals.EstimatedEffort } } },
+                            { columnId: "actual", value: totals.AcceptedEffort, render: { func: "renderDuration", params: { value: totals.AcceptedEffort } } }
+                        ]
+                    }];
+                    return this._createUserRow(user, { values });
+                });
     
                 const workItemTotals = this._aggregateTotals(userRows);
                 return {
@@ -177,7 +144,6 @@ export class EffortTransformer {
         return { groups, rows };
     }
     
-
     transformToTotalsByUser() {
         const groups = this._buildTotalsGroups();
     
@@ -199,7 +165,6 @@ export class EffortTransformer {
     
         const getUserProjectsForTotals = (userId) => {
             let projects = [];
-    
             this.data.Entities.forEach(entity => {
                 const projectWorkItems = entity.WorkItems.reduce((acc, workItem) => {
                     workItem.AssignedEfforts.filter(effort => effort.UserId === userId)
@@ -227,28 +192,32 @@ export class EffortTransformer {
         const rows = this.data.Users.map(user => {
             const userProjects = getUserProjectsForTotals(user.Id);
             const userTotals = this._aggregateTotals(userProjects);
-            return {
-                type: "user",
-                id: user.Id, // Include user ID
-                name: user.Name,
-                imageUrl: user.UserImageUrl, // Include user image URL
-                categoryId: user.CategoryId, // Include user category ID
-                render: { 
-                    func: "renderUserName", 
-                    params: { 
-                        name: user.Name,
-                        imageUrl: user.UserImageUrl, // Include in render params
-                        categoryId: user.CategoryId // Include in render params
-                    }
-                },
-                values: userTotals,
-                children: userProjects
-            };
+            return this._createUserRow(user, { values: userTotals, children: userProjects });
         });
     
         return { groups, rows };
     }
     
+    _createUserRow(user, additionalValues = {}) {
+        return {
+            type: "user",
+            id: user.Id,
+            name: user.Name,
+            imageUrl: user.UserImageUrl,
+            categoryId: user.CategoryId,
+            render: {
+                func: "renderUserName",
+                params: {
+                    name: user.Name,
+                    imageUrl: user.UserImageUrl,
+                    categoryId: user.CategoryId
+                }
+            },
+            ...additionalValues
+        };
+    }
+    
+
     _aggregateTotals(rows) {
         return this._sumValuesByGroup(rows.flatMap(row => row.values));
     }
@@ -346,17 +315,6 @@ export class EffortTransformer {
         return groups;
     }
 
-    _buildUserMap() {
-        const userMap = new Map();
-        this.data.Users.forEach(user => {
-            userMap.set(user.Id, {
-                name: user.Name,
-                imageUrl: user.UserImageUrl,
-                categoryId: user.CategoryId
-            });
-        });
-        return userMap;
-    }
 
     _buildIntervalValues(intervals) {
         const intervalValues = intervals.map(interval => ({

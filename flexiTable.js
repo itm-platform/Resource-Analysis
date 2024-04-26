@@ -30,7 +30,6 @@ export class FlexiTable {
 
 
     renderUserName(params) {
-        console.log(params);
         return `<span class="user-icon">👤</span>${params.name}`;
     }
 
