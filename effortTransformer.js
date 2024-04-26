@@ -39,7 +39,7 @@ export class EffortTransformer {
                     type: entity.EntityType,
                     name: entity.Name,
                     subType: entity.EntitySubType,
-                    render: { func: "renderEntityName", params: { name: entity.Name, entityType: entity.EntityType, entitySubType: entity.EntitySubType } },
+                    render: { func: "renderEntityName", params: { name: entity.Name, EntityType: entity.EntityType, EntitySubType: entity.EntitySubType } },
                     values: this._aggregateEntityValues(workItems),
                     children: workItems
                 };
