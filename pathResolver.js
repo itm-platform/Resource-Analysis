@@ -1,14 +1,13 @@
 // pathResolver.js
 import flexiTableConfig from './flexiTable.config.js';
 
-const pathCache = {};
+export const pathCache = {};
 
-// Checks if an image exists at the given URL and logs appropriately
 const imageExists = async (imagePath, imageName) => {
     try {
         const response = await fetch(imagePath, { method: 'HEAD' });
         if (!response.ok) {
-            console.log(`Image ${imageName} in host not found, falling back to autonomous file.`);
+            console.log(`Image ${imageName} in host not found, falling back to default.`);
             return false;
         }
         return true;
@@ -18,6 +17,13 @@ const imageExists = async (imagePath, imageName) => {
     }
 };
 
+const preloadUserImages = async (users) => {
+    for (const user of users) {
+        const imageUrl = `${user.imageUrl}`;
+        const exists = await imageExists(imageUrl, user.name);
+        pathCache[user.name] = exists ? imageUrl : null;  // Caches the path or null if not exists
+    }
+};
 const preloadIcons = async () => {
     const imageNames = ['Waterfall.svg', 'Agile.svg', 'Service.svg'];
     const paths = imageNames.map(name => ({
@@ -36,4 +42,4 @@ const resolveIconPath = (imageName) => {
     return pathCache[imageName] || `${flexiTableConfig.fallbackImagePath}/${imageName}`;
 };
 
-export { preloadIcons, resolveIconPath };
+export { preloadIcons, resolveIconPath, preloadUserImages };

@@ -1,20 +1,52 @@
 // flexiTable.js
-import { preloadIcons, resolveIconPath } from './pathResolver.js';
+import { preloadIcons, resolveIconPath, preloadUserImages, pathCache } from './pathResolver.js';
 
 export class FlexiTable {
     constructor(containerId, dataset, filters = {}) {
         preloadIcons().catch(error => {
             console.error("Failed to preload images:", error);
         });
-        
-        this.container = document.getElementById(containerId);
-        this.dataset = dataset; // The entire new dataset including groups and rows
-        this.filters = filters || {};
-        this.generateTable();
 
-         // Event listeners
-         document.addEventListener('filtersUpdated', this.updateFilters.bind(this));
-         document.addEventListener('dataUpdated', this.updateData.bind(this));
+        this.container = document.getElementById(containerId);
+        this.dataset = dataset;
+        this.filters = filters || {};
+        
+        // Preload user images
+        const userImages = this.extractUserImages(dataset.rows);
+        console.log('User images before:', userImages);
+        preloadUserImages(userImages).then(() => {
+            console.log('User images after:', userImages);
+            this.generateTable();
+        });
+
+        // Event listeners
+        document.addEventListener('filtersUpdated', this.updateFilters.bind(this));
+        document.addEventListener('dataUpdated', this.updateData.bind(this));
+    }
+
+    extractUserImages(rows) {
+        let userImages = [];
+        const extract = (rows) => {
+            for (const row of rows) {
+                if (row.type === 'user' && row.render && row.render.func === 'renderUserName') {
+                    userImages.push(row.render.params);
+                }
+                if (row.children) {
+                    extract(row.children);
+                }
+            }
+        };
+        extract(rows);
+        return userImages;
+    }
+
+    renderUserName(params) {
+        const imagePath = pathCache[params.name];
+        if (imagePath) {
+            return `<img src="${imagePath}" alt="${params.name}" class="ftbl-user-photo"/>${params.name}`;
+        }
+        const initials = params.name.split(' ').slice(0, 2).map(n => n[0]).join('');
+        return `<div class="initialsDP initialsDP32" style="display:block;" title="${params.name}">${initials.toLowerCase()}</div>${params.name}`;
     }
 
     generateTable() {
@@ -26,12 +58,6 @@ export class FlexiTable {
         this.tbody = document.createElement('tbody');
         this.table.appendChild(this.tbody);
         this.renderRows(this.dataset.rows);
-    }
-
-
-    renderUserName(params) {
-        console.log(params);
-        return `<span class="ftbl-user-photo">👤</span>${params.name}`;
     }
 
 
