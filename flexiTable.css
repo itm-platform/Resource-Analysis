@@ -37,8 +37,15 @@ table {
     fill: #000;
 }
 
-.entity-icon{
+.ftbl-entity-icon{
     margin-right: 5px;
+}
+.ftbl-user-photo{
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    margin-top: 2px;
 }
 
 /* Duplicated from ITM Platform as host */

@@ -36,4 +36,4 @@ const resolveImagePath = (imageName) => {
     return pathCache[imageName] || `${flexiTableConfig.fallbackImagePath}/${imageName}`;
 };
 
-export { preloadImages, resolveImagePath };
+export { preloadImages, resolveImagePath, imageExists };

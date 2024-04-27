@@ -1,5 +1,5 @@
 // flexiTable.js
-import { preloadImages, resolveImagePath } from './pathResolver.js';
+import { preloadImages, resolveImagePath, imageExists } from './pathResolver.js';
 
 export class FlexiTable {
     constructor(containerId, dataset, filters = {}) {
@@ -30,8 +30,10 @@ export class FlexiTable {
 
 
     renderUserName(params) {
-        return `<span class="user-icon">👤</span>${params.name}`;
+        console.log(params);
+        return `<span class="ftbl-user-photo">👤</span>${params.name}`;
     }
+
 
     renderEntityName(params) {
         const imageNameMap = {
@@ -46,7 +48,7 @@ export class FlexiTable {
         const entitySubType = params.entitySubType;
         const imageName = imageNameMap[entityType]?.[entitySubType] || imageNameMap[entityType];
         const imagePath = resolveImagePath(imageName);
-        return `<span class="entity-icon"><img src="${imagePath}" alt="${entitySubType || entityType}"></span>${params.name}`;
+        return `<span class="ftbl-entity-icon"><img src="${imagePath}" alt="${entitySubType || entityType}"></span>${params.name}`;
     }
 
     renderDuration(params) {
