@@ -1,9 +1,9 @@
 // flexiTable.js
-import { preloadImages, resolveImagePath, imageExists } from './pathResolver.js';
+import { preloadIcons, resolveIconPath } from './pathResolver.js';
 
 export class FlexiTable {
     constructor(containerId, dataset, filters = {}) {
-        preloadImages().catch(error => {
+        preloadIcons().catch(error => {
             console.error("Failed to preload images:", error);
         });
         
@@ -47,7 +47,7 @@ export class FlexiTable {
         const entityType = params.entityType;
         const entitySubType = params.entitySubType;
         const imageName = imageNameMap[entityType]?.[entitySubType] || imageNameMap[entityType];
-        const imagePath = resolveImagePath(imageName);
+        const imagePath = resolveIconPath(imageName);
         return `<span class="ftbl-entity-icon"><img src="${imagePath}" alt="${entitySubType || entityType}"></span>${params.name}`;
     }
 

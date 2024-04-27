@@ -18,7 +18,7 @@ const imageExists = async (imagePath, imageName) => {
     }
 };
 
-const preloadImages = async () => {
+const preloadIcons = async () => {
     const imageNames = ['Waterfall.svg', 'Agile.svg', 'Service.svg'];
     const paths = imageNames.map(name => ({
         name,
@@ -32,8 +32,8 @@ const preloadImages = async () => {
     }
 };
 
-const resolveImagePath = (imageName) => {
+const resolveIconPath = (imageName) => {
     return pathCache[imageName] || `${flexiTableConfig.fallbackImagePath}/${imageName}`;
 };
 
-export { preloadImages, resolveImagePath, imageExists };
+export { preloadIcons, resolveIconPath };
