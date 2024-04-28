@@ -7,12 +7,12 @@ const imageExists = async (imagePath, imageName) => {
     try {
         const response = await fetch(imagePath, { method: 'HEAD' });
         if (!response.ok) {
-            console.log(`Image ${imageName} in host not found, falling back to default.`);
+            //console.log(`Image ${imageName} in host not found, falling back to default.`);
             return false;
         }
         return true;
     } catch (error) {
-        console.error(`Error checking image path ${imagePath}:`, error);
+        //console.error(`Error checking image path ${imagePath}:`, error);
         return false;
     }
 };

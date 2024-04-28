@@ -4,8 +4,8 @@ import { FlexiTable } from '../../flexiTable.js';
 import { FilterManager } from '../../filterManager.js';
 import data from '../dataSamples/intervalsByEntity.js';
 
-describe('UI Tests for flexiTable', () => {
-  beforeEach(() => {
+describe('UI Tests for flexiTable', async () => {
+  beforeEach(async () => {
     // Setup the initial HTML structure
     document.body.innerHTML = `
       <div id="filtersDiv"></div>
@@ -17,6 +17,7 @@ describe('UI Tests for flexiTable', () => {
     const filterManager = new FilterManager('filtersDiv', {
       project: true, workItem: true, user: true
     });
+    await new Promise(r => setTimeout(r, 100)); // Wait 100ms for the DOM to update
   });
 
   test('Filters are present with all options ticked', () => {
@@ -97,7 +98,8 @@ describe('Interaction Tests for FlexiTable Filters', () => {
       });
     });
   
-    test('Check that users are initially present in the table', () => {
+    test('Check that users are initially present in the table', async () => {
+      await new Promise(r => setTimeout(r, 100)); // Wait a bit for the DOM updates to apply
       const users = document.querySelectorAll('tr[data-type="user"]');
       expect(users.length).toBeGreaterThan(0); // Check that there are user entries
     });
