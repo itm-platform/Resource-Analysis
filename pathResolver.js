@@ -17,16 +17,16 @@ const imageExists = async (imagePath, imageName) => {
     }
 };
 
-const preloadUserImages = async (users) => {
+const cacheUserImagePaths = async (users) => {
     for (const user of users) {
         const imageUrl = `${user.imageUrl}`;
-        const exists = await imageExists(imageUrl, user.name);
-        pathCache[user.name] = exists ? imageUrl : null;  // Caches the path or null if not exists
+        const exists = await imageExists(imageUrl, user.id);
+        pathCache[user.id] = exists ? imageUrl : null;  // Caches the path or null if not exists
     }
 };
-const preloadIcons = async () => {
-    const imageNames = ['Waterfall.svg', 'Agile.svg', 'Service.svg'];
-    const paths = imageNames.map(name => ({
+const cacheIconPaths = async () => {
+    const iconNames = ['Waterfall.svg', 'Agile.svg', 'Service.svg'];
+    const paths = iconNames.map(name => ({
         name,
         hostedPath: `${flexiTableConfig.hostedImagePath}/${name}`,
         fallbackPath: `${flexiTableConfig.fallbackImagePath}/${name}`
@@ -42,4 +42,4 @@ const resolveIconPath = (imageName) => {
     return pathCache[imageName] || `${flexiTableConfig.fallbackImagePath}/${imageName}`;
 };
 
-export { preloadIcons, resolveIconPath, preloadUserImages };
+export { cacheIconPaths, resolveIconPath, cacheUserImagePaths };

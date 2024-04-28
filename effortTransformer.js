@@ -258,6 +258,7 @@ export class EffortTransformer {
             render: {
                 func: "renderUserName",
                 params: {
+                    id: user.Id,
                     name: user.Name,
                     imageUrl: user.UserImageUrl,
                     categoryId: user.CategoryId

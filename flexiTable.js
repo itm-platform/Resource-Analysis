@@ -1,21 +1,18 @@
 // flexiTable.js
-import { preloadIcons, resolveIconPath, preloadUserImages, pathCache } from './pathResolver.js';
+import { cacheIconPaths, resolveIconPath, cacheUserImagePaths, pathCache } from './pathResolver.js';
 
 export class FlexiTable {
     constructor(containerId, dataset, filters = {}) {
-        preloadIcons().catch(error => {
-            console.error("Failed to preload images:", error);
+        cacheIconPaths().catch(error => {
+            throw new Error("Failed to preload icons:", error);
         });
 
         this.container = document.getElementById(containerId);
         this.dataset = dataset;
         this.filters = filters || {};
         
-        // Preload user images
-        const userImages = this.extractUserImages(dataset.rows);
-        console.log('User images before:', userImages);
-        preloadUserImages(userImages).then(() => {
-            console.log('User images after:', userImages);
+        const uniqueUsers = this._getUniqueUsers(dataset.rows);
+        cacheUserImagePaths(uniqueUsers).then(() => {
             this.generateTable();
         });
 
@@ -24,12 +21,12 @@ export class FlexiTable {
         document.addEventListener('dataUpdated', this.updateData.bind(this));
     }
 
-    extractUserImages(rows) {
-        let userImages = [];
+    _getUniqueUsers(rows) {
+        let userImages = {};
         const extract = (rows) => {
             for (const row of rows) {
                 if (row.type === 'user' && row.render && row.render.func === 'renderUserName') {
-                    userImages.push(row.render.params);
+                    userImages[row.render.params.id] = row.render.params; // Use the user's ID as the key
                 }
                 if (row.children) {
                     extract(row.children);
@@ -37,11 +34,12 @@ export class FlexiTable {
             }
         };
         extract(rows);
-        return userImages;
+        return Object.values(userImages); // Convert the object to an array of user image objects
     }
+    
 
     renderUserName(params) {
-        const imagePath = pathCache[params.name];
+        const imagePath = pathCache[params.id];
         if (imagePath) {
             return `<img src="${imagePath}" alt="${params.name}" class="ftbl-user-photo"/>${params.name}`;
         }

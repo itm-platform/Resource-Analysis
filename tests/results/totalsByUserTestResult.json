@@ -25,6 +25,7 @@
       "render": {
         "func": "renderUserName",
         "params": {
+          "id": "user1",
           "name": "User name 1",
           "imageUrl": "UploadData/PHOTO/16by16_30168.jpg",
           "categoryId": "category1"
@@ -172,6 +173,7 @@
       "render": {
         "func": "renderUserName",
         "params": {
+          "id": "user2",
           "name": "User name 2",
           "imageUrl": "UploadData/PHOTO/16by16_30169.jpg",
           "categoryId": "category1"
@@ -360,6 +362,7 @@
       "render": {
         "func": "renderUserName",
         "params": {
+          "id": "user3",
           "name": "User name 3",
           "imageUrl": "UploadData/PHOTO/16by16_30170.jpg",
           "categoryId": "category2"
