@@ -41,17 +41,27 @@ export class FlexiTable {
     renderUserName(params) {
         const imagePath = pathCache[params.id];
         if (imagePath) {
-            return `<img src="${imagePath}" alt="${params.name}" class="ftbl-user-photo"/>${params.name}`;
+            return `
+            <div class="ftbl-user-wrapper">
+                <img src="${imagePath}" alt="${params.name}" class="ftbl-user-placeholder"/>
+                <span class="ftbl-user-name">${params.name}</span>
+            </div>`;
         }
         const initials = params.name.split(' ').slice(0, 2).map(n => n[0]).join('');
-        return `<div class="initialsDP initialsDP32" style="display:block;" title="${params.name}">${initials.toLowerCase()}</div>${params.name}`;
+        return `
+        <div class="ftbl-user-wrapper">
+            <div class="ftbl-user-placeholder ftbl-user-initials" title="${params.name}">${initials.toLowerCase()}</div>
+            <span class="ftbl-user-name">${params.name}</span>
+        </div>`;
     }
 
     generateTable() {
+        const tableWrapper = document.createElement('div');
+        tableWrapper.classList.add('ftbl-table-wrapper');
         this.table = document.createElement('table');
-        this.table.setAttribute('border', '1');
-        this.table.style.width = '100%';
-        this.container.appendChild(this.table);
+        this.table.classList.add('ftbl-table');
+        tableWrapper.appendChild(this.table);
+        this.container.appendChild(tableWrapper);
         this.renderHeader();
         this.tbody = document.createElement('tbody');
         this.table.appendChild(this.tbody);
@@ -80,8 +90,9 @@ export class FlexiTable {
     }
     renderHeader() {
         const header = this.table.createTHead();
+        header.classList.add('ftbl-header');
         const headerRow = header.insertRow();
-
+        headerRow.classList.add('ftbl-header-row');
         // Add an empty cell for the first column for the toggle/indentation/name
         headerRow.insertCell();
 
@@ -95,6 +106,8 @@ export class FlexiTable {
 
         // Second row for individual columns
         const columnRow = header.insertRow();
+        columnRow.classList.add('ftbl-header-row');
+
         // Again, add an empty cell for the first column
         columnRow.insertCell();
 
@@ -114,6 +127,7 @@ export class FlexiTable {
                 const row = this.tbody.insertRow();
                 row.setAttribute('data-id', rowId);
                 row.setAttribute('data-type', item.type);
+                row.classList.add('ftbl-data-row');
                 if (!parentVisible) {
                     row.style.display = 'none';
                 }
@@ -139,7 +153,8 @@ export class FlexiTable {
                 this.dataset.groups.forEach(group => {
                     const groupValues = item.values.find(value => value.groupId === group.id);
                     if (groupValues) {
-                        groupValues.values.forEach(value => {
+                        // Iterate over group values
+                        groupValues.values.forEach((value, index, array) => {
                             const cell = row.insertCell();
                             if (value.render) {
                                 const renderFunc = this[value.render.func];
@@ -151,9 +166,14 @@ export class FlexiTable {
                                 cell.innerHTML = value.value;
                             }
                             cell.classList.add('ftbl-value-cell');
+                            // Check if the current cell is the last in the group
+                            if (index === array.length - 1) {
+                                cell.classList.add('ftbl-rightmost-cell-in-group');
+                            }
                         });
                     }
                 });
+                
 
                 if (item.children) {
                     this.renderRows(item.children, `${rowId}-`, level + 1, parentVisible && this.filters[item.type]);

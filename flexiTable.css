@@ -1,29 +1,60 @@
 /* flexiTable.css */
-.ftbl-header-group-cell, .ftbl-header-column-cell {
+:root {
+    --ftbl-border-color: #ccc;
+    --ftbl-border-width: 1px;  
+}
+
+.ftbl-table-wrapper {
+    padding: 4px;
+}
+
+.ftbl-table {
+    border: solid var(--ftbl-border-width) var(--ftbl-border-color);
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ftbl-header {
+    border-bottom: solid var(--ftbl-border-width) var(--ftbl-border-color);
+}
+
+.ftbl-header-row {
+
+    border-collapse: collapse;
     background-color: #eee;
+}
+
+.ftbl-header-group-cell {
     text-align: center;
     font-size: .9em;
+    color: #444;
+}
+.ftbl-header-column-cell {
+    text-align: center;
+    font-size: .9em;
+    color: #666;
 }
 
 
 .ftbl-value-cell {
     text-align: right;
+    padding-right: 7px;
     width: 4em; /* Default width for most cells */
+}
+
+.ftbl-rightmost-cell-in-group {
+    border-right: solid var(--ftbl-border-width) var(--ftbl-border-color);
 }
 
 .ftbl-name-cell {
     text-align: left; 
     width: 15em; /* Specific width for the first column/cell */
+    border-right: solid var(--ftbl-border-width) var(--ftbl-border-color);
+
 }
 
-/* Ensure the header cells align with your column setup */
-.ftbl-header-group-cell:first-child, .ftbl-header-column-cell:first-child {
-    width: 10em; /* You may also need to adjust this for header cells if they align with the name column */
-}
-
-table {
-    /* border-collapse: collapse; */
-    border: 1px solid #ccc;
+.ftbl-data-row {
+   height:2.3em;
 }
 
 .ftbl-caret {
@@ -40,29 +71,30 @@ table {
 .ftbl-entity-icon{
     margin-right: 5px;
 }
-.ftbl-user-photo{
-    height: 32px;
-    width: 32px;
+.ftbl-user-wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+}
+.ftbl-user-placeholder{
+    height: 1.6em;
+    width: 1.6em;
     border-radius: 50%;
     -webkit-border-radius: 50%;
-    margin-top: 2px;
 }
-
-/* Duplicated from ITM Platform as host */
-.initialsDP32 {
-    width: 30px;
-    height: 30px;
-    line-height: 2.3em;
+.ftbl-user-name{
+    margin-left: 3px;
 }
-.initialsDP {
-    border-radius: 50%;
-    margin-top: 1px;
-    margin-right: 5px;
+.ftbl-user-initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: default;
     text-align: center;
     color: #000;
-    font-weight: normal !important;
-    background-color: #EBEBEB !important;
+    font-size: .8em;
+    padding: .2em;
+    background-color: #EBEBEB ;
     text-transform: uppercase;
-    border: 1px solid #9c9c9c !important;
+    border: 1px solid #9c9c9c ;
 }
