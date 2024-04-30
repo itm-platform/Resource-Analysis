@@ -20,10 +20,18 @@ if (!fs.existsSync(resultsDirPath)) {
 
 describe('effortTransformer', () => {
     //const effortTransformer = new EffortTransformer(responseResourceAnalysisFull);
-    test('transformToIntervalsByEntity', () => {
+    test('transformToIntervalsByEntity and workItem', () => {
         const effortTransformer = new EffortTransformer(responseResourceAnalysisIntervals);
         const result = effortTransformer.transformToIntervals('entity');
-        const filePath = path.join(resultsDirPath, 'intervalsByEntityTestResult.json');
+        const filePath = path.join(resultsDirPath, 'intervalsByEntityAndWorkItemTestResult.json');
+        fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
+        expect(result).toEqual(intervalsByEntity);
+    });
+
+    test('transformToIntervalsByEntity and user', () => {
+        const effortTransformer = new EffortTransformer(responseResourceAnalysisIntervals);
+        const result = effortTransformer.transformToIntervals('entity', 'user');
+        const filePath = path.join(resultsDirPath, 'intervalsByEntityAndUserTestResult.json');
         fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
         expect(result).toEqual(intervalsByEntity);
     });
@@ -36,9 +44,17 @@ describe('effortTransformer', () => {
         expect(result).toEqual(intervalsByUser);
     });
  
-    test('transformToTotalsByEntity', () => {
+    test('transformToTotalsByEntity and workItem', () => {
         const effortTransformer = new EffortTransformer(responseResourceAnalysisTotals);
         const result = effortTransformer.transformToTotals('entity');
+        const filePath = path.join(resultsDirPath, 'totalsByEntityTestResult.json');
+        fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
+        expect(result).toEqual(totalsByEntity);
+    });
+
+    test('transformToTotalsByEntity and user', () => {
+        const effortTransformer = new EffortTransformer(responseResourceAnalysisTotals);
+        const result = effortTransformer.transformToTotals('entity', 'user');
         const filePath = path.join(resultsDirPath, 'totalsByEntityTestResult.json');
         fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
         expect(result).toEqual(totalsByEntity);

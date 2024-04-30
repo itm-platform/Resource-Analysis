@@ -4,12 +4,12 @@ export class EffortTransformer {
     constructor(data) {
         this.data = JSON.parse(JSON.stringify(data));
     }
-    transformToIntervals(groupBy) {
+    transformToIntervals(groupBy, groupEntityBy) {
         this.#setCapacity0ToRepeatedIntervalAndUsers();
         const groups = this.#buildIntervalGroups(groupBy === 'user'); // Include capacity if grouped by user
 
         if (groupBy === 'entity') {
-            return { groups, rows: this.#transformByEntity('intervals') };
+            return { groups, rows: this.#transformByEntity('intervals', groupEntityBy) };
         } else if (groupBy === 'user') {
             return { groups, rows: this.#transformIntervalsByUser() };
         } else {
@@ -17,10 +17,10 @@ export class EffortTransformer {
         }
     }
 
-    transformToTotals(groupBy) {
+    transformToTotals(groupBy, groupEntityBy) {
         const groups = this.#buildTotalsGroups();
         if (groupBy === 'entity') {
-            return { groups, rows: this.#transformByEntity('totals') };
+            return { groups, rows: this.#transformByEntity('totals', groupEntityBy) };
         } else if (groupBy === 'user') {
             return { groups, rows: this.#transformTotalsByUser() };
         } else {
