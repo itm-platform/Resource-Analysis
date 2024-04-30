@@ -1,6 +1,8 @@
 // flexiTable.js
 import { cacheIconPaths, resolveIconPath, cacheUserImagePaths, pathCache } from './pathResolver.js';
-
+// LEFT OFF: Add expand / collapse all 
+// base the toggling on events rather than direct DOM manipulation
+// Expand one level at a time?
 export class FlexiTable {
     constructor(containerId, dataset, rowFilters = {}) {
         cacheIconPaths().catch(error => {
@@ -21,6 +23,65 @@ export class FlexiTable {
         document.addEventListener('dataUpdated', this.updateData.bind(this));
     }
 
+    generateTable() {
+        const tableWrapper = document.createElement('div');
+        tableWrapper.classList.add('ftbl-table-wrapper');
+        this.table = document.createElement('table');
+        this.table.classList.add('ftbl-table');
+        tableWrapper.appendChild(this.table);
+        this.container.appendChild(tableWrapper);
+        this.renderHeader();
+        this.tbody = document.createElement('tbody');
+        this.table.appendChild(this.tbody);
+        this.renderRows(this.dataset.rows);
+    }
+    renderRows(items, parentRowId = '', level = 0, parentVisible = true) {
+        items.forEach((item, index) => {
+            const isRowNotFilteredOut = !this.rowFilters.hasOwnProperty(item.type) || this.rowFilters[item.type];
+            if (isRowNotFilteredOut) {
+                const { row, rowId } = this._createRow(parentRowId, index, item, parentVisible);
+                this._createFirstNameCell(row, item, level, rowId);
+                this._createValueCells(item, row);
+                if (item.children) {
+                    this.renderRows(item.children, `${rowId}-`, level + 1, parentVisible && this.rowFilters[item.type]);
+                }
+            }
+        });
+    }
+    toggleRow(rowId, toggleCell) {
+        const childRows = this.table.querySelectorAll(`tr[data-id^="${rowId}-"]`);
+        let isAnyChildVisible = Array.from(childRows).some(row => row.style.display !== 'none');
+    
+        childRows.forEach(childRow => {
+            if (isAnyChildVisible) {
+                childRow.style.display = 'none';
+            } else {
+                childRow.style.display = '';
+            }
+        });
+    
+        let parentRow = this.table.querySelector(`tr[data-id="${rowId}"]`);
+        if (parentRow) {
+            this._updateRowClasses(parentRow, !isAnyChildVisible);
+        }
+        this._updateToggleIcon(toggleCell, !isAnyChildVisible);
+    }
+    _addToggleIcon(cell, isVisible, rowId) {
+        const toggleSpan = document.createElement('span');
+        toggleSpan.innerHTML = isVisible ? this._getDownCaret() : this._getRightCaret();
+        toggleSpan.classList.add('ftbl-caret');
+        toggleSpan.onclick = () => this.toggleRow(rowId, toggleSpan);
+        cell.insertBefore(toggleSpan, cell.firstChild);
+    }
+    
+    _updateRowClasses(row, childrenVisible) {
+        const idParts = row.getAttribute('data-id').split('-');
+        if (idParts.length === 1) { // Level 1 row
+            row.classList.toggle('ftbl-row-level-1-expanded', childrenVisible);
+        } else if (idParts.length === 2) { // Level 2 row
+            row.classList.toggle('ftbl-row-level-2-expanded', childrenVisible);
+        }
+    }
     _getUniqueUsers(rows) {
         let userImages = {};
         const extract = (rows) => {
@@ -36,7 +97,6 @@ export class FlexiTable {
         extract(rows);
         return Object.values(userImages); // Convert the object to an array of user image objects
     }
-
     renderUserName(params) {
         const imagePath = pathCache[params.id];
         if (imagePath) {
@@ -53,20 +113,6 @@ export class FlexiTable {
             <span class="ftbl-user-name">${params.name}</span>
         </div>`;
     }
-
-    generateTable() {
-        const tableWrapper = document.createElement('div');
-        tableWrapper.classList.add('ftbl-table-wrapper');
-        this.table = document.createElement('table');
-        this.table.classList.add('ftbl-table');
-        tableWrapper.appendChild(this.table);
-        this.container.appendChild(tableWrapper);
-        this.renderHeader();
-        this.tbody = document.createElement('tbody');
-        this.table.appendChild(this.tbody);
-        this.renderRows(this.dataset.rows);
-    }
-
     renderEntityName(params) {
         const imageNameMap = {
             'project': {
@@ -82,7 +128,6 @@ export class FlexiTable {
         const imagePath = resolveIconPath(imageName);
         return `<span class="ftbl-entity-icon"><img src="${imagePath}" alt="${entitySubType || entityType}"></span>${params.name}`;
     }
-
     renderDuration(params) {
         return params.value ? `${params.value / 60} h.` : '';
     }
@@ -117,21 +162,6 @@ export class FlexiTable {
             });
         });
     }
-
-    renderRows(items, parentRowId = '', level = 0, parentVisible = true) {
-        items.forEach((item, index) => {
-            const isRowNotFilteredOut = !this.rowFilters.hasOwnProperty(item.type) || this.rowFilters[item.type];
-            if (isRowNotFilteredOut) {
-                const { row, rowId } = this._createRow(parentRowId, index, item, parentVisible);
-                this._createFirstNameCell(row, item, level, rowId);
-                this._createValueCells(item, row);
-                if (item.children) {
-                    this.renderRows(item.children, `${rowId}-`, level + 1, parentVisible && this.rowFilters[item.type]);
-                }
-            }
-        });
-    }
-
     _createValueCells(item, row) {
         this.dataset.groups.forEach(group => {
             const groupValues = item.values.find(value => value.groupId === group.id);
@@ -191,38 +221,6 @@ export class FlexiTable {
         }
         return { row, rowId };
     }
-
-    toggleRow(rowId, toggleCell) {
-        const childRows = this.table.querySelectorAll(`tr[data-id^="${rowId}-"]`);
-        let isAnyChildVisible = Array.from(childRows).some(row => row.style.display !== 'none');
-    
-        childRows.forEach(childRow => {
-            if (isAnyChildVisible) {
-                childRow.style.display = 'none';
-            } else {
-                childRow.style.display = '';
-            }
-        });
-    
-        let parentRow = this.table.querySelector(`tr[data-id="${rowId}"]`);
-        if (parentRow) {
-            this._updateRowClasses(parentRow, !isAnyChildVisible);
-        }
-        this._updateToggleIcon(toggleCell, !isAnyChildVisible);
-    }
-    
-    
-    
-    _updateRowClasses(row, childrenVisible) {
-        const idParts = row.getAttribute('data-id').split('-');
-        if (idParts.length === 1) { // Level 1 row
-            row.classList.toggle('ftbl-row-level-1-expanded', childrenVisible);
-        } else if (idParts.length === 2) { // Level 2 row
-            row.classList.toggle('ftbl-row-level-2-expanded', childrenVisible);
-        }
-    }
-    
-    
 
     _addToggleIcon(cell, isVisible, rowId) {
         const toggleSpan = document.createElement('span');
