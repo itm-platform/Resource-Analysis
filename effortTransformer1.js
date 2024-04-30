@@ -19,15 +19,71 @@ export class EffortTransformer {
         const groups = this._buildIntervalGroups(groupBy === 'user'); // Include capacity if grouped by user
 
         if (groupBy === 'entity') {
-            return { groups, rows: this._transformByEntity() };
+            return { groups, rows: this._transformIntervalsByEntity() };
         } else if (groupBy === 'user') {
-            return { groups, rows: this._transformByUser() };
+            return { groups, rows: this._transformIntervalsByUser() };
         } else {
             throw new Error('Invalid groupBy value. Use "entity" or "user".');
         }
     }
 
-    _transformByEntity() {
+    transformToTotals(groupBy) {
+        const groups = this._buildTotalsGroups();
+        if (groupBy === 'entity') {
+            return { groups, rows: this._transformTotalsByEntity() };
+        } else if (groupBy === 'user') {
+            return { groups, rows: this._transformTotalsByUser() };
+        } else {
+            throw new Error('Invalid groupBy value. Use "entity" or "user".');
+        }
+    }
+
+    _transformTotalsByEntity() {
+        const rows = this.data.Entities.map(entity => {
+            const workItemRows = entity.WorkItems.map(workItem => {
+                const userRows = workItem.AssignedEfforts.map(assignedEffort => {
+                    const user = this._getUserById(assignedEffort.UserId);
+                    const totals = assignedEffort.TotalUserWorkItemEffort;
+                    const values = [{
+                        groupId: 1,
+                        values: [
+                            { columnId: "estimated", value: totals.EstimatedEffort, render: { func: "renderDuration", params: { value: totals.EstimatedEffort } } },
+                            { columnId: "actual", value: totals.AcceptedEffort, render: { func: "renderDuration", params: { value: totals.AcceptedEffort } } }
+                        ]
+                    }];
+                    return this._createUserRow(user, { values });
+                });
+    
+                const workItemTotals = this._aggregateWorkItemValues(userRows);
+                return {
+                    type: "workItem",
+                    name: workItem.Name,
+                    values: workItemTotals,
+                    children: userRows
+                };
+            });
+    
+            const entityTotals = this._aggregateEntityValues(workItemRows);
+            return {
+                type: entity.EntityType,
+                name: entity.Name,
+                render: { func: "renderEntityName", params: { name: entity.Name, entityType: entity.EntityType, entitySubType: entity.EntitySubType } },
+                values: entityTotals,
+                children: workItemRows
+            };
+        });
+        return rows;
+    }
+
+    _transformTotalsByUser() {
+        const rows = this.data.Users.map(user => {
+            const userProjects = this._getUserProjectsForTotals(user.Id);
+            const userTotals = this._aggregateTotals(userProjects);
+            return this._createUserRow(user, { values: userTotals, children: userProjects });
+        });
+        return rows;
+    }
+    _transformIntervalsByEntity() {
         const buildEntitiesRows = () => this.data.Entities.map(entity => {
             const workItems = entity.WorkItems.map(workItem => {
                 const userRows = workItem.AssignedEfforts.map(effort => {
@@ -54,8 +110,7 @@ export class EffortTransformer {
 
         return buildEntitiesRows();
     }
-
-    _transformByUser() {
+    _transformIntervalsByUser() {
         const buildUserRowsWithEntities = () => this.data.Users.map(user => {
             const userProjects = this._aggregateUserEntities(user.Id);
             const userTotals = this._aggregateUserValuesAcrossEntities(userProjects);
@@ -65,6 +120,46 @@ export class EffortTransformer {
         const rows = buildUserRowsWithEntities();
         this._setCapacityToUndefinedForNonUsers(rows);
         return rows;
+    }
+    _createWorkItemValueForTotals(workItem, assignedEffort) {
+        const totals = assignedEffort.TotalUserWorkItemEffort;
+        const values = [{
+            groupId: 1,
+            values: [
+                { columnId: "estimated", value: totals.EstimatedEffort, render: { func: "renderDuration", params: { value: totals.EstimatedEffort } } },
+                { columnId: "actual", value: totals.AcceptedEffort, render: { func: "renderDuration", params: { value: totals.AcceptedEffort } } }
+            ]
+        }];
+        return {
+            type: "workItem",
+            name: workItem.Name,
+            values: values
+        };
+    }
+    _getUserProjectsForTotals(userId) {
+        let projects = [];
+        this.data.Entities.forEach(entity => {
+            const projectWorkItems = entity.WorkItems.reduce((acc, workItem) => {
+                workItem.AssignedEfforts.filter(effort => effort.UserId === userId)
+                    .forEach(assignedEffort => {
+                        acc.push(this._createWorkItemValueForTotals(workItem, assignedEffort));
+                    });
+                return acc;
+            }, []);
+    
+            if (projectWorkItems.length > 0) {
+                const projectTotals = this._aggregateTotals(projectWorkItems);
+                projects.push({
+                    type: "project",
+                    name: entity.Name,
+                    render: { func: "renderEntityName", params: { name: entity.Name, entityType: entity.EntityType, entitySubType: entity.EntitySubType } },
+                    values: projectTotals,
+                    children: projectWorkItems
+                });
+            }
+        });
+    
+        return projects;
     }
     _renderEntity(entity) {
         return {
@@ -151,34 +246,10 @@ export class EffortTransformer {
             };
         };
     
-        const getUserProjectsForTotals = (userId) => {
-            let projects = [];
-            this.data.Entities.forEach(entity => {
-                const projectWorkItems = entity.WorkItems.reduce((acc, workItem) => {
-                    workItem.AssignedEfforts.filter(effort => effort.UserId === userId)
-                        .forEach(assignedEffort => {
-                            acc.push(createWorkItemValueForTotals(workItem, assignedEffort));
-                        });
-                    return acc;
-                }, []);
-    
-                if (projectWorkItems.length > 0) {
-                    const projectTotals = this._aggregateTotals(projectWorkItems);
-                    projects.push({
-                        type: "project",
-                        name: entity.Name,
-                        render: { func: "renderEntityName", params: { name: entity.Name, entityType: entity.EntityType, entitySubType: entity.EntitySubType } },
-                        values: projectTotals,
-                        children: projectWorkItems
-                    });
-                }
-            });
-    
-            return projects;
-        };
+
     
         const rows = this.data.Users.map(user => {
-            const userProjects = getUserProjectsForTotals(user.Id);
+            const userProjects = this_getUserProjectsForTotals(user.Id);
             const userTotals = this._aggregateTotals(userProjects);
             return this._createUserRow(user, { values: userTotals, children: userProjects });
         });

@@ -36,16 +36,16 @@ describe('effortTransformer', () => {
         expect(result).toEqual(intervalsByUser);
     });
 
-    test.skip('transformToTotalsByEntity', () => {
+    test('transformToTotalsByEntity', () => {
         const effortTransformer = new EffortTransformer(responseResourceAnalysisTotals);
-        const result = effortTransformer.transformToTotalsByEntity();
+        const result = effortTransformer.transformToTotals('entity');
         const filePath = path.join(resultsDirPath, 'totalsByEntityTestResult.json');
         fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
         expect(result).toEqual(totalsByEntity);
     });
-    test.skip('transformToTotalsByUser', () => {
+    test('transformToTotalsByUser', () => {
         const effortTransformer = new EffortTransformer(responseResourceAnalysisTotals);
-        const result = effortTransformer.transformToTotalsByUser();
+        const result = effortTransformer.transformToTotals('user');
         const filePath = path.join(resultsDirPath, 'totalsByUserTestResult.json');
         fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
         expect(result).toEqual(totalsByUser);
