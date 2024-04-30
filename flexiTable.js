@@ -144,39 +144,17 @@ export class FlexiTable {
         return params.value ? `${params.value / 60} h.` : '';
     }
     renderHeader() {
-        const header = this.table.createTHead();
-        header.classList.add('ftbl-header');
-        const headerRow = header.insertRow();
-        headerRow.classList.add('ftbl-header-row');
-        
-        // Add a cell for the collapse/expand icons
-        const toggleCell = headerRow.insertCell();
-        toggleCell.innerHTML = `${this._getCaretCollapse()}${this._getCaretExpand()}`;
-        toggleCell.classList.add('ftbl-header-toggle-cell');
-        
-        // Assuming the collapse icon is the first child and expand is the second
-        const collapseIcon = toggleCell.children[0];
-        const expandIcon = toggleCell.children[1];
-        
-        collapseIcon.addEventListener('click', () => this._setRowVisibility('tbody tr', false));
-        expandIcon.addEventListener('click', () => this._setRowVisibility('tbody tr', true));
-        
-        collapseIcon.classList.add('ftbl-caret-toggle-all');
-        expandIcon.classList.add('ftbl-caret-toggle-all');
+        const { headerRow, header } = this._createHeader();
+        this._addCollapseExpandIconsToHeaderFirstRow(headerRow);
+        this._addGroupHeaders(headerRow);
+        this._addColumnsHeaders(header);
+    }
     
-        // Iterate over each group to create headers
-        this.dataset.groups.forEach(group => {
-            const cell = headerRow.insertCell();
-            cell.textContent = group.name;
-            cell.setAttribute('colspan', group.columns.length);
-            cell.classList.add('ftbl-header-group-cell');
-        });
-    
-        // Second row for individual columns
+    _addColumnsHeaders(header) {
         const columnRow = header.insertRow();
         columnRow.classList.add('ftbl-header-row');
         columnRow.insertCell(); // First empty cell for the first column
-    
+
         this.dataset.groups.forEach(group => {
             group.columns.forEach(column => {
                 const cell = columnRow.insertCell();
@@ -185,8 +163,40 @@ export class FlexiTable {
             });
         });
     }
-    
-    
+
+    _addGroupHeaders(headerRow) {
+        this.dataset.groups.forEach(group => {
+            const cell = headerRow.insertCell();
+            cell.textContent = group.name;
+            cell.setAttribute('colspan', group.columns.length);
+            cell.classList.add('ftbl-header-group-cell');
+        });
+    }
+
+    _addCollapseExpandIconsToHeaderFirstRow(headerRow) {
+        const toggleCell = headerRow.insertCell();
+        toggleCell.innerHTML = `${this._getCaretCollapse()}${this._getCaretExpand()}`;
+        toggleCell.classList.add('ftbl-header-toggle-cell');
+
+        // Assuming the collapse icon is the first child and expand is the second
+        const collapseIcon = toggleCell.children[0];
+        const expandIcon = toggleCell.children[1];
+
+        collapseIcon.addEventListener('click', () => this._setRowVisibility('tbody tr', false));
+        expandIcon.addEventListener('click', () => this._setRowVisibility('tbody tr', true));
+
+        collapseIcon.classList.add('ftbl-caret-toggle-all');
+        expandIcon.classList.add('ftbl-caret-toggle-all');
+    }
+
+    _createHeader() {
+        const header = this.table.createTHead();
+        header.classList.add('ftbl-header');
+        const headerRow = header.insertRow();
+        headerRow.classList.add('ftbl-header-row');
+        return { headerRow, header };
+    }
+
     _createValueCells(item, row) {
         this.dataset.groups.forEach(group => {
             const groupValues = item.values.find(value => value.groupId === group.id);

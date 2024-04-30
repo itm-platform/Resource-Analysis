@@ -146,7 +146,10 @@ Explanation:
 - Totals (such as `UserWorkItemTotals`, `WorkItemTotals`, and `EntityTotals`) will not consider intervals; they are the totals. (beware of double calculations)
 
 #### Response testing
-The response must pass the validation. JS simplified example:
+The response must pass the validation. 
+Use the [Postman testing](https://planetary-moon-805575.postman.co/workspace/ITM-Platform~0a69d185-fab5-48c3-890b-e619b2acb113/request/26760249-d7ac2203-36ec-4e48-977e-c6f5a2ae0fc9?ctx=documentation) to validate the response.
+
+Otherwise you can use the local JS. Simplified example:
 ```js
 const payload = {"analysisMode": "totals"};
 const result = await fetch('http://localhost:3000/resourceAnalysis', {

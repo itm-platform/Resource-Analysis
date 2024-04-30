@@ -12,194 +12,69 @@ export class EffortTransformer {
             CategoryId: ''
         };
     }
-    
-    transformToIntervalsByEntity() {
+    transformToIntervals(groupBy) {
         this._setCapacity0ToRepeatedIntervalAndUsers();
-        const groups = this._buildIntervalGroups();
-    
-        const buildEntitiesRows = () => {
-            const buildWorkItemRows = (workItems) => {
-                return workItems.map(workItem => {
-                    const buildUserRows = (assignedEfforts) => {
-                        return assignedEfforts.map(effort => {
-                            const user = this._getUserById(effort.UserId);  
-                            const values = this._buildIntervalValues(effort.Intervals);
-                            return this._createUserRow(user, {values});
-                        });
-                    };
-                    
-                    const userRows = buildUserRows(workItem.AssignedEfforts);
-                    const workItemRow = {
-                        type: "workItem",
-                        name: workItem.Name,
-                        values: this._aggregateWorkItemValues(userRows),
-                        children: userRows
-                    };
-                    return workItemRow;
-                });
-            };
-            return this.data.Entities.map(entity => {
-                const workItems = buildWorkItemRows(entity.WorkItems);
-                const entityRow = {
-                    type: entity.EntityType,
-                    name: entity.Name,
-                    subType: entity.EntitySubType,
-                    render: {
-                        func: "renderEntityName",
-                        params: {
-                            name: entity.Name,
-                            entityType: entity.EntityType,
-                            entitySubType: entity.EntitySubType
-                        }
-                    },
-                    values: this._aggregateEntityValues(workItems),
-                    children: workItems
-                };
-                return entityRow;
-            });
-        };
-        const rows = buildEntitiesRows();
-        return { groups, rows };
+        const groups = this._buildIntervalGroups(groupBy === 'user'); // Include capacity if grouping by user
+
+        if (groupBy === 'entity') {
+            return { groups, rows: this._buildEntityRows() };
+        } else if (groupBy === 'user') {
+            const rows = this._buildUserRowsWithEntities();
+            this._setCapacityToUndefinedForNonUsers(rows);
+            return { groups, rows };
+        } else {
+            throw new Error("Invalid groupBy value. Must be 'entity' or 'user'.");
+        }
     }
-    
-    transformToIntervalsByUser() {
-        this._setCapacity0ToRepeatedIntervalAndUsers();
-        const groups = this._buildIntervalGroups(true); // Pass true to include capacity
-    
-        const buildUserRowsWithEntities = () => {
-            return this.data.Users.map(user => {
-                const userProjects = this._aggregateUserEntities(user.Id);
-                const userTotals = this._aggregateUserValuesAcrossEntities(userProjects);
-                return this._createUserRow(user, { values: userTotals, children: userProjects });
-            });
-        };
-        const rows = buildUserRowsWithEntities();
-        
-        const setCapacityToUndefinedForNonUsers = (rows) => {
-            function updateCapacity(item) {
-                // Only process the items that are not of type 'user'
-                if (item.type !== 'user') {
-                    item.values.forEach(group => {
-                        group.values.forEach(value => {
-                            if (value.columnId === 'capacity') {
-                                value.value = undefined;
-                                value.render.params.value = undefined;
-                            }
-                        });
-                    });
-                }
-        
-                // Recurse into children if they exist
-                if (item.children && item.children.length > 0) {
-                    item.children.forEach(child => updateCapacity(child));
-                }
-            }
-        
-            rows.forEach(row => {
-                updateCapacity(row);
-            });
-        };
-        setCapacityToUndefinedForNonUsers(rows);
-        return { groups, rows };
-    }
-    
-    transformToTotalsByEntity() {
-        const groups = this._buildTotalsGroups();
-    
-        const rows = this.data.Entities.map(entity => {
-            const mapEntity = (workItem) => {
-                const userRows = workItem.AssignedEfforts.map(assignedEffort => {
-                    const user = this._getUserById(assignedEffort.UserId);
-                    const totals = assignedEffort.TotalUserWorkItemEffort;
-                    const values = [{
-                        groupId: 1,
-                        values: [
-                            { columnId: "estimated", value: totals.EstimatedEffort, render: { func: "renderDuration", params: { value: totals.EstimatedEffort } } },
-                            { columnId: "actual", value: totals.AcceptedEffort, render: { func: "renderDuration", params: { value: totals.AcceptedEffort } } }
-                        ]
-                    }];
-                    return this._createUserRow(user, { values });
-                });
-    
-                const workItemTotals = this._aggregateWorkItemValues(userRows);
+
+    _buildEntityRows() {
+        return this.data.Entities.map(entity => {
+            const workItems = entity.WorkItems.map(workItem => {
+                const userRows = this._buildUserRows(workItem);
                 return {
                     type: "workItem",
                     name: workItem.Name,
-                    values: workItemTotals,
+                    values: this._aggregateWorkItemValues(userRows),
                     children: userRows
                 };
-            };
-    
-            const workItemRows = entity.WorkItems.map(mapEntity);
-    
-            const entityTotals = this._aggregateEntityValues(workItemRows);
+            });
+
             return {
                 type: entity.EntityType,
                 name: entity.Name,
-                render: { func: "renderEntityName", params: { name: entity.Name, entityType: entity.EntityType, entitySubType: entity.EntitySubType } },
-                values: entityTotals,
-                children: workItemRows
+                subType: entity.EntitySubType,
+                render: this._renderEntityName(entity),
+                values: this._aggregateEntityValues(workItems),
+                children: workItems
             };
         });
-    
-        return { groups, rows };
     }
-    
-    transformToTotalsByUser() {
-        const groups = this._buildTotalsGroups();
-    
-        const createWorkItemValueForTotals = (workItem, assignedEffort) => {
-            const totals = assignedEffort.TotalUserWorkItemEffort;
-            const values = [{
-                groupId: 1,
-                values: [
-                    { columnId: "estimated", value: totals.EstimatedEffort, render: { func: "renderDuration", params: { value: totals.EstimatedEffort } } },
-                    { columnId: "actual", value: totals.AcceptedEffort, render: { func: "renderDuration", params: { value: totals.AcceptedEffort } } }
-                ]
-            }];
-            return {
-                type: "workItem",
-                name: workItem.Name,
-                values: values
-            };
-        };
-    
-        const getUserProjectsForTotals = (userId) => {
-            let projects = [];
-            this.data.Entities.forEach(entity => {
-                const projectWorkItems = entity.WorkItems.reduce((acc, workItem) => {
-                    workItem.AssignedEfforts.filter(effort => effort.UserId === userId)
-                        .forEach(assignedEffort => {
-                            acc.push(createWorkItemValueForTotals(workItem, assignedEffort));
-                        });
-                    return acc;
-                }, []);
-    
-                if (projectWorkItems.length > 0) {
-                    const projectTotals = this._aggregateTotals(projectWorkItems);
-                    projects.push({
-                        type: "project",
-                        name: entity.Name,
-                        render: { func: "renderEntityName", params: { name: entity.Name, entityType: entity.EntityType, entitySubType: entity.EntitySubType } },
-                        values: projectTotals,
-                        children: projectWorkItems
-                    });
-                }
-            });
-    
-            return projects;
-        };
-    
-        const rows = this.data.Users.map(user => {
-            const userProjects = getUserProjectsForTotals(user.Id);
-            const userTotals = this._aggregateTotals(userProjects);
+
+    _buildUserRowsWithEntities() {
+        return this.data.Users.map(user => {
+            const userProjects = this._aggregateUserEntities(user.Id);
+            const userTotals = this._aggregateUserValuesAcrossEntities(userProjects);
             return this._createUserRow(user, { values: userTotals, children: userProjects });
         });
-    
-        return { groups, rows };
     }
-    _aggregateTotals(rows) {
-        return this._sumValuesByGroup(rows.flatMap(row => row.values));
+
+    _setCapacityToUndefinedForNonUsers(rows) {
+        rows.forEach(row => {
+            if (row.type !== 'user') {
+                row.values.forEach(group => {
+                    group.values.forEach(value => {
+                        if (value.columnId === 'capacity') {
+                            value.value = undefined;
+                            value.render.params.value = undefined;
+                        }
+                    });
+                });
+
+                if (row.children) {
+                    row.children.forEach(child => this._setCapacityToUndefinedForNonUsers([child]));
+                }
+            }
+        });
     }
     
     _aggregateWorkItemValues(workItemRows) {
@@ -295,20 +170,7 @@ export class EffortTransformer {
         };
     }
 
-    _buildTotalsGroups() {
-        return [
-            {
-                id: 1,
-                name: "Total",
-                columns: [
-                    { id: "estimated", name: "Estimated" },
-                    { id: "actual", name: "Actual" }
-                ]
-            }
-        ];
-    }
-
-    _buildIntervalGroups(includeCapacity = false) {
+     _buildIntervalGroups(includeCapacity = false) {
         const intervals = this.data.Intervals || [];
         const groups = intervals.map(interval => ({
             id: interval.IntervalId,
