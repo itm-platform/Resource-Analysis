@@ -105,3 +105,18 @@
     text-transform: uppercase;
     border: 1px solid #9c9c9c ;
 }
+
+.ftbl-caret-toggle-all {
+    height: .95em;
+    cursor: pointer;
+    fill: #444
+}
+.ftbl-caret-toggle-all-enabled {
+    cursor: pointer;
+    fill: #444
+}
+
+.ftbl-caret-toggle-all-disabled {
+    cursor: default;
+    fill: #999
+}
