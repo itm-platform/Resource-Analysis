@@ -201,12 +201,9 @@
                   "values": [
                     {
                       "columnId": "capacity",
-                      "value": 2400,
                       "render": {
                         "func": "renderDuration",
-                        "params": {
-                          "value": 2400
-                        }
+                        "params": {}
                       }
                     },
                     {
@@ -236,12 +233,9 @@
                   "values": [
                     {
                       "columnId": "capacity",
-                      "value": 720,
                       "render": {
                         "func": "renderDuration",
-                        "params": {
-                          "value": 720
-                        }
+                        "params": {}
                       }
                     },
                     {
@@ -271,12 +265,9 @@
                   "values": [
                     {
                       "columnId": "capacity",
-                      "value": 3120,
                       "render": {
                         "func": "renderDuration",
-                        "params": {
-                          "value": 3120
-                        }
+                        "params": {}
                       }
                     },
                     {
@@ -312,12 +303,9 @@
                   "values": [
                     {
                       "columnId": "capacity",
-                      "value": 0,
                       "render": {
                         "func": "renderDuration",
-                        "params": {
-                          "value": 0
-                        }
+                        "params": {}
                       }
                     },
                     {
@@ -347,12 +335,9 @@
                   "values": [
                     {
                       "columnId": "capacity",
-                      "value": 0,
                       "render": {
                         "func": "renderDuration",
-                        "params": {
-                          "value": 0
-                        }
+                        "params": {}
                       }
                     },
                     {
@@ -382,12 +367,9 @@
                   "values": [
                     {
                       "columnId": "capacity",
-                      "value": 0,
                       "render": {
                         "func": "renderDuration",
-                        "params": {
-                          "value": 0
-                        }
+                        "params": {}
                       }
                     },
                     {
@@ -421,12 +403,9 @@
               "values": [
                 {
                   "columnId": "capacity",
-                  "value": 2400,
                   "render": {
                     "func": "renderDuration",
-                    "params": {
-                      "value": 2400
-                    }
+                    "params": {}
                   }
                 },
                 {
@@ -456,12 +435,9 @@
               "values": [
                 {
                   "columnId": "capacity",
-                  "value": 720,
                   "render": {
                     "func": "renderDuration",
-                    "params": {
-                      "value": 720
-                    }
+                    "params": {}
                   }
                 },
                 {
@@ -491,12 +467,9 @@
               "values": [
                 {
                   "columnId": "capacity",
-                  "value": 3120,
                   "render": {
                     "func": "renderDuration",
-                    "params": {
-                      "value": 3120
-                    }
+                    "params": {}
                   }
                 },
                 {
@@ -670,12 +643,9 @@
                   "values": [
                     {
                       "columnId": "capacity",
-                      "value": 2400,
                       "render": {
                         "func": "renderDuration",
-                        "params": {
-                          "value": 2400
-                        }
+                        "params": {}
                       }
                     },
                     {
@@ -705,12 +675,9 @@
                   "values": [
                     {
                       "columnId": "capacity",
-                      "value": 2400,
                       "render": {
                         "func": "renderDuration",
-                        "params": {
-                          "value": 2400
-                        }
+                        "params": {}
                       }
                     },
                     {
@@ -740,12 +707,9 @@
                   "values": [
                     {
                       "columnId": "capacity",
-                      "value": 4800,
                       "render": {
                         "func": "renderDuration",
-                        "params": {
-                          "value": 4800
-                        }
+                        "params": {}
                       }
                     },
                     {
@@ -779,12 +743,9 @@
               "values": [
                 {
                   "columnId": "capacity",
-                  "value": 2400,
                   "render": {
                     "func": "renderDuration",
-                    "params": {
-                      "value": 2400
-                    }
+                    "params": {}
                   }
                 },
                 {
@@ -814,12 +775,9 @@
               "values": [
                 {
                   "columnId": "capacity",
-                  "value": 2400,
                   "render": {
                     "func": "renderDuration",
-                    "params": {
-                      "value": 2400
-                    }
+                    "params": {}
                   }
                 },
                 {
@@ -849,12 +807,9 @@
               "values": [
                 {
                   "columnId": "capacity",
-                  "value": 4800,
                   "render": {
                     "func": "renderDuration",
-                    "params": {
-                      "value": 4800
-                    }
+                    "params": {}
                   }
                 },
                 {
@@ -903,12 +858,9 @@
                   "values": [
                     {
                       "columnId": "capacity",
-                      "value": 0,
                       "render": {
                         "func": "renderDuration",
-                        "params": {
-                          "value": 0
-                        }
+                        "params": {}
                       }
                     },
                     {
@@ -938,12 +890,9 @@
                   "values": [
                     {
                       "columnId": "capacity",
-                      "value": 0,
                       "render": {
                         "func": "renderDuration",
-                        "params": {
-                          "value": 0
-                        }
+                        "params": {}
                       }
                     },
                     {
@@ -973,12 +922,9 @@
                   "values": [
                     {
                       "columnId": "capacity",
-                      "value": 0,
                       "render": {
                         "func": "renderDuration",
-                        "params": {
-                          "value": 0
-                        }
+                        "params": {}
                       }
                     },
                     {
@@ -1012,12 +958,9 @@
               "values": [
                 {
                   "columnId": "capacity",
-                  "value": 0,
                   "render": {
                     "func": "renderDuration",
-                    "params": {
-                      "value": 0
-                    }
+                    "params": {}
                   }
                 },
                 {
@@ -1047,12 +990,9 @@
               "values": [
                 {
                   "columnId": "capacity",
-                  "value": 0,
                   "render": {
                     "func": "renderDuration",
-                    "params": {
-                      "value": 0
-                    }
+                    "params": {}
                   }
                 },
                 {
@@ -1082,12 +1022,9 @@
               "values": [
                 {
                   "columnId": "capacity",
-                  "value": 0,
                   "render": {
                     "func": "renderDuration",
-                    "params": {
-                      "value": 0
-                    }
+                    "params": {}
                   }
                 },
                 {
@@ -1261,12 +1198,9 @@
                   "values": [
                     {
                       "columnId": "capacity",
-                      "value": 2400,
                       "render": {
                         "func": "renderDuration",
-                        "params": {
-                          "value": 2400
-                        }
+                        "params": {}
                       }
                     },
                     {
@@ -1296,12 +1230,9 @@
                   "values": [
                     {
                       "columnId": "capacity",
-                      "value": 2400,
                       "render": {
                         "func": "renderDuration",
-                        "params": {
-                          "value": 2400
-                        }
+                        "params": {}
                       }
                     },
                     {
@@ -1331,12 +1262,9 @@
                   "values": [
                     {
                       "columnId": "capacity",
-                      "value": 4800,
                       "render": {
                         "func": "renderDuration",
-                        "params": {
-                          "value": 4800
-                        }
+                        "params": {}
                       }
                     },
                     {
@@ -1370,12 +1298,9 @@
               "values": [
                 {
                   "columnId": "capacity",
-                  "value": 2400,
                   "render": {
                     "func": "renderDuration",
-                    "params": {
-                      "value": 2400
-                    }
+                    "params": {}
                   }
                 },
                 {
@@ -1405,12 +1330,9 @@
               "values": [
                 {
                   "columnId": "capacity",
-                  "value": 2400,
                   "render": {
                     "func": "renderDuration",
-                    "params": {
-                      "value": 2400
-                    }
+                    "params": {}
                   }
                 },
                 {
@@ -1440,12 +1362,9 @@
               "values": [
                 {
                   "columnId": "capacity",
-                  "value": 4800,
                   "render": {
                     "func": "renderDuration",
-                    "params": {
-                      "value": 4800
-                    }
+                    "params": {}
                   }
                 },
                 {
