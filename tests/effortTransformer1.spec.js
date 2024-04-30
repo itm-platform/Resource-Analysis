@@ -35,7 +35,7 @@ describe('effortTransformer', () => {
         fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
         expect(result).toEqual(intervalsByUser);
     });
-
+ 
     test('transformToTotalsByEntity', () => {
         const effortTransformer = new EffortTransformer(responseResourceAnalysisTotals);
         const result = effortTransformer.transformToTotals('entity');

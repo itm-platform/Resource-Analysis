@@ -18,7 +18,7 @@ if (!fs.existsSync(resultsDirPath)) {
     fs.mkdirSync(resultsDirPath, { recursive: true });
 }
 
-describe('effortTransformer', () => {
+describe.skip('effortTransformer', () => {
     //const effortTransformer = new EffortTransformer(responseResourceAnalysisFull);
     test('transformToIntervalsByEntity', () => {
         const effortTransformer = new EffortTransformer(responseResourceAnalysisIntervals);

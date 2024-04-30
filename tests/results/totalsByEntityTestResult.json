@@ -19,6 +19,7 @@
     {
       "type": "project",
       "name": "Project name 1",
+      "subType": "waterfall",
       "render": {
         "func": "renderEntityName",
         "params": {
@@ -255,6 +256,7 @@
     {
       "type": "project",
       "name": "Project name 2",
+      "subType": "waterfall",
       "render": {
         "func": "renderEntityName",
         "params": {
