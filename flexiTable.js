@@ -130,6 +130,9 @@ export class FlexiTable {
                 row.classList.add('ftbl-data-row');
                 if (!parentVisible) {
                     row.style.display = 'none';
+                }else {
+                    // Automatically apply the correct class based on level and visibility
+                    this._updateRowClasses(row, true);
                 }
 
                 // First cell for name with toggle/indentation
@@ -185,13 +188,40 @@ export class FlexiTable {
     toggleRow(rowId, toggleCell) {
         const rows = this.table.querySelectorAll(`tr[data-id^="${rowId}-"]`);
         let isAnyVisible = Array.from(rows).some(row => row.style.display !== 'none');
-
+    
+        // Toggle the display state based on whether any child is visible
         rows.forEach(row => {
-            row.style.display = row.style.display === 'none' ? '' : 'none';
+            if (isAnyVisible) {
+                // If any child row is visible, hide all
+                row.style.display = 'none';
+            } else {
+                // If no child rows are visible, show all
+                row.style.display = '';
+            }
         });
-
+    
+        // Update the parent row's class based on the new visibility of children
+        let parentRow = this.table.querySelector(`tr[data-id="${rowId}"]`);
+        if (parentRow) {
+            this._updateRowClasses(parentRow, !isAnyVisible);
+        }
+    
+        // Update toggle icon
         this._updateToggleIcon(toggleCell, !isAnyVisible);
     }
+    
+    
+    
+    _updateRowClasses(row, childrenVisible) {
+        const idParts = row.getAttribute('data-id').split('-');
+        if (idParts.length === 1) { // Level 1 row
+            row.classList.toggle('ftbl-row-level-1-expanded', childrenVisible);
+        } else if (idParts.length === 2) { // Level 2 row
+            row.classList.toggle('ftbl-row-level-2-expanded', childrenVisible);
+        }
+    }
+    
+    
 
     _addToggleIcon(cell, isVisible, rowId) {
         const toggleSpan = document.createElement('span');
