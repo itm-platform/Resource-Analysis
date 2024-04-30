@@ -2,14 +2,14 @@
 import { cacheIconPaths, resolveIconPath, cacheUserImagePaths, pathCache } from './pathResolver.js';
 
 export class FlexiTable {
-    constructor(containerId, dataset, filters = {}) {
+    constructor(containerId, dataset, rowFilters = {}) {
         cacheIconPaths().catch(error => {
             throw new Error("Failed to preload icons:", error);
         });
 
         this.container = document.getElementById(containerId);
         this.dataset = dataset;
-        this.filters = filters || {};
+        this.rowFilters = rowFilters || {};
         
         const uniqueUsers = this._getUniqueUsers(dataset.rows);
         cacheUserImagePaths(uniqueUsers).then(() => {
@@ -36,7 +36,6 @@ export class FlexiTable {
         extract(rows);
         return Object.values(userImages); // Convert the object to an array of user image objects
     }
-    
 
     renderUserName(params) {
         const imagePath = pathCache[params.id];
@@ -67,7 +66,6 @@ export class FlexiTable {
         this.table.appendChild(this.tbody);
         this.renderRows(this.dataset.rows);
     }
-
 
     renderEntityName(params) {
         const imageNameMap = {
@@ -122,92 +120,95 @@ export class FlexiTable {
 
     renderRows(items, parentRowId = '', level = 0, parentVisible = true) {
         items.forEach((item, index) => {
-            if (!this.filters.hasOwnProperty(item.type) || this.filters[item.type]) {
-                const rowId = `${parentRowId}${index}`;
-                const row = this.tbody.insertRow();
-                row.setAttribute('data-id', rowId);
-                row.setAttribute('data-type', item.type);
-                row.classList.add('ftbl-data-row');
-                if (!parentVisible) {
-                    row.style.display = 'none';
-                }else {
-                    // Automatically apply the correct class based on level and visibility
-                    this._updateRowClasses(row, true);
-                }
-
-                // First cell for name with toggle/indentation
-                const nameCell = row.insertCell();
-                if (item.render) {
-                    const renderFunc = this[item.render.func];
-                    if (renderFunc) {
-                        // Directly pass the params object to the render function
-                        nameCell.innerHTML = renderFunc.call(this, item.render.params);
-                    }
-                } else {
-                    // Fallback to direct content if no render function specified
-                    nameCell.innerHTML = item.name || '';
-                }
-                nameCell.style.paddingLeft = `${5+(level * 20)}px`; // Adjust the level of indentation
-                nameCell.classList.add('ftbl-name-cell');
-                if (item.children && item.children.length > 0) {
-                    this._addToggleIcon(nameCell, true, rowId);
-                }
-
-                this.dataset.groups.forEach(group => {
-                    const groupValues = item.values.find(value => value.groupId === group.id);
-                    if (groupValues) {
-                        // Iterate over group values
-                        groupValues.values.forEach((value, index, array) => {
-                            const cell = row.insertCell();
-                            if (value.render) {
-                                const renderFunc = this[value.render.func];
-                                if (renderFunc) {
-                                    // Pass the params object for value rendering
-                                    cell.innerHTML = renderFunc.call(this, value.render.params);
-                                }
-                            } else {
-                                cell.innerHTML = value.value;
-                            }
-                            cell.classList.add('ftbl-value-cell');
-                            // Check if the current cell is the last in the group
-                            if (index === array.length - 1) {
-                                cell.classList.add('ftbl-rightmost-cell-in-group');
-                            }
-                        });
-                    }
-                });
-                
-
+            const isRowNotFilteredOut = !this.rowFilters.hasOwnProperty(item.type) || this.rowFilters[item.type];
+            if (isRowNotFilteredOut) {
+                const { row, rowId } = this._createRow(parentRowId, index, item, parentVisible);
+                this._createFirstNameCell(row, item, level, rowId);
+                this._createValueCells(item, row);
                 if (item.children) {
-                    this.renderRows(item.children, `${rowId}-`, level + 1, parentVisible && this.filters[item.type]);
+                    this.renderRows(item.children, `${rowId}-`, level + 1, parentVisible && this.rowFilters[item.type]);
                 }
             }
         });
     }
 
+    _createValueCells(item, row) {
+        this.dataset.groups.forEach(group => {
+            const groupValues = item.values.find(value => value.groupId === group.id);
+            if (groupValues) {
+                // Iterate over group values
+                groupValues.values.forEach((value, index, array) => {
+                    const cell = row.insertCell();
+                    if (value.render) {
+                        const renderFunc = this[value.render.func];
+                        if (renderFunc) {
+                            // Pass the params object for value rendering
+                            cell.innerHTML = renderFunc.call(this, value.render.params);
+                        }
+                    } else {
+                        cell.innerHTML = value.value;
+                    }
+                    cell.classList.add('ftbl-value-cell');
+                    // Check if the current cell is the last in the group
+                    if (index === array.length - 1) {
+                        cell.classList.add('ftbl-rightmost-cell-in-group');
+                    }
+                });
+            }
+        });
+    }
+
+    _createFirstNameCell(row, item, level, rowId) {
+        const nameCell = row.insertCell();
+        if (item.render) {
+            const renderFunc = this[item.render.func];
+            if (renderFunc) {
+                // Directly pass the params object to the render function
+                nameCell.innerHTML = renderFunc.call(this, item.render.params);
+            }
+        } else {
+            // Fallback to direct content if no render function specified
+            nameCell.innerHTML = item.name || '';
+        }
+        nameCell.style.paddingLeft = `${5 + (level * 20)}px`; // Adjust the level of indentation
+        nameCell.classList.add('ftbl-name-cell');
+        if (item.children && item.children.length > 0) {
+            this._addToggleIcon(nameCell, true, rowId);
+        }
+    }
+
+    _createRow(parentRowId, index, item, parentVisible) {
+        const rowId = `${parentRowId}${index}`;
+        const row = this.tbody.insertRow();
+        row.setAttribute('data-id', rowId);
+        row.setAttribute('data-type', item.type);
+        row.classList.add('ftbl-data-row');
+        if (!parentVisible) {
+            row.style.display = 'none';
+        } else {
+            // Automatically apply the correct class based on level and visibility
+            this._updateRowClasses(row, true);
+        }
+        return { row, rowId };
+    }
+
     toggleRow(rowId, toggleCell) {
-        const rows = this.table.querySelectorAll(`tr[data-id^="${rowId}-"]`);
-        let isAnyVisible = Array.from(rows).some(row => row.style.display !== 'none');
+        const childRows = this.table.querySelectorAll(`tr[data-id^="${rowId}-"]`);
+        let isAnyChildVisible = Array.from(childRows).some(row => row.style.display !== 'none');
     
-        // Toggle the display state based on whether any child is visible
-        rows.forEach(row => {
-            if (isAnyVisible) {
-                // If any child row is visible, hide all
-                row.style.display = 'none';
+        childRows.forEach(childRow => {
+            if (isAnyChildVisible) {
+                childRow.style.display = 'none';
             } else {
-                // If no child rows are visible, show all
-                row.style.display = '';
+                childRow.style.display = '';
             }
         });
     
-        // Update the parent row's class based on the new visibility of children
         let parentRow = this.table.querySelector(`tr[data-id="${rowId}"]`);
         if (parentRow) {
-            this._updateRowClasses(parentRow, !isAnyVisible);
+            this._updateRowClasses(parentRow, !isAnyChildVisible);
         }
-    
-        // Update toggle icon
-        this._updateToggleIcon(toggleCell, !isAnyVisible);
+        this._updateToggleIcon(toggleCell, !isAnyChildVisible);
     }
     
     
@@ -251,7 +252,7 @@ export class FlexiTable {
     }
 
     updateFilters(event) {
-        this.filters = event.detail;
+        this.rowFilters = event.detail;
         this.container.innerHTML = '';
         this.generateTable();
     }
