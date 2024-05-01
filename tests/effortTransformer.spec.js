@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { EffortTransformer } from '../effortTransformer1.js';
+import { EffortTransformer } from '../effortTransformer.js';
 import responseResourceAnalysisIntervals from './dataSamples/responseResourceAnalysisIntervals.js';
 import responseResourceAnalysisTotals from './dataSamples/responseResourceAnalysisTotals.js';
 import intervalsByEntityAndUser from './dataSamples/intervalsByEntityAndUser.json';
@@ -11,7 +11,6 @@ import totalsByUser from './dataSamples/totalsByUser.js';
 import fs from 'fs';
 import path from 'path';
 
-//const earlyJSON=JSON.stringify(responseResourceAnalysis, null, 2); // This will print the data to be validated
 // Define the directory path relative to the current script
 const resultsDirPath = path.join(__dirname, 'results');
 
