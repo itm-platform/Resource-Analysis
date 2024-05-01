@@ -13,7 +13,7 @@ export class FlexiTable {
         this.dataset = dataset;
         this.rowFilters = rowFilters || {};
 
-        const uniqueUsers = this._getUniqueUsers(dataset.rows);
+        const uniqueUsers = this.#getUniqueUsers(dataset.rows);
         cacheUserImagePaths(uniqueUsers).then(() => {
             this.generateTable();
         });
@@ -33,22 +33,22 @@ export class FlexiTable {
         this.renderHeader();
         this.tbody = document.createElement('tbody');
         this.table.appendChild(this.tbody);
-        this.renderRows(this.dataset.rows);
+        this.#renderRows(this.dataset.rows);
     }
-    renderRows(items, parentRowId = '', level = 0, parentVisible = true) {
+    #renderRows(items, parentRowId = '', level = 0, parentVisible = true) {
         items.forEach((item, index) => {
             const isRowNotFilteredOut = !this.rowFilters.hasOwnProperty(item.type) || this.rowFilters[item.type];
             if (isRowNotFilteredOut) {
-                const { row, rowId } = this._createRow(parentRowId, index, item, parentVisible);
-                this._createFirstNameCell(row, item, level, rowId);
-                this._createValueCells(item, row);
+                const { row, rowId } = this.#createRow(parentRowId, index, item, parentVisible);
+                this.#createFirstNameCell(row, item, level, rowId);
+                this.#createValueCells(item, row);
                 if (item.children) {
-                    this.renderRows(item.children, `${rowId}-`, level + 1, parentVisible && this.rowFilters[item.type]);
+                    this.#renderRows(item.children, `${rowId}-`, level + 1, parentVisible && this.rowFilters[item.type]);
                 }
             }
         });
     }
-    _setRowVisibility(selector, isVisible) {
+    #setRowVisibility(selector, isVisible) {
         const rows = this.table.querySelectorAll(selector);
         rows.forEach(row => {
             // Check if the row should be toggled or not based on its `data-id`
@@ -63,30 +63,20 @@ export class FlexiTable {
             }
         });
     }
-    
-
-    _toggleChildRows(rowId, toggleCell) {
+    #toggleChildRows(rowId, toggleCell) {
         const childRows = `tr[data-id^="${rowId}-"]`;
         const isAnyChildVisible = Array.from(this.table.querySelectorAll(childRows)).some(row => row.style.display !== 'none');
 
-        this._setRowVisibility(childRows, !isAnyChildVisible);
+        this.#setRowVisibility(childRows, !isAnyChildVisible);
 
         let parentRow = this.table.querySelector(`tr[data-id="${rowId}"]`);
         if (parentRow) {
-            this._updateRowClasses(parentRow, !isAnyChildVisible);
+            this.#updateRowClasses(parentRow, !isAnyChildVisible);
         }
-        this._updateToggleIcon(toggleCell, !isAnyChildVisible);
+        this.#updateToggleIcon(toggleCell, !isAnyChildVisible);
     }
 
-    _addToggleIcon(cell, isVisible, rowId) {
-        const toggleSpan = document.createElement('span');
-        toggleSpan.innerHTML = isVisible ? this._getDownCaret() : this._getRightCaret();
-        toggleSpan.classList.add('ftbl-caret');
-        toggleSpan.onclick = () => this._toggleChildRows(rowId, toggleSpan);
-        cell.insertBefore(toggleSpan, cell.firstChild);
-    }
-
-    _updateRowClasses(row, childrenVisible) {
+    #updateRowClasses(row, childrenVisible) {
         const idParts = row.getAttribute('data-id').split('-');
         if (idParts.length === 1) { // Level 1 row
             row.classList.toggle('ftbl-row-level-1-expanded', childrenVisible);
@@ -94,7 +84,7 @@ export class FlexiTable {
             row.classList.toggle('ftbl-row-level-2-expanded', childrenVisible);
         }
     }
-    _getUniqueUsers(rows) {
+    #getUniqueUsers(rows) {
         let userImages = {};
         const extract = (rows) => {
             for (const row of rows) {
@@ -144,13 +134,13 @@ export class FlexiTable {
         return params.value ? `${params.value / 60} h.` : '';
     }
     renderHeader() {
-        const { headerRow, header } = this._createHeader();
-        this._addCollapseExpandIconsToHeaderFirstRow(headerRow);
-        this._addGroupHeaders(headerRow);
-        this._addColumnsHeaders(header);
+        const { headerRow, header } = this.#createHeader();
+        this.#addCollapseExpandIconsToHeaderFirstRow(headerRow);
+        this.#addGroupHeaders(headerRow);
+        this.#addColumnsHeaders(header);
     }
     
-    _addColumnsHeaders(header) {
+    #addColumnsHeaders(header) {
         const columnRow = header.insertRow();
         columnRow.classList.add('ftbl-header-row');
         columnRow.insertCell(); // First empty cell for the first column
@@ -164,7 +154,7 @@ export class FlexiTable {
         });
     }
 
-    _addGroupHeaders(headerRow) {
+    #addGroupHeaders(headerRow) {
         this.dataset.groups.forEach(group => {
             const cell = headerRow.insertCell();
             cell.textContent = group.name;
@@ -173,23 +163,23 @@ export class FlexiTable {
         });
     }
 
-    _addCollapseExpandIconsToHeaderFirstRow(headerRow) {
+    #addCollapseExpandIconsToHeaderFirstRow(headerRow) {
         const toggleCell = headerRow.insertCell();
-        toggleCell.innerHTML = `${this._getCaretCollapse()}${this._getCaretExpand()}`;
+        toggleCell.innerHTML = `${this.#getCaretCollapse()}${this.#getCaretExpand()}`;
         toggleCell.classList.add('ftbl-header-toggle-cell');
 
         // Assuming the collapse icon is the first child and expand is the second
         const collapseIcon = toggleCell.children[0];
         const expandIcon = toggleCell.children[1];
 
-        collapseIcon.addEventListener('click', () => this._setRowVisibility('tbody tr', false));
-        expandIcon.addEventListener('click', () => this._setRowVisibility('tbody tr', true));
+        collapseIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', false));
+        expandIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', true));
 
         collapseIcon.classList.add('ftbl-caret-toggle-all');
         expandIcon.classList.add('ftbl-caret-toggle-all');
     }
 
-    _createHeader() {
+    #createHeader() {
         const header = this.table.createTHead();
         header.classList.add('ftbl-header');
         const headerRow = header.insertRow();
@@ -197,7 +187,7 @@ export class FlexiTable {
         return { headerRow, header };
     }
 
-    _createValueCells(item, row) {
+    #createValueCells(item, row) {
         this.dataset.groups.forEach(group => {
             const groupValues = item.values.find(value => value.groupId === group.id);
             if (groupValues) {
@@ -223,7 +213,7 @@ export class FlexiTable {
         });
     }
 
-    _createFirstNameCell(row, item, level, rowId) {
+    #createFirstNameCell(row, item, level, rowId) {
         const nameCell = row.insertCell();
         // Create a div inside the cell for content
         const innerDiv = document.createElement('div');
@@ -244,21 +234,18 @@ export class FlexiTable {
         nameCell.appendChild(innerDiv);
         nameCell.classList.add('ftbl-name-cell');
         if (item.children && item.children.length > 0) {
-            this._addToggleIcon(innerDiv, true, rowId); // Append the toggle icon to innerDiv
+            this.#addToggleIcon(innerDiv, true, rowId); // Append the toggle icon to innerDiv
         }
     }
     
-
- 
-
-    _addToggleIcon(cell, isVisible, rowId) {
+    #addToggleIcon(cell, isVisible, rowId) {
         const toggleSpan = document.createElement('span');
-        toggleSpan.innerHTML = isVisible ? this._getDownCaret() : this._getRightCaret();
+        toggleSpan.innerHTML = isVisible ? this.#getDownCaret() : this.#getRightCaret();
         toggleSpan.classList.add('ftbl-caret');
-        toggleSpan.onclick = () => this._toggleChildRows(rowId, toggleSpan);
+        toggleSpan.onclick = () => this.#toggleChildRows(rowId, toggleSpan);
         cell.insertBefore(toggleSpan, cell.firstChild);
     }
-    _createRow(parentRowId, index, item, parentVisible) {
+    #createRow(parentRowId, index, item, parentVisible) {
         const rowId = `${parentRowId}${index}`;
         const row = this.tbody.insertRow();
         row.setAttribute('data-id', rowId);
@@ -268,26 +255,26 @@ export class FlexiTable {
             row.style.display = 'none';
         } else {
             // Automatically apply the correct class based on level and visibility
-            this._updateRowClasses(row, true);
+            this.#updateRowClasses(row, true);
         }
         return { row, rowId };
     }
 
-    _updateToggleIcon(toggleSpan, isVisible) {
-        toggleSpan.innerHTML = isVisible ? this._getDownCaret() : this._getRightCaret();
+    #updateToggleIcon(toggleSpan, isVisible) {
+        toggleSpan.innerHTML = isVisible ? this.#getDownCaret() : this.#getRightCaret();
     }
 
-    _getDownCaret() {
+    #getDownCaret() {
         return `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" height="14">
             <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"/>
         </svg>`;
     }
 
-    _getRightCaret() {
+    #getRightCaret() {
         return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" height="14"><path d="M246.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6l0 256c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l128-128z"/></svg>`;
     }
-    _getCaretCollapse() {
+    #getCaretCollapse() {
         return `
         <svg xmlns="http://www.w3.org/2000/svg" fill="#000" viewBox="0 0 13 17" height="17">
             <path d="m5.536 7.344c0.5 0.5 1.312 0.5 1.812 0l5.12-5.12c0.368-0.368 0.476-0.916 0.276-1.396-0.2-0.48-0.664-0.792-1.184-0.792l-10.24 0.0040003c-0.516 0-0.984 0.312-1.184 0.792-0.2 0.48-0.088 1.028 0.276 1.396l5.12 5.12 4e-3 -4e-3z"/>
@@ -295,7 +282,7 @@ export class FlexiTable {
         </svg>
         `;
     };
-    _getCaretExpand() {
+    #getCaretExpand() {
         return `
         <svg xmlns="http://www.w3.org/2000/svg" fill="#000" viewBox="0 0 13 17" height="17">     
             <path d="M5.49823 16.308C5.99823 16.808 6.81023 16.808 7.31023 16.308L12.4302 11.188C12.7982 10.82 12.9062 10.272 12.7062 9.792C12.5062 9.312 12.0422 9 11.5222 9L1.28223 9.004C0.766227 9.004 0.298227 9.316 0.0982268 9.796C-0.101773 10.276 0.0102268 10.824 0.374227 11.192L5.49423 16.312L5.49823 16.308Z"/>
