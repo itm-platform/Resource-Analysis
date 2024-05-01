@@ -48,18 +48,19 @@ export class FlexiTable {
             }
         });
     }
-    #setRowVisibility(selector, isVisible) {
+    #setRowVisibility(selector, isVisible, updateClasses = false) {
         const rows = this.table.querySelectorAll(selector);
         rows.forEach(row => {
-            // Check if the row should be toggled or not based on its `data-id`
             if (isVisible) {
-                // If setting to visible, just set it (as all rows match in the general case)
                 row.style.display = '';
             } else {
-                // Only collapse rows that are not first-level (those with a dash in their `data-id`)
                 if (row.dataset.id.includes('-')) {
                     row.style.display = 'none';
                 }
+            }
+            if (updateClasses) {
+                // Updates row classes based on the new visibility state
+                this.#updateRowClasses(row, isVisible);
             }
         });
     }
@@ -171,8 +172,8 @@ export class FlexiTable {
         const collapseIcon = toggleCell.children[0];
         const expandIcon = toggleCell.children[1];
 
-        collapseIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', false));
-        expandIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', true));
+        collapseIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', false, true)); // Updates classes when collapsing all
+        expandIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', true, true)); // Updates classes when expanding all
 
         collapseIcon.classList.add('ftbl-caret-toggle-all');
         expandIcon.classList.add('ftbl-caret-toggle-all');
