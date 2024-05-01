@@ -165,10 +165,9 @@ export class FlexiTable {
 
     #addCollapseExpandIconsToHeaderFirstRow(headerRow) {
         const toggleCell = headerRow.insertCell();
-        toggleCell.innerHTML = `${this.#getCaretCollapse()}${this.#getCaretExpand()}`;
+        toggleCell.innerHTML = `${this.#getCaretCollapseAll()}${this.#getCaretExpandAll()}`;
         toggleCell.classList.add('ftbl-header-toggle-cell');
 
-        // Assuming the collapse icon is the first child and expand is the second
         const collapseIcon = toggleCell.children[0];
         const expandIcon = toggleCell.children[1];
 
@@ -274,7 +273,7 @@ export class FlexiTable {
     #getRightCaret() {
         return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" height="14"><path d="M246.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6l0 256c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l128-128z"/></svg>`;
     }
-    #getCaretCollapse() {
+    #getCaretCollapseAll() {
         return `
         <svg xmlns="http://www.w3.org/2000/svg" fill="#000" viewBox="0 0 13 17" height="17">
             <path d="m5.536 7.344c0.5 0.5 1.312 0.5 1.812 0l5.12-5.12c0.368-0.368 0.476-0.916 0.276-1.396-0.2-0.48-0.664-0.792-1.184-0.792l-10.24 0.0040003c-0.516 0-0.984 0.312-1.184 0.792-0.2 0.48-0.088 1.028 0.276 1.396l5.12 5.12 4e-3 -4e-3z"/>
@@ -282,7 +281,7 @@ export class FlexiTable {
         </svg>
         `;
     };
-    #getCaretExpand() {
+    #getCaretExpandAll() {
         return `
         <svg xmlns="http://www.w3.org/2000/svg" fill="#000" viewBox="0 0 13 17" height="17">     
             <path d="M5.49823 16.308C5.99823 16.808 6.81023 16.808 7.31023 16.308L12.4302 11.188C12.7982 10.82 12.9062 10.272 12.7062 9.792C12.5062 9.312 12.0422 9 11.5222 9L1.28223 9.004C0.766227 9.004 0.298227 9.316 0.0982268 9.796C-0.101773 10.276 0.0102268 10.824 0.374227 11.192L5.49423 16.312L5.49823 16.308Z"/>
