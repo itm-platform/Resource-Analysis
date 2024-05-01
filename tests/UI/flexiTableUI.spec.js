@@ -13,10 +13,10 @@ describe('UI Tests for flexiTable', async () => {
     `;
 
         // Initialize the components as done in the application
-        const flexiTable = new FlexiTable('tableContainer', data);
         const filterManager = new FilterManager('filtersDiv', {
             project: true, workItem: true, user: true
         });
+        const flexiTable = new FlexiTable('tableContainer', data, filterManager.getFilters());
         await new Promise(r => setTimeout(r, 100)); // Wait 100ms for the DOM to update
     });
 
@@ -83,76 +83,74 @@ describe('UI Tests for flexiTable', async () => {
     });
 
 });
-// tests/UI/flexiTableUI.spec.js
-import { describe, test, expect, beforeEach } from 'vitest';
-import { FlexiTable } from '../../flexiTable.js';
-import data from '../dataSamples/intervalsByEntityAndWorkItem.json';
 
-describe('UI Tests for flexiTable', async () => {
-    let flexiTable;
-
+describe('Row Interaction Tests', async () => {
     beforeEach(async () => {
+        // Setup the initial HTML structure
         document.body.innerHTML = `
+      <div id="filtersDiv"></div>
       <div id="tableContainer" style="width: 80%;"></div>
     `;
 
-        flexiTable = new FlexiTable('tableContainer', data);
-        await new Promise(r => setTimeout(r, 100)); // Wait for DOM updates after initialization
+        // Initialize the components as done in the application
+        const filterManager = new FilterManager('filtersDiv', {
+            project: true, workItem: true, user: true
+        });
+        const flexiTable = new FlexiTable('tableContainer', data, filterManager.getFilters());
+        await new Promise(r => setTimeout(r, 100)); // Wait 100ms for the DOM to update
     });
 
-    // Existing tests...
+    test('Clicking on a row toggles its expanded/collapsed state', async () => {
+        await new Promise(r => setTimeout(r, 100)); // Wait 100ms for the DOM to update
 
-    describe('Row Interaction Tests', () => {
-        test('Clicking on a row toggles its expanded/collapsed state', () => {
-            const firstRowToggle = document.querySelector('.ftbl-caret');
-            expect(firstRowToggle).toBeTruthy();
-            const rowId = firstRowToggle.closest('tr').dataset.id;
+        const firstRowToggle = document.querySelector('.ftbl-caret');
+        expect(firstRowToggle).toBeTruthy();
+        const rowId = firstRowToggle.closest('tr').dataset.id;
 
-            const collapseAll = document.getElementById('collapseAll');
-            collapseAll.dispatchEvent(new Event('click'));
+        const collapseAll = document.getElementById('collapseAll');
+        collapseAll.dispatchEvent(new Event('click'));
 
-            // Expand the first row
-            firstRowToggle.click();
-            let row = document.querySelector(`tr[data-id="${rowId}"]`);
-            console.log(row.getAttribute('data-id'));
-            expect(row.classList.contains('ftbl-row-level-1-expanded')).toBe(true);
+        // Expand the first row
+        firstRowToggle.click();
+        let row = document.querySelector(`tr[data-id="${rowId}"]`);
+        console.log(row.getAttribute('data-id'));
+        expect(row.classList.contains('ftbl-row-level-1-expanded')).toBe(true);
 
-            // Click again to collapse
-            firstRowToggle.click();
-            row = document.querySelector(`tr[data-id="${rowId}"]`);
-            expect(row.classList.contains('ftbl-row-level-1-expanded')).toBe(false);
-        });
-
-        test('Collapse all sets all rows to collapsed state and updates classes', () => {
-            const collapseAll = document.getElementById('collapseAll');
-            collapseAll.dispatchEvent(new Event('click')); // Manually dispatch the click event
-
-            const allRows = document.querySelectorAll('tbody tr');
-            allRows.forEach(row => {
-                const isNotFirstRow = row.getAttribute('data-id').length > 1;
-                if (isNotFirstRow) {
-                    expect(row.style.display).toBe('none');
-                    expect(row.classList.contains('ftbl-row-level-1-expanded')).toBe(false);
-                }
-            });
-        });
-
-        test('Expand all sets all rows to visible state and updates classes', () => {
-            const expandAll = document.getElementById('expandAll');
-            expandAll.dispatchEvent(new Event('click')); // Manually dispatch the click event
-
-            const allRows = document.querySelectorAll('tbody tr');
-            allRows.forEach(row => {
-                expect(row.style.display).toBe('');
-                const isFirstRow = row.getAttribute('data-id').length == 1;
-                if (row.querySelector('.ftbl-caret') && isFirstRow) {
-                    expect(row.classList.contains('ftbl-row-level-1-expanded')).toBe(true);
-                }
-            });
-        });
-
-
+        // Click again to collapse
+        firstRowToggle.click();
+        row = document.querySelector(`tr[data-id="${rowId}"]`);
+        expect(row.classList.contains('ftbl-row-level-1-expanded')).toBe(false);
     });
+
+    test('Collapse all sets all rows to collapsed state and updates classes', () => {
+        const collapseAll = document.getElementById('collapseAll');
+        collapseAll.dispatchEvent(new Event('click')); // Manually dispatch the click event
+
+        const allRows = document.querySelectorAll('tbody tr');
+        allRows.forEach(row => {
+            const isNotFirstRow = row.getAttribute('data-id').length > 1;
+            if (isNotFirstRow) {
+                expect(row.style.display).toBe('none');
+                expect(row.classList.contains('ftbl-row-level-1-expanded')).toBe(false);
+            }
+        });
+    });
+
+    test('Expand all sets all rows to visible state and updates classes', () => {
+        const expandAll = document.getElementById('expandAll');
+        expandAll.dispatchEvent(new Event('click')); // Manually dispatch the click event
+
+        const allRows = document.querySelectorAll('tbody tr');
+        allRows.forEach(row => {
+            expect(row.style.display).toBe('');
+            const isFirstRow = row.getAttribute('data-id').length == 1;
+            if (row.querySelector('.ftbl-caret') && isFirstRow) {
+                expect(row.classList.contains('ftbl-row-level-1-expanded')).toBe(true);
+            }
+        });
+    });
+
+
 });
 
 describe('Interaction Tests for FlexiTable Filters', () => {
@@ -164,10 +162,10 @@ describe('Interaction Tests for FlexiTable Filters', () => {
       `;
 
         // Initialize components
-        new FlexiTable('tableContainer', data);
-        new FilterManager('filtersDiv', {
+        const filterManager = new FilterManager('filtersDiv', {
             project: true, workItem: true, user: true
         });
+        const flexiTable = new FlexiTable('tableContainer', data, filterManager.getFilters());
     });
 
     test('Check that users are initially present in the table', async () => {
