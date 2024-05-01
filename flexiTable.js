@@ -168,16 +168,19 @@ export class FlexiTable {
         const toggleCell = headerRow.insertCell();
         toggleCell.innerHTML = `${this.#getCaretCollapseAll()}${this.#getCaretExpandAll()}`;
         toggleCell.classList.add('ftbl-header-toggle-cell');
-
+    
         const collapseIcon = toggleCell.children[0];
         const expandIcon = toggleCell.children[1];
-
+    
         collapseIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', false, true)); // Updates classes when collapsing all
         expandIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', true, true)); // Updates classes when expanding all
-
+    
         collapseIcon.classList.add('ftbl-caret-toggle-all');
+        collapseIcon.id = 'collapseAll';  // Assign an ID to the collapse icon
         expandIcon.classList.add('ftbl-caret-toggle-all');
+        expandIcon.id = 'expandAll';  // Assign an ID to the expand icon
     }
+    
 
     #createHeader() {
         const header = this.table.createTHead();
