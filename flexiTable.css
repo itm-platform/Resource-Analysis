@@ -2,6 +2,7 @@
 :root {
     --ftbl-border-color: #ccc;
     --ftbl-border-width: 1px;  
+    --ftbl-row-height: 2.3em; 
 }
 
 .ftbl-table-wrapper {
@@ -54,14 +55,26 @@
 }
 
 .ftbl-name-cell {
+    display: flex;
+    align-items: center;
     text-align: left; 
+    height:var(--ftbl-row-height);
     width: 15em; /* Specific width for the first column/cell */
     border-right: solid var(--ftbl-border-width) var(--ftbl-border-color);
-
 }
 
+.ftbl-inner-content {
+    display: flex;
+    align-items: center;
+    flex: 1; /* Take available space */
+    padding-left: 5px; /* Default padding */
+}
+
+
+
+
 .ftbl-data-row {
-   height:2.3em;
+   height: var(--ftbl-row-height);
 }
 
 .ftbl-caret {
@@ -69,6 +82,7 @@
     fill: #555;
     cursor: pointer; /* Optional: adds a pointer cursor on hover */
     margin-right: 5px;
+    flex-shrink: 0;
 }
 
 .ftbl-caret:hover {

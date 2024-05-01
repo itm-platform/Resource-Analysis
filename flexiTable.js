@@ -225,23 +225,39 @@ export class FlexiTable {
 
     _createFirstNameCell(row, item, level, rowId) {
         const nameCell = row.insertCell();
+        // Create a div inside the cell for content
+        const innerDiv = document.createElement('div');
+        innerDiv.className = 'ftbl-inner-content';
+        innerDiv.style.paddingLeft = `${5 + (level * 20)}px`; // Adjust the level of indentation here
+    
         if (item.render) {
             const renderFunc = this[item.render.func];
             if (renderFunc) {
                 // Directly pass the params object to the render function
-                nameCell.innerHTML = renderFunc.call(this, item.render.params);
+                innerDiv.innerHTML = renderFunc.call(this, item.render.params);
             }
-        } else {
+        } else { 
             // Fallback to direct content if no render function specified
-            nameCell.innerHTML = item.name || '';
+            innerDiv.innerHTML = item.name || '';
         }
-        nameCell.style.paddingLeft = `${5 + (level * 20)}px`; // Adjust the level of indentation
+    
+        nameCell.appendChild(innerDiv);
         nameCell.classList.add('ftbl-name-cell');
         if (item.children && item.children.length > 0) {
-            this._addToggleIcon(nameCell, true, rowId);
+            this._addToggleIcon(innerDiv, true, rowId); // Append the toggle icon to innerDiv
         }
     }
+    
 
+ 
+
+    _addToggleIcon(cell, isVisible, rowId) {
+        const toggleSpan = document.createElement('span');
+        toggleSpan.innerHTML = isVisible ? this._getDownCaret() : this._getRightCaret();
+        toggleSpan.classList.add('ftbl-caret');
+        toggleSpan.onclick = () => this._toggleChildRows(rowId, toggleSpan);
+        cell.insertBefore(toggleSpan, cell.firstChild);
+    }
     _createRow(parentRowId, index, item, parentVisible) {
         const rowId = `${parentRowId}${index}`;
         const row = this.tbody.insertRow();
@@ -255,14 +271,6 @@ export class FlexiTable {
             this._updateRowClasses(row, true);
         }
         return { row, rowId };
-    }
-
-    _addToggleIcon(cell, isVisible, rowId) {
-        const toggleSpan = document.createElement('span');
-        toggleSpan.innerHTML = isVisible ? this._getDownCaret() : this._getRightCaret();
-        toggleSpan.classList.add('ftbl-caret');
-        toggleSpan.onclick = () => this._toggleChildRows(rowId, toggleSpan);
-        cell.insertBefore(toggleSpan, cell.firstChild);
     }
 
     _updateToggleIcon(toggleSpan, isVisible) {
