@@ -11,7 +11,6 @@
 
 .ftbl-table {
     border: solid var(--ftbl-border-width) var(--ftbl-border-color);
-    width: 100%;
     border-collapse: collapse;
 }
 
@@ -47,7 +46,7 @@
 .ftbl-value-cell {
     text-align: right;
     padding-right: 7px;
-    width: 4em; /* Default width for most cells */
+    width: 4.5em; /* Default width for most cells */
 }
 
 .ftbl-rightmost-cell-in-group {

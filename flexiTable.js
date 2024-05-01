@@ -1,8 +1,8 @@
 // flexiTable.js
 import { cacheIconPaths, resolveIconPath, cacheUserImagePaths, pathCache } from './pathResolver.js';
-// LEFT OFF: Add expand / collapse all 
-// base the toggling on events rather than direct DOM manipulation
-// Expand one level at a time?
+// TODO - A - translations
+// TODO - A - Render hours with minutes
+// TODO - B- Export
 export class FlexiTable {
     constructor(containerId, dataset, rowFilters = {}) {
         cacheIconPaths().catch(error => {
