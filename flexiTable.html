@@ -88,14 +88,17 @@
 
             tableContainer.innerHTML = ''; // Clear previous table contents
 
-            flexiTable = new FlexiTable('tableContainer', data); // Re-create the flexiTable instance here
+
+            document.getElementById('filtersDiv').innerHTML = '';
+            filterManager = new FilterManager('filtersDiv', {
+                project: true, workItem: false, user: true
+            });
+            console.log(filterManager.getFilters());
+
+            flexiTable = new FlexiTable('tableContainer', data, filterManager.getFilters()); 
             
             window.flexiTable = flexiTable; // Assign to window object to access from outside. 
              
-            document.getElementById('filtersDiv').innerHTML = '';
-            filterManager = new FilterManager('filtersDiv', {
-                project: true, workItem: true, user: true
-            });
         }
     </script>
 

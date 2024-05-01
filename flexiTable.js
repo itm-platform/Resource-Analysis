@@ -36,6 +36,7 @@ export class FlexiTable {
         this.#renderRows(this.dataset.rows);
     }
     #renderRows(items, parentRowId = '', level = 0, parentVisible = true) {
+        console.log(`filtering rows: ${JSON.stringify(this.rowFilters)}`);
         items.forEach((item, index) => {
             const isRowNotFilteredOut = !this.rowFilters.hasOwnProperty(item.type) || this.rowFilters[item.type];
             if (isRowNotFilteredOut) {

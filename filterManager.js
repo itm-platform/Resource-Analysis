@@ -25,6 +25,10 @@ export class FilterManager {
         this.targetDiv.appendChild(filterContainer);
     }
 
+    getFilters() {
+        return this.filters;
+    }
+
     updateFilter(type, value) {
         this.filters[type] = value;
         document.dispatchEvent(new CustomEvent('filtersUpdated', { detail: this.filters }));
