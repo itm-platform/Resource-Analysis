@@ -18,9 +18,11 @@
 <body>
     <!-- Dropdown for selecting the data method -->
     <select id="dataFileSelector">
-        <option value="intervalsByEntity">Intervals by Entity</option>
+        <option value="intervalsByEntityAndWorkItem">Intervals by Entity and WorkItem</option>
+        <option value="intervalsByEntityAndUser">Intervals by Entity and User</option>
         <option value="intervalsByUser">Intervals by User</option>
-        <option value="totalsByEntity">Totals by Entity</option>
+        <option value="totalsByEntityAndWorkItem">Totals by Entity and WorkItem</option>
+        <option value="totalsByEntityAndUser">Totals by Entity and User</option>
         <option value="totalsByUser">Totals by User</option>
     </select>
     <button id="refreshDataButton">Refresh Data</button>
@@ -37,7 +39,7 @@
         const tableContainer = document.getElementById('tableContainer');
         let effortTransformer;
 
-        const defaultDataMethod = 'transformToIntervalsByEntity';
+        const defaultDataMethod = 'intervalsByEntityAndWorkItem';
         dataFileSelector.value = localStorage.getItem('selectedDataMethod') || defaultDataMethod;
 
         let flexiTable; 
@@ -64,17 +66,23 @@
 
             let data;
             switch (selectedMethod) {
-                case 'intervalsByEntity':
-                    data = effortTransformer.transformToIntervalsByEntity();
+                case 'intervalsByEntityAndWorkItem':
+                    data = effortTransformer.transformToIntervals('entity', 'workItem');;
+                    break;
+                case 'intervalsByEntityAndUser':
+                    data = effortTransformer.transformToIntervals('entity', 'user');
                     break;
                 case 'intervalsByUser':
-                    data = effortTransformer.transformToIntervalsByUser();
+                    data = effortTransformer.transformToIntervals('user');
                     break;
-                case 'totalsByEntity':
-                    data = effortTransformer.transformToTotalsByEntity();
+                case 'totalsByEntityAndWorkItem':
+                    data = effortTransformer.transformToTotals('entity', 'workItem');
+                    break;
+                case 'totalsByEntityAndUser':
+                    data = effortTransformer.transformToTotals('entity', 'user');
                     break;
                 case 'totalsByUser':
-                    data = effortTransformer.transformToTotalsByUser();
+                    data = effortTransformer.transformToTotals('user');
                     break;
             }
 
@@ -83,7 +91,7 @@
             flexiTable = new FlexiTable('tableContainer', data); // Re-create the flexiTable instance here
             
             window.flexiTable = flexiTable; // Assign to window object to access from outside. 
-            
+             
             document.getElementById('filtersDiv').innerHTML = '';
             filterManager = new FilterManager('filtersDiv', {
                 project: true, workItem: true, user: true
