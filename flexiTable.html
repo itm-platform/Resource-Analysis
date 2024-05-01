@@ -91,9 +91,8 @@
 
             document.getElementById('filtersDiv').innerHTML = '';
             filterManager = new FilterManager('filtersDiv', {
-                project: true, workItem: false, user: true
+                project: true, workItem: true, user: true
             });
-            console.log(filterManager.getFilters());
 
             flexiTable = new FlexiTable('tableContainer', data, filterManager.getFilters()); 
             

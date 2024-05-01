@@ -34,9 +34,9 @@ export class FlexiTable {
         this.tbody = document.createElement('tbody');
         this.table.appendChild(this.tbody);
         this.#renderRows(this.dataset.rows);
+        this.#updateAllRowClasses();
     }
     #renderRows(items, parentRowId = '', level = 0, parentVisible = true) {
-        console.log(`filtering rows: ${JSON.stringify(this.rowFilters)}`);
         items.forEach((item, index) => {
             const isRowNotFilteredOut = !this.rowFilters.hasOwnProperty(item.type) || this.rowFilters[item.type];
             if (isRowNotFilteredOut) {
@@ -49,6 +49,7 @@ export class FlexiTable {
             }
         });
     }
+ 
     #setRowVisibility(selector, isVisible, updateClasses = false) {
         const rows = this.table.querySelectorAll(selector);
         rows.forEach(row => {
@@ -78,6 +79,19 @@ export class FlexiTable {
         this.#updateToggleIcon(toggleCell, !isAnyChildVisible);
     }
 
+    #areChildrenVisible(rowId) {
+        const childRows = `tr[data-id^="${rowId}-"]`;
+        return Array.from(this.table.querySelectorAll(childRows)).some(row => row.style.display !== 'none');
+    }
+
+    #updateAllRowClasses() {
+        const rows = this.table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            const childrenVisible = this.#areChildrenVisible(row.getAttribute('data-id'));
+            this.#updateRowClasses(row, childrenVisible);
+        });
+    }
+
     #updateRowClasses(row, childrenVisible) {
         const idParts = row.getAttribute('data-id').split('-');
         if (idParts.length === 1) { // Level 1 row
@@ -86,6 +100,7 @@ export class FlexiTable {
             row.classList.toggle('ftbl-row-level-2-expanded', childrenVisible);
         }
     }
+
     #getUniqueUsers(rows) {
         let userImages = {};
         const extract = (rows) => {
@@ -237,11 +252,19 @@ export class FlexiTable {
     
         nameCell.appendChild(innerDiv);
         nameCell.classList.add('ftbl-name-cell');
-        if (item.children && item.children.length > 0) {
+        if (item.children && item.children.length > 0 && !this.#areChildrenFilteredOut(item.type)) {
             this.#addToggleIcon(innerDiv, true, rowId); // Append the toggle icon to innerDiv
         }
     }
-    
+    #areChildrenFilteredOut(itemType) {
+        const nextKey=(object, key) =>{
+            const keys = Object.keys(object);
+            const index = keys.indexOf(key);
+            return index >= 0 && index < keys.length - 1 ? keys[index + 1] : undefined;
+        }
+        const nextFilter = nextKey(this.rowFilters,itemType);
+        return !this.rowFilters.hasOwnProperty(nextFilter) || !this.rowFilters[nextFilter];
+    }
     #addToggleIcon(cell, isVisible, rowId) {
         const toggleSpan = document.createElement('span');
         toggleSpan.innerHTML = isVisible ? this.#getDownCaret() : this.#getRightCaret();
@@ -304,6 +327,7 @@ export class FlexiTable {
         this.rowFilters = event.detail;
         this.container.innerHTML = '';
         this.generateTable();
+        
     }
 
 }
