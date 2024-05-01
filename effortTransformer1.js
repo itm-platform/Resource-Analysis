@@ -36,46 +36,101 @@ export class EffortTransformer {
         });
         return rows;
     }
-    #transformByEntity(intervalsOrTotals) {
+    #transformByEntity(intervalsOrTotals, groupEntityBy = 'workItem') {
         const isIntervals = intervalsOrTotals === 'intervals';
-
+    
         const buildEntityRows = this.data.Entities.map(entity => {
-            const workItems = entity.WorkItems.map(workItem => {
-                const userRows = workItem.AssignedEfforts.map(effort => {
-                    const user = this.#getUserById(effort.UserId);
-                    const values = isIntervals ? this.#buildIntervalValues(effort.Intervals) :
-                        [{
-                            groupId: 1,
-                            values: [
-                                { columnId: "estimated", value: effort.TotalUserWorkItemEffort.EstimatedEffort, render: { func: "renderDuration", params: { value: effort.TotalUserWorkItemEffort.EstimatedEffort } } },
-                                { columnId: "actual", value: effort.TotalUserWorkItemEffort.AcceptedEffort, render: { func: "renderDuration", params: { value: effort.TotalUserWorkItemEffort.AcceptedEffort } } }
-                            ]
-                        }];
-                    return this.#createUserRow(user, { values });
-                });
-
-                const workItemValues = this.#aggregateWorkItemValues(userRows);
-                return {
-                    type: "workItem",
-                    name: workItem.Name,
-                    values: workItemValues,
-                    children: userRows
-                };
-            });
-
-            const entityValues = this.#aggregateEntityValues(workItems);
-            return {
-                type: entity.EntityType,
-                name: entity.Name,
-                subType: entity.EntitySubType,
-                render: this.#renderEntity(entity),
-                values: entityValues,
-                children: workItems
-            };
+            if (groupEntityBy === 'workItem') {
+                return this.#groupEntityByWorkItem(entity, isIntervals);
+            } else if (groupEntityBy === 'user') {
+                return this.#groupEntityByUser(entity, isIntervals);
+            } else {
+                throw new Error('Invalid groupEntityBy value. Use "workItem" or "user".');
+            }
         });
-
+    
         return buildEntityRows;
     }
+    #groupEntityByWorkItem(entity, isIntervals) {
+        const workItems = entity.WorkItems.map(workItem => {
+            const userRows = workItem.AssignedEfforts.map(effort => {
+                const user = this.#getUserById(effort.UserId);
+                const values = isIntervals ? this.#buildIntervalValues(effort.Intervals) : [{
+                    groupId: 1,
+                    values: [
+                        { columnId: "estimated", value: effort.TotalUserWorkItemEffort.EstimatedEffort, render: { func: "renderDuration", params: { value: effort.TotalUserWorkItemEffort.EstimatedEffort } } },
+                        { columnId: "actual", value: effort.TotalUserWorkItemEffort.AcceptedEffort, render: { func: "renderDuration", params: { value: effort.TotalUserWorkItemEffort.AcceptedEffort } } }
+                    ]
+                }];
+                return this.#createUserRow(user, { values });
+            });
+    
+            const workItemValues = this.#aggregateWorkItemValues(userRows);
+            return {
+                type: "workItem",
+                name: workItem.Name,
+                values: workItemValues,
+                children: userRows
+            };
+        });
+    
+        const entityValues = this.#aggregateEntityValues(workItems);
+        return {
+            type: entity.EntityType,
+            name: entity.Name,
+            subType: entity.EntitySubType,
+            render: this.#renderEntity(entity),
+            values: entityValues,
+            children: workItems
+        };
+    }
+    #groupEntityByUser(entity, isIntervals) {
+        let userMap = new Map();
+    
+        entity.WorkItems.forEach(workItem => {
+            workItem.AssignedEfforts.forEach(effort => {
+                const user = this.#getUserById(effort.UserId);
+                if (!userMap.has(user.Id)) {
+                    userMap.set(user.Id, {
+                        user: user,
+                        workItems: []
+                    });
+                }
+                const values = isIntervals ? this.#buildIntervalValues(effort.Intervals) :
+                    [{
+                        groupId: 1,
+                        values: [
+                            { columnId: "estimated", value: effort.TotalUserWorkItemEffort.EstimatedEffort, render: { func: "renderDuration", params: { value: effort.TotalUserWorkItemEffort.EstimatedEffort } } },
+                            { columnId: "actual", value: effort.TotalUserWorkItemEffort.AcceptedEffort, render: { func: "renderDuration", params: { value: effort.TotalUserWorkItemEffort.AcceptedEffort } } }
+                        ]
+                    }];
+                userMap.get(user.Id).workItems.push({
+                    type: "workItem",
+                    name: workItem.Name,
+                    values: values
+                });
+            });
+        });
+    
+        const userRows = Array.from(userMap.values()).map(({ user, workItems }) => {
+            const userValues = this.#aggregateWorkItemValues(workItems); // This method needs to be adapted to handle single user aggregation
+            return this.#createUserRow(user, {
+                values: userValues,
+                children: workItems
+            });
+        });
+    
+        return {
+            type: entity.EntityType,
+            name: entity.Name,
+            subType: entity.EntitySubType,
+            render: this.#renderEntity(entity),
+            values: this.#aggregateEntityValues(userRows), // Adapted to handle user aggregation
+            children: userRows
+        };
+    }
+    
+    
 
     #transformIntervalsByUser() {
         const buildUserRowsWithEntities = () => this.data.Users.map(user => {

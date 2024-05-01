@@ -47,7 +47,7 @@ describe('effortTransformer', () => {
     test('transformToTotalsByEntity and workItem', () => {
         const effortTransformer = new EffortTransformer(responseResourceAnalysisTotals);
         const result = effortTransformer.transformToTotals('entity');
-        const filePath = path.join(resultsDirPath, 'totalsByEntityTestResult.json');
+        const filePath = path.join(resultsDirPath, 'totalsByEntityAndWorkItemTestResult.json');
         fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
         expect(result).toEqual(totalsByEntity);
     });

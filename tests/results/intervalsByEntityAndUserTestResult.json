@@ -135,29 +135,41 @@
       ],
       "children": [
         {
-          "type": "workItem",
-          "name": "Task name 1",
+          "type": "user",
+          "id": "user1",
+          "name": "User name 1",
+          "imageUrl": "UploadData/PHOTO/16by16_30168.jpg",
+          "categoryId": "category1",
+          "render": {
+            "func": "renderUserName",
+            "params": {
+              "id": "user1",
+              "name": "User name 1",
+              "imageUrl": "UploadData/PHOTO/16by16_30168.jpg",
+              "categoryId": "category1"
+            }
+          },
           "values": [
             {
               "groupId": 1,
               "values": [
                 {
                   "columnId": "estimated",
-                  "value": 1320,
+                  "value": 1800,
                   "render": {
                     "func": "renderDuration",
                     "params": {
-                      "value": 1320
+                      "value": 1800
                     }
                   }
                 },
                 {
                   "columnId": "actual",
-                  "value": 1320,
+                  "value": 1260,
                   "render": {
                     "func": "renderDuration",
                     "params": {
-                      "value": 1320
+                      "value": 1260
                     }
                   }
                 }
@@ -168,21 +180,21 @@
               "values": [
                 {
                   "columnId": "estimated",
-                  "value": 1320,
+                  "value": 1800,
                   "render": {
                     "func": "renderDuration",
                     "params": {
-                      "value": 1320
+                      "value": 1800
                     }
                   }
                 },
                 {
                   "columnId": "actual",
-                  "value": 1320,
+                  "value": 1260,
                   "render": {
                     "func": "renderDuration",
                     "params": {
-                      "value": 1320
+                      "value": 1260
                     }
                   }
                 }
@@ -193,21 +205,21 @@
               "values": [
                 {
                   "columnId": "estimated",
-                  "value": 2640,
+                  "value": 3600,
                   "render": {
                     "func": "renderDuration",
                     "params": {
-                      "value": 2640
+                      "value": 3600
                     }
                   }
                 },
                 {
                   "columnId": "actual",
-                  "value": 2640,
+                  "value": 2520,
                   "render": {
                     "func": "renderDuration",
                     "params": {
-                      "value": 2640
+                      "value": 2520
                     }
                   }
                 }
@@ -216,20 +228,8 @@
           ],
           "children": [
             {
-              "type": "user",
-              "id": "user1",
-              "name": "User name 1",
-              "imageUrl": "UploadData/PHOTO/16by16_30168.jpg",
-              "categoryId": "category1",
-              "render": {
-                "func": "renderUserName",
-                "params": {
-                  "id": "user1",
-                  "name": "User name 1",
-                  "imageUrl": "UploadData/PHOTO/16by16_30168.jpg",
-                  "categoryId": "category1"
-                }
-              },
+              "type": "workItem",
+              "name": "Task name 1",
               "values": [
                 {
                   "groupId": 1,
@@ -309,196 +309,8 @@
               ]
             },
             {
-              "type": "user",
-              "id": "user2",
-              "name": "User name 2",
-              "imageUrl": "UploadData/PHOTO/16by16_30169.jpg",
-              "categoryId": "category1",
-              "render": {
-                "func": "renderUserName",
-                "params": {
-                  "id": "user2",
-                  "name": "User name 2",
-                  "imageUrl": "UploadData/PHOTO/16by16_30169.jpg",
-                  "categoryId": "category1"
-                }
-              },
-              "values": [
-                {
-                  "groupId": 1,
-                  "values": [
-                    {
-                      "columnId": "estimated",
-                      "value": 720,
-                      "render": {
-                        "func": "renderDuration",
-                        "params": {
-                          "value": 720
-                        }
-                      }
-                    },
-                    {
-                      "columnId": "actual",
-                      "value": 780,
-                      "render": {
-                        "func": "renderDuration",
-                        "params": {
-                          "value": 780
-                        }
-                      }
-                    }
-                  ]
-                },
-                {
-                  "groupId": 2,
-                  "values": [
-                    {
-                      "columnId": "estimated",
-                      "value": 720,
-                      "render": {
-                        "func": "renderDuration",
-                        "params": {
-                          "value": 720
-                        }
-                      }
-                    },
-                    {
-                      "columnId": "actual",
-                      "value": 780,
-                      "render": {
-                        "func": "renderDuration",
-                        "params": {
-                          "value": 780
-                        }
-                      }
-                    }
-                  ]
-                },
-                {
-                  "groupId": 3,
-                  "values": [
-                    {
-                      "columnId": "estimated",
-                      "value": 1440,
-                      "render": {
-                        "func": "renderDuration",
-                        "params": {
-                          "value": 1440
-                        }
-                      }
-                    },
-                    {
-                      "columnId": "actual",
-                      "value": 1560,
-                      "render": {
-                        "func": "renderDuration",
-                        "params": {
-                          "value": 1560
-                        }
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "workItem",
-          "name": "Task name 2",
-          "values": [
-            {
-              "groupId": 1,
-              "values": [
-                {
-                  "columnId": "estimated",
-                  "value": 1200,
-                  "render": {
-                    "func": "renderDuration",
-                    "params": {
-                      "value": 1200
-                    }
-                  }
-                },
-                {
-                  "columnId": "actual",
-                  "value": 720,
-                  "render": {
-                    "func": "renderDuration",
-                    "params": {
-                      "value": 720
-                    }
-                  }
-                }
-              ]
-            },
-            {
-              "groupId": 2,
-              "values": [
-                {
-                  "columnId": "estimated",
-                  "value": 1200,
-                  "render": {
-                    "func": "renderDuration",
-                    "params": {
-                      "value": 1200
-                    }
-                  }
-                },
-                {
-                  "columnId": "actual",
-                  "value": 720,
-                  "render": {
-                    "func": "renderDuration",
-                    "params": {
-                      "value": 720
-                    }
-                  }
-                }
-              ]
-            },
-            {
-              "groupId": 3,
-              "values": [
-                {
-                  "columnId": "estimated",
-                  "value": 2400,
-                  "render": {
-                    "func": "renderDuration",
-                    "params": {
-                      "value": 2400
-                    }
-                  }
-                },
-                {
-                  "columnId": "actual",
-                  "value": 1440,
-                  "render": {
-                    "func": "renderDuration",
-                    "params": {
-                      "value": 1440
-                    }
-                  }
-                }
-              ]
-            }
-          ],
-          "children": [
-            {
-              "type": "user",
-              "id": "user1",
-              "name": "User name 1",
-              "imageUrl": "UploadData/PHOTO/16by16_30168.jpg",
-              "categoryId": "category1",
-              "render": {
-                "func": "renderUserName",
-                "params": {
-                  "id": "user1",
-                  "name": "User name 1",
-                  "imageUrl": "UploadData/PHOTO/16by16_30168.jpg",
-                  "categoryId": "category1"
-                }
-              },
+              "type": "workItem",
+              "name": "Task name 2",
               "values": [
                 {
                   "groupId": 1,
@@ -570,6 +382,182 @@
                         "func": "renderDuration",
                         "params": {
                           "value": 1440
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "user",
+          "id": "user2",
+          "name": "User name 2",
+          "imageUrl": "UploadData/PHOTO/16by16_30169.jpg",
+          "categoryId": "category1",
+          "render": {
+            "func": "renderUserName",
+            "params": {
+              "id": "user2",
+              "name": "User name 2",
+              "imageUrl": "UploadData/PHOTO/16by16_30169.jpg",
+              "categoryId": "category1"
+            }
+          },
+          "values": [
+            {
+              "groupId": 1,
+              "values": [
+                {
+                  "columnId": "estimated",
+                  "value": 720,
+                  "render": {
+                    "func": "renderDuration",
+                    "params": {
+                      "value": 720
+                    }
+                  }
+                },
+                {
+                  "columnId": "actual",
+                  "value": 780,
+                  "render": {
+                    "func": "renderDuration",
+                    "params": {
+                      "value": 780
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "groupId": 2,
+              "values": [
+                {
+                  "columnId": "estimated",
+                  "value": 720,
+                  "render": {
+                    "func": "renderDuration",
+                    "params": {
+                      "value": 720
+                    }
+                  }
+                },
+                {
+                  "columnId": "actual",
+                  "value": 780,
+                  "render": {
+                    "func": "renderDuration",
+                    "params": {
+                      "value": 780
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "groupId": 3,
+              "values": [
+                {
+                  "columnId": "estimated",
+                  "value": 1440,
+                  "render": {
+                    "func": "renderDuration",
+                    "params": {
+                      "value": 1440
+                    }
+                  }
+                },
+                {
+                  "columnId": "actual",
+                  "value": 1560,
+                  "render": {
+                    "func": "renderDuration",
+                    "params": {
+                      "value": 1560
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "children": [
+            {
+              "type": "workItem",
+              "name": "Task name 1",
+              "values": [
+                {
+                  "groupId": 1,
+                  "values": [
+                    {
+                      "columnId": "estimated",
+                      "value": 720,
+                      "render": {
+                        "func": "renderDuration",
+                        "params": {
+                          "value": 720
+                        }
+                      }
+                    },
+                    {
+                      "columnId": "actual",
+                      "value": 780,
+                      "render": {
+                        "func": "renderDuration",
+                        "params": {
+                          "value": 780
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "groupId": 2,
+                  "values": [
+                    {
+                      "columnId": "estimated",
+                      "value": 720,
+                      "render": {
+                        "func": "renderDuration",
+                        "params": {
+                          "value": 720
+                        }
+                      }
+                    },
+                    {
+                      "columnId": "actual",
+                      "value": 780,
+                      "render": {
+                        "func": "renderDuration",
+                        "params": {
+                          "value": 780
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "groupId": 3,
+                  "values": [
+                    {
+                      "columnId": "estimated",
+                      "value": 1440,
+                      "render": {
+                        "func": "renderDuration",
+                        "params": {
+                          "value": 1440
+                        }
+                      }
+                    },
+                    {
+                      "columnId": "actual",
+                      "value": 1560,
+                      "render": {
+                        "func": "renderDuration",
+                        "params": {
+                          "value": 1560
                         }
                       }
                     }
@@ -672,29 +660,41 @@
       ],
       "children": [
         {
-          "type": "workItem",
-          "name": "Task name 3",
+          "type": "user",
+          "id": "user2",
+          "name": "User name 2",
+          "imageUrl": "UploadData/PHOTO/16by16_30169.jpg",
+          "categoryId": "category1",
+          "render": {
+            "func": "renderUserName",
+            "params": {
+              "id": "user2",
+              "name": "User name 2",
+              "imageUrl": "UploadData/PHOTO/16by16_30169.jpg",
+              "categoryId": "category1"
+            }
+          },
           "values": [
             {
               "groupId": 1,
               "values": [
                 {
                   "columnId": "estimated",
-                  "value": 2580,
+                  "value": 780,
                   "render": {
                     "func": "renderDuration",
                     "params": {
-                      "value": 2580
+                      "value": 780
                     }
                   }
                 },
                 {
                   "columnId": "actual",
-                  "value": 2160,
+                  "value": 1560,
                   "render": {
                     "func": "renderDuration",
                     "params": {
-                      "value": 2160
+                      "value": 1560
                     }
                   }
                 }
@@ -705,21 +705,21 @@
               "values": [
                 {
                   "columnId": "estimated",
-                  "value": 2580,
+                  "value": 780,
                   "render": {
                     "func": "renderDuration",
                     "params": {
-                      "value": 2580
+                      "value": 780
                     }
                   }
                 },
                 {
                   "columnId": "actual",
-                  "value": 2160,
+                  "value": 1560,
                   "render": {
                     "func": "renderDuration",
                     "params": {
-                      "value": 2160
+                      "value": 1560
                     }
                   }
                 }
@@ -730,21 +730,21 @@
               "values": [
                 {
                   "columnId": "estimated",
-                  "value": 5160,
+                  "value": 1560,
                   "render": {
                     "func": "renderDuration",
                     "params": {
-                      "value": 5160
+                      "value": 1560
                     }
                   }
                 },
                 {
                   "columnId": "actual",
-                  "value": 4320,
+                  "value": 3120,
                   "render": {
                     "func": "renderDuration",
                     "params": {
-                      "value": 4320
+                      "value": 3120
                     }
                   }
                 }
@@ -753,20 +753,8 @@
           ],
           "children": [
             {
-              "type": "user",
-              "id": "user2",
-              "name": "User name 2",
-              "imageUrl": "UploadData/PHOTO/16by16_30169.jpg",
-              "categoryId": "category1",
-              "render": {
-                "func": "renderUserName",
-                "params": {
-                  "id": "user2",
-                  "name": "User name 2",
-                  "imageUrl": "UploadData/PHOTO/16by16_30169.jpg",
-                  "categoryId": "category1"
-                }
-              },
+              "type": "workItem",
+              "name": "Task name 3",
               "values": [
                 {
                   "groupId": 1,
@@ -844,22 +832,105 @@
                   ]
                 }
               ]
-            },
-            {
-              "type": "user",
+            }
+          ]
+        },
+        {
+          "type": "user",
+          "id": "user3",
+          "name": "User name 3",
+          "imageUrl": "UploadData/PHOTO/16by16_30170.jpg",
+          "categoryId": "category2",
+          "render": {
+            "func": "renderUserName",
+            "params": {
               "id": "user3",
               "name": "User name 3",
               "imageUrl": "UploadData/PHOTO/16by16_30170.jpg",
-              "categoryId": "category2",
-              "render": {
-                "func": "renderUserName",
-                "params": {
-                  "id": "user3",
-                  "name": "User name 3",
-                  "imageUrl": "UploadData/PHOTO/16by16_30170.jpg",
-                  "categoryId": "category2"
+              "categoryId": "category2"
+            }
+          },
+          "values": [
+            {
+              "groupId": 1,
+              "values": [
+                {
+                  "columnId": "estimated",
+                  "value": 1800,
+                  "render": {
+                    "func": "renderDuration",
+                    "params": {
+                      "value": 1800
+                    }
+                  }
+                },
+                {
+                  "columnId": "actual",
+                  "value": 600,
+                  "render": {
+                    "func": "renderDuration",
+                    "params": {
+                      "value": 600
+                    }
+                  }
                 }
-              },
+              ]
+            },
+            {
+              "groupId": 2,
+              "values": [
+                {
+                  "columnId": "estimated",
+                  "value": 1800,
+                  "render": {
+                    "func": "renderDuration",
+                    "params": {
+                      "value": 1800
+                    }
+                  }
+                },
+                {
+                  "columnId": "actual",
+                  "value": 600,
+                  "render": {
+                    "func": "renderDuration",
+                    "params": {
+                      "value": 600
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "groupId": 3,
+              "values": [
+                {
+                  "columnId": "estimated",
+                  "value": 3600,
+                  "render": {
+                    "func": "renderDuration",
+                    "params": {
+                      "value": 3600
+                    }
+                  }
+                },
+                {
+                  "columnId": "actual",
+                  "value": 1200,
+                  "render": {
+                    "func": "renderDuration",
+                    "params": {
+                      "value": 1200
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "children": [
+            {
+              "type": "workItem",
+              "name": "Task name 3",
               "values": [
                 {
                   "groupId": 1,
