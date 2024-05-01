@@ -29,9 +29,5 @@ export class FilterManager {
         this.filters[type] = value;
         document.dispatchEvent(new CustomEvent('filtersUpdated', { detail: this.filters }));
     }
-    
 
-    updateFilterCallback(newCallback) {
-        this.onFilterChangeCallback = newCallback;
-    }
 }
