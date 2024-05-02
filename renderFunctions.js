@@ -1,8 +1,8 @@
 
+// TODO - C - Explore injecting the render functions so users can override them or use new ones
 import { resolveIconPath, pathCache } from './pathResolver.js';
 
 function renderUserName(params) {
-    console.log('renderUserName', params);
     const imagePath = pathCache[params.id];
     if (imagePath) {
         return `
@@ -27,14 +27,32 @@ function renderEntityName(params) {
         'service': 'Service.svg'
     };
 
-    const entityType = params.entityType;
-    const entitySubType = params.entitySubType;
-    const imageName = imageNameMap[entityType]?.[entitySubType] || imageNameMap[entityType];
-    const imagePath = resolveIconPath(imageName);
+    const { entityType, entitySubType } = params;
+    let imageName = '';
+    
+    if (entitySubType && imageNameMap[entityType] && imageNameMap[entityType][entitySubType]) {
+        imageName = imageNameMap[entityType][entitySubType];
+    } else if (!entitySubType && imageNameMap[entityType] && typeof imageNameMap[entityType] === 'string') {
+        imageName = imageNameMap[entityType];
+    }
+
+    const imagePath = imageName ? resolveIconPath(imageName) : '';
     return `<span class="ftbl-entity-icon"><img src="${imagePath}" alt="${entitySubType || entityType}"></span>${params.name}`;
 }
-function renderDuration(params) {
-    return params.value ? `${params.value / 60} h.` : '';
+
+function renderDuration(params, options={}) {
+    return params.value ? `${convertMinutesToHHMM(params.value)}` : '';
+}
+function convertMinutesToHHMM(minutes) {
+    minutes = Number(minutes);
+    if (isNaN(minutes)) {
+        return '';
+    }
+    let hours = Math.floor(minutes / 60);  
+    let remainingMinutes = minutes % 60;   
+    remainingMinutes = remainingMinutes < 10 ? '0' + remainingMinutes : remainingMinutes;
+
+    return `${hours}:${remainingMinutes}`;
 }
 export {
     renderUserName,
