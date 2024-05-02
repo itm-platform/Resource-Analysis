@@ -1,12 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-//import { JSDOM } from 'jsdom';
 import { FilterManager } from '../filterManager'; // Adjust the path as necessary
-
-//const { window } = new JSDOM('<!doctype html><html><body></body></html>');
-// global.window = window;
-// global.document = window.document;
-
-describe('FilterManager', () => {
+// LEFT OFF fix these tests with the new implementation
+describe('FilterManager basics', () => {
     let filterManager;
     let initialFilters;
 
@@ -17,7 +12,7 @@ describe('FilterManager', () => {
         document.body.appendChild(div);
 
         // Setting initial filters state
-        initialFilters = { project: true, workItem: false, user: true };
+        initialFilters = { project: true, workItem: true, user: true };
         filterManager = new FilterManager('filtersDiv', initialFilters);
     });
 

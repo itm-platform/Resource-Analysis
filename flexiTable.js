@@ -1,5 +1,6 @@
 // flexiTable.js
 import { cacheIconPaths, resolveIconPath, cacheUserImagePaths, pathCache } from './pathResolver.js';
+import { retrieveTypeOrder } from './utils.js';
 // TODO - A - translations
 // TODO - A - Render hours with minutes
 // TODO - B- Export
