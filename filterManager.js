@@ -29,6 +29,11 @@ export class FilterManager {
         return this.filters;
     }
 
+    setFilters(newFilters) {
+        this.filters = newFilters;
+        document.dispatchEvent(new CustomEvent('filtersUpdated', { detail: this.filters }));
+    }
+
     updateFilter(type, value) {
         this.filters[type] = value;
         document.dispatchEvent(new CustomEvent('filtersUpdated', { detail: this.filters }));

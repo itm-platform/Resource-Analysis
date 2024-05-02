@@ -1,8 +1,8 @@
 // tests/UI/flexiTableUI.spec.js
 import { describe, test, expect, beforeEach } from 'vitest';
-import { FlexiTable } from '../../flexiTable.js';
-import { FilterManager } from '../../filterManager.js';
-import data from '../dataSamples/intervalsByEntityAndWorkItem.json';
+import { FlexiTable } from '../flexiTable.js';
+import { FilterManager } from '../filterManager.js';
+import data from './dataSamples/intervalsByEntityAndWorkItem.json';
 
 describe('UI Tests for flexiTable', async () => {
     beforeEach(async () => {
