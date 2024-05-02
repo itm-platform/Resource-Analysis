@@ -4,7 +4,7 @@ export class FilterManager {
     constructor(targetDivId, initialFilters = {}, dataRows) {
         this.targetDiv = document.getElementById(targetDivId);
         this.dataRows = dataRows;
-        this.filterOrder = this.#getFilterOrder(dataRows);
+        this.filterOrder = this.#getFilterOrder(dataRows, initialFilters);
         this.filters = this.#reorderFilters(initialFilters);
         this.initFiltersUI();
     }
@@ -22,7 +22,6 @@ export class FilterManager {
         this.targetDiv.appendChild(this.filterContainer);
         this.manageCheckboxes(); // Initial setup for checkbox states
     }
-
     createCheckboxes() {
         Object.keys(this.filters).forEach(type => {
             const label = document.createElement('label');
@@ -40,7 +39,6 @@ export class FilterManager {
             this.filterContainer.appendChild(label);
         });
     }
-
     manageCheckboxes() {
         let firstUncheckedFound = false;
         let enableNext = false;
@@ -59,19 +57,28 @@ export class FilterManager {
             }
         });
     }
-
-
-
-    #getFilterOrder(dataRows) {
-        return dataRows && dataRows.length > 0 ? retrieveTypeOrder(dataRows) : [];
+    #getFilterOrder(dataRows,  initialFilters = {}) {
+        if (dataRows && dataRows.length > 0) {
+            return retrieveTypeOrder(dataRows);
+        } else {
+            if (Object.keys(initialFilters).length > 0) {
+                return Object.keys(initialFilters);
+            } else {
+                return undefined;
+            }
+        }
     };
+    
 
-    #reorderFilters(filters) {
+    #reorderFilters(previousFilters) {
+        if (this.filterOrder) {
         const reorderedFilters = {};
-        this.filterOrder.forEach(type => {
-            reorderedFilters[type] = type in filters ? filters[type] : false;
-        });
-        return this.#setSubsequentFiltersFalse(reorderedFilters);
+            this.filterOrder.forEach(type => {
+                reorderedFilters[type] = type in previousFilters ? previousFilters[type] : false;
+            });
+            return this.#setSubsequentFiltersFalse(reorderedFilters);
+        }
+        return this.#setSubsequentFiltersFalse(previousFilters);
     }
 
     #setSubsequentFiltersFalse(filters) {

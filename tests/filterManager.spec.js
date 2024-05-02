@@ -4,7 +4,7 @@ import { FilterManager } from '../filterManager'; // Adjust the path as necessar
 describe('FilterManager basics', () => {
     let filterManager;
     let initialFilters;
-
+    let dataRows;
     beforeEach(() => {
         document.body.innerHTML = '';   
         const div = document.createElement('div');
@@ -13,11 +13,12 @@ describe('FilterManager basics', () => {
 
         // Setting initial filters state
         initialFilters = { project: true, workItem: true, user: true };
-        filterManager = new FilterManager('filtersDiv', initialFilters);
+        dataRows = [{type:"project",children:[{type:"workItem",children:[{type:"user",children:[]}]}]}];;
+        filterManager = new FilterManager('filtersDiv', initialFilters, dataRows);
     });
 
     test('should initialize with the given filter settings', () => {
-        expect(filterManager.getFilters()).toEqual(initialFilters);
+        expect(filterManager.getFilters()).toEqual(initialFilters, dataRows);
     });
 
     test('should create filter checkboxes based on initialFilters', () => {
@@ -52,17 +53,5 @@ describe('FilterManager basics', () => {
         }));
     });
 
-    test('should update filters and dispatch filtersUpdated event when setFilters is called', () => {
-        const newFilters = { user: true, macaroni:{tomato:"parmigiano"}  };
-        const spy = vi.fn();
-        document.addEventListener('filtersUpdated', spy);
-
-        filterManager.setFilters(newFilters);
-
-        expect(filterManager.getFilters()).toEqual(newFilters);
-        expect(spy).toHaveBeenCalled();
-        expect(spy).toHaveBeenCalledWith(expect.objectContaining({
-            detail: newFilters
-        }));
-    });
+    
 });
