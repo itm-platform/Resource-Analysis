@@ -1,6 +1,6 @@
 // flexiTable.js
 import { cacheIconPaths, resolveIconPath, cacheUserImagePaths, pathCache } from './pathResolver.js';
-import { retrieveTypeOrder } from './utils.js';
+import { renderUserName, renderEntityName, renderDuration } from './renderFunctions.js';
 // TODO - A - translations
 // TODO - A - Render hours with minutes
 // TODO - B- Export
@@ -37,6 +37,11 @@ export class FlexiTable {
         this.#renderRows(this.dataset.rows);
         this.#updateAllRowClasses();
     }
+    #renderFuncMap = {
+        'renderUserName': renderUserName,
+        'renderEntityName': renderEntityName,
+        'renderDuration': renderDuration
+    };
     #renderRows(items, parentRowId = '', level = 0, parentVisible = true) {
         items.forEach((item, index) => {
             const isRowNotFilteredOut = !this.rowFilters.hasOwnProperty(item.type) || this.rowFilters[item.type];
@@ -211,20 +216,16 @@ export class FlexiTable {
         this.dataset.groups.forEach(group => {
             const groupValues = item.values.find(value => value.groupId === group.id);
             if (groupValues) {
-                // Iterate over group values
                 groupValues.values.forEach((value, index, array) => {
                     const cell = row.insertCell();
-                    if (value.render) {
-                        const renderFunc = this[value.render.func];
-                        if (renderFunc) {
-                            // Pass the params object for value rendering
-                            cell.innerHTML = renderFunc.call(this, value.render.params);
-                        }
+                    if (value.render && this.#renderFuncMap[value.render.func]) {
+                        const renderFunc = this.#renderFuncMap[value.render.func];
+                        // Assuming render functions do not need 'this' from FlexiTable
+                        cell.innerHTML = renderFunc(value.render.params);
                     } else {
                         cell.innerHTML = value.value;
                     }
                     cell.classList.add('ftbl-value-cell');
-                    // Check if the current cell is the last in the group
                     if (index === array.length - 1) {
                         cell.classList.add('ftbl-rightmost-cell-in-group');
                     }
@@ -235,26 +236,22 @@ export class FlexiTable {
 
     #createFirstNameCell(row, item, level, rowId) {
         const nameCell = row.insertCell();
-        // Create a div inside the cell for content
         const innerDiv = document.createElement('div');
         innerDiv.className = 'ftbl-inner-content';
-        innerDiv.style.paddingLeft = `${5 + (level * 20)}px`; // Adjust the level of indentation here
-    
-        if (item.render) {
-            const renderFunc = this[item.render.func];
-            if (renderFunc) {
-                // Directly pass the params object to the render function
-                innerDiv.innerHTML = renderFunc.call(this, item.render.params);
-            }
+        innerDiv.style.paddingLeft = `${5 + (level * 20)}px`;
+
+        if (item.render && this.#renderFuncMap[item.render.func]) {
+            const renderFunc = this.#renderFuncMap[item.render.func];
+            // Assuming render functions do not need 'this' from FlexiTable
+            innerDiv.innerHTML = renderFunc(item.render.params);
         } else { 
-            // Fallback to direct content if no render function specified
             innerDiv.innerHTML = item.name || '';
         }
-    
+
         nameCell.appendChild(innerDiv);
         nameCell.classList.add('ftbl-name-cell');
         if (item.children && item.children.length > 0 && !this.#areChildrenFilteredOut(item.type)) {
-            this.#addToggleIcon(innerDiv, true, rowId); // Append the toggle icon to innerDiv
+            this.#addToggleIcon(innerDiv, true, rowId);
         }
     }
     #areChildrenFilteredOut(itemType) {
