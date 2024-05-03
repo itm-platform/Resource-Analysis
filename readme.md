@@ -36,13 +36,13 @@ Interval example:
 }
 ```	
 Totals example:
+This is an example of "live between" filter. We're requesting that the StartDate is before the range end date and the EndDate is after the range start date.
 ```json
 {
     "analysisMode": "totals",
     "filter": {
-        "project": {
-            "StartDate": { "$bt": ["2023-09-01", "2023-11-30"] }
-        }
+        "StartDate": { "$lte": "2023-11-30" },
+        "EndDate": { "$gte": "2023-09-01" }
     }
 }
 ```
