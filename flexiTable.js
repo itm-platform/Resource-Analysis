@@ -17,6 +17,7 @@ export class FlexiTable {
 
         const uniqueUsers = this.#getUniqueUsers(dataset.rows);
         cacheUserImagePaths(uniqueUsers).then(() => {
+            console.log(`Cached ${uniqueUsers.length} user images`);
             this.generateTable();
         });
 
@@ -26,23 +27,41 @@ export class FlexiTable {
     }
 
     generateTable() {
-        const tableWrapper = document.createElement('div');
-        tableWrapper.classList.add('ftbl-table-wrapper');
-        this.table = document.createElement('table');
-        this.table.classList.add('ftbl-table');
-        tableWrapper.appendChild(this.table);
-        this.container.appendChild(tableWrapper);
-        this.renderHeader();
-        this.tbody = document.createElement('tbody');
-        this.table.appendChild(this.tbody);
-        this.#renderRows(this.dataset.rows);
-        this.#updateAllRowClasses();
+        try {
+            this.#validateDataset(this.dataset);
+       
+            const tableWrapper = document.createElement('div');
+            tableWrapper.classList.add('ftbl-table-wrapper');
+            this.table = document.createElement('table');
+            this.table.classList.add('ftbl-table');
+            tableWrapper.appendChild(this.table);
+            this.container.appendChild(tableWrapper);
+            this.renderHeader();
+            this.tbody = document.createElement('tbody');
+            this.table.appendChild(this.tbody);
+            this.#renderRows(this.dataset.rows);
+            this.#updateAllRowClasses();
+        }
+        catch (error) {
+            console.warn ('Error generating table:', error.message);
+        }
+   
     }
     #renderFuncMap = {
         'renderUserName': renderUserName,
         'renderEntityName': renderEntityName,
         'renderDuration': renderDuration
     };
+
+    #validateDataset(dataset) {
+        if (!dataset || !dataset.rows || !Array.isArray(dataset.rows) || dataset.rows.length === 0) {
+            throw new Error('Invalid dataset provided to flexiTable', dataset);
+        }
+        if (!dataset.groups || !Array.isArray(dataset.groups) || dataset.groups.length === 0) {
+            throw new Error('Invalid groups provided to FlexiTable', dataset);
+        }
+    }
+
     #renderRows(items, parentRowId = '', level = 0, parentVisible = true) {
         items.forEach((item, index) => {
             const isRowNotFilteredOut = !this.rowFilters.hasOwnProperty(item.type) || this.rowFilters[item.type];
@@ -109,6 +128,9 @@ export class FlexiTable {
     }
 
     #getUniqueUsers(rows) {
+        if (!rows || rows.length === 0) {
+            return [];
+        }
         let userImages = {};
         const extract = (rows) => {
             for (const row of rows) {
@@ -159,7 +181,7 @@ export class FlexiTable {
     }
     renderHeader() {
         const { headerRow, header } = this.#createHeader();
-        this.#addCollapseExpandIconsToHeaderFirstCell(headerRow);
+        this.#addToolbarToHeaderFirstCell(headerRow);
         this.#addGroupHeaders(headerRow);
         this.#addColumnsHeaders(header);
     }
@@ -190,44 +212,44 @@ export class FlexiTable {
     #addExpandCollapseButtons(caretWrapper) {
         // Create the collapse and expand icons and insert them into the caretWrapper
         caretWrapper.innerHTML = `${this.#getCaretCollapseAll()}${this.#getCaretExpandAll()}`;
-    
+
         const collapseIcon = caretWrapper.children[0];
         const expandIcon = caretWrapper.children[1];
-    
+
         // Add event listeners for the icons
         collapseIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', false, true));
         expandIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', true, true));
-    
+
         // Add common classes and specific IDs to the icons
         collapseIcon.classList.add('ftbl-caret-toggle-all');
         collapseIcon.id = 'collapseAll';
         expandIcon.classList.add('ftbl-caret-toggle-all');
         expandIcon.id = 'expandAll';
     }
-    
-    #addCollapseExpandIconsToHeaderFirstCell(headerRow) {
+
+    #addToolbarToHeaderFirstCell(headerRow) {
         // Create the main toolbar div and add it to the header cell
         const headerToolbar = document.createElement('div');
         headerToolbar.id = 'headerToolbar';
         const toggleCell = headerRow.insertCell();
         toggleCell.appendChild(headerToolbar);
-    
+
         // Caret wrapper div
         const caretWrapper = document.createElement('div');
         caretWrapper.id = 'caretWrapper';
         headerToolbar.appendChild(caretWrapper);
         this.#addExpandCollapseButtons(caretWrapper);
-    
+
         // viewSelector div
         const viewSelector = document.createElement('div');
         viewSelector.id = 'viewSelector';
         headerToolbar.appendChild(viewSelector);
         this.#attachViewSelector(viewSelector);
-    
+
         // Add a class to the header toggle cell for styling
         toggleCell.classList.add('ftbl-header-toggle-cell');
     }
-    
+
     #attachViewSelector(viewSelectorWrapper) {
         if (this.viewSelector) {
             this.viewSelector.attachTo(viewSelectorWrapper);
@@ -346,6 +368,7 @@ export class FlexiTable {
 
     updateData(event) {
         this.dataset = event.detail;
+        console.log('Updating data:', this.dataset);
         this.container.innerHTML = '';
         this.generateTable();
     }

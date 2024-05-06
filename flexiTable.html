@@ -27,7 +27,7 @@
     </select>
     <button id="refreshDataButton">Refresh Data</button>
 
-    <div id="filtersDiv"></div>
+    <div id="rowSelectorDiv"></div>
     <div id="tableContainer" style="width: 80%;"></div>
 
     <script type="module">
@@ -87,14 +87,12 @@ switch (selectedMethod) {
 }
 
             tableContainer.innerHTML = ''; // Clear previous table contents
-
-
-            document.getElementById('filtersDiv').innerHTML = '';
-            flexiRowSelector = new FlexiRowSelector('filtersDiv', {
+            document.getElementById('rowSelectorDiv').innerHTML = '';
+            flexiRowSelector = new FlexiRowSelector('rowSelectorDiv', {
                 project: true, workItem: true, user: true
             });
 
-            flexiTable = new FlexiTable('tableContainer', data, flexiRowSelector.getFilters()); 
+            flexiTable = new FlexiTable('tableContainer', data, flexiRowSelector.getRows()); 
             
             window.flexiTable = flexiTable; // Assign to window object to access from outside. 
              

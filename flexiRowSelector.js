@@ -92,20 +92,20 @@ export class FlexiRowSelector {
         });
         return filters;
     }
-    getFilters() {
+    getRows() {
         return this.filters;
     }
 
     setFilters(newFilters) {
         this.filters = this.#reorderFilters(newFilters, this.dataRows);
-        document.dispatchEvent(new CustomEvent('filtersUpdated', { detail: this.filters }));
+        document.dispatchEvent(new CustomEvent('filtersUpdated', { detail: this.filters, bubbles: true}));
     }
 
     updateFilter(type, value) {
         this.filters[type] = value;
         this.filters = this.#setSubsequentFiltersFalse(this.filters);
         this.initFiltersUI(); // Reinitialize UI to reflect changes
-        document.dispatchEvent(new CustomEvent('filtersUpdated', { detail: this.filters }));
+        document.dispatchEvent(new CustomEvent('filtersUpdated', { detail: this.filters, bubbles: true}));
     }
 
 }

@@ -8,17 +8,17 @@ describe('FlexiRowSelector basics', () => {
     beforeEach(() => {
         document.body.innerHTML = '';   
         const div = document.createElement('div');
-        div.id = 'filtersDiv';
+        div.id = 'rowSelectorDiv';
         document.body.appendChild(div);
 
         // Setting initial filters state
         initialFilters = { project: true, workItem: true, user: true };
         dataRows = [{type:"project",children:[{type:"workItem",children:[{type:"user",children:[]}]}]}];;
-        flexiRowSelector = new FlexiRowSelector('filtersDiv', initialFilters, dataRows);
+        flexiRowSelector = new FlexiRowSelector('rowSelectorDiv', initialFilters, dataRows);
     });
 
     test('should initialize with the given filter settings', () => {
-        expect(flexiRowSelector.getFilters()).toEqual(initialFilters, dataRows);
+        expect(flexiRowSelector.getRows()).toEqual(initialFilters, dataRows);
     });
 
     test('should create filter checkboxes based on initialFilters', () => {
@@ -36,7 +36,7 @@ describe('FlexiRowSelector basics', () => {
         checkbox.checked = true;
         checkbox.dispatchEvent(new window.Event('change'));
         
-        expect(flexiRowSelector.getFilters().workItem).toBe(true);
+        expect(flexiRowSelector.getRows().workItem).toBe(true);
     });
 
     test('should dispatch custom event when filters are updated', () => {

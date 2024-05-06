@@ -8,20 +8,20 @@ describe('UI Tests for flexiTable', async () => {
     beforeEach(async () => {
         // Setup the initial HTML structure
         document.body.innerHTML = `
-      <div id="filtersDiv"></div>
+      <div id="rowSelectorDiv"></div>
       <div id="tableContainer" style="width: 80%;"></div>
     `;
 
         // Initialize the components as done in the application
-        const flexiRowSelector = new FlexiRowSelector('filtersDiv', {
+        const flexiRowSelector = new FlexiRowSelector('rowSelectorDiv', {
             project: true, workItem: true, user: true
         });
-        const flexiTable = new FlexiTable('tableContainer', data, flexiRowSelector.getFilters());
+        const flexiTable = new FlexiTable('tableContainer', data, flexiRowSelector.getRows());
         await new Promise(r => setTimeout(r, 100)); // Wait 100ms for the DOM to update
     });
 
     test('Filters are present with all options ticked', () => {
-        const checkboxes = document.querySelectorAll('#filtersDiv input[type="checkbox"]');
+        const checkboxes = document.querySelectorAll('#rowSelectorDiv input[type="checkbox"]');
         expect(checkboxes.length).toBe(3); // Check if all filters are present
         checkboxes.forEach(checkbox => {
             expect(checkbox.checked).toBe(true); // Check if each checkbox is ticked
@@ -88,15 +88,15 @@ describe('Row Interaction Tests', async () => {
     beforeEach(async () => {
         // Setup the initial HTML structure
         document.body.innerHTML = `
-      <div id="filtersDiv"></div>
+      <div id="rowSelectorDiv"></div>
       <div id="tableContainer" style="width: 80%;"></div>
     `;
 
         // Initialize the components as done in the application
-        const flexiRowSelector = new FlexiRowSelector('filtersDiv', {
+        const flexiRowSelector = new FlexiRowSelector('rowSelectorDiv', {
             project: true, workItem: true, user: true
         });
-        const flexiTable = new FlexiTable('tableContainer', data, flexiRowSelector.getFilters());
+        const flexiTable = new FlexiTable('tableContainer', data, flexiRowSelector.getRows());
         await new Promise(r => setTimeout(r, 100)); // Wait 100ms for the DOM to update
     });
 
@@ -157,16 +157,16 @@ describe('Interaction Tests for FlexiTable Filters', () => {
     beforeEach(() => {
         // Set up the DOM structure as it would be in the live environment
         document.body.innerHTML = `
-        <div id="filtersDiv"></div>
+        <div id="rowSelectorDiv"></div>
         <div id="tableContainer" style="width: 80%;"></div>
       `;
 
         // Initialize components
         const dataRows = [{ type: "project", children: [{ type: "workItem", children: [{ type: "user", children: [] }] }] }];;
-        const flexiRowSelector = new FlexiRowSelector('filtersDiv', {
+        const flexiRowSelector = new FlexiRowSelector('rowSelectorDiv', {
             project: true, workItem: true, user: true
         }, dataRows);
-        const flexiTable = new FlexiTable('tableContainer', data, flexiRowSelector.getFilters());
+        const flexiTable = new FlexiTable('tableContainer', data, flexiRowSelector.getRows());
     });
 
     test('Check that users are initially present in the table', async () => {

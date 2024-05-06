@@ -1,4 +1,5 @@
-/** Renders the options in a toolbar and emits the requested option
+/** flexiViewSelector.js
+ * Renders the options in a toolbar and emits the requested option
  * @param {Object} options - The options to render, such as [{ svg: 'svg1.svg', name: 'Option 1', tooltip: 'Option 1 tooltip'}]
  * @emits optionSelected - The selected option
 */
@@ -20,7 +21,7 @@ export class ViewSelector {
     }
 
     selectOption(option) {
-        const event = new CustomEvent('optionSelected', { detail: option.name });
+        const event = new CustomEvent('optionSelected', { detail: option.name , bubbles: true});
         this.element.dispatchEvent(event);
     }
 
