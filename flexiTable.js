@@ -17,7 +17,6 @@ export class FlexiTable {
 
         const uniqueUsers = this.#getUniqueUsers(dataset.rows);
         cacheUserImagePaths(uniqueUsers).then(() => {
-            console.log(`Cached ${uniqueUsers.length} user images`);
             this.generateTable();
         });
 
