@@ -32,7 +32,7 @@
 
     <script type="module">
         import { FlexiTable } from './flexiTable.js';
-        import { FilterManager } from './flexiRowSelector.js';
+        import { FilterManager } from './filterManager.js';
         import { EffortTransformer } from './effortTransformer.js';
 
         const dataFileSelector = document.getElementById('dataFileSelector');
@@ -65,26 +65,26 @@
             effortTransformer = new EffortTransformer(responseData);
 
             let data;
-switch (selectedMethod) {
-    case 'intervalsByEntityAndWorkItem':
-        data = effortTransformer.transformToIntervals('entity', 'workItem');;
-        break;
-    case 'intervalsByEntityAndUser':
-        data = effortTransformer.transformToIntervals('entity', 'user');
-        break;
-    case 'intervalsByUser':
-        data = effortTransformer.transformToIntervals('user');
-        break;
-    case 'totalsByEntityAndWorkItem':
-        data = effortTransformer.transformToTotals('entity', 'workItem');
-        break;
-    case 'totalsByEntityAndUser':
-        data = effortTransformer.transformToTotals('entity', 'user');
-        break;
-    case 'totalsByUser':
-        data = effortTransformer.transformToTotals('user');
-        break;
-}
+            switch (selectedMethod) {
+                case 'intervalsByEntityAndWorkItem':
+                    data = effortTransformer.transformToIntervals('entity', 'workItem');;
+                    break;
+                case 'intervalsByEntityAndUser':
+                    data = effortTransformer.transformToIntervals('entity', 'user');
+                    break;
+                case 'intervalsByUser':
+                    data = effortTransformer.transformToIntervals('user');
+                    break;
+                case 'totalsByEntityAndWorkItem':
+                    data = effortTransformer.transformToTotals('entity', 'workItem');
+                    break;
+                case 'totalsByEntityAndUser':
+                    data = effortTransformer.transformToTotals('entity', 'user');
+                    break;
+                case 'totalsByUser':
+                    data = effortTransformer.transformToTotals('user');
+                    break;
+            }
 
             tableContainer.innerHTML = ''; // Clear previous table contents
 

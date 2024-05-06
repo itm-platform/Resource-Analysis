@@ -5,7 +5,7 @@ import { renderUserName, renderEntityName, renderDuration } from './renderFuncti
 // TODO - A - Render hours with minutes
 // TODO - B- Export
 export class FlexiTable {
-    constructor(containerId, dataset, rowFilters = {}) {
+    constructor(containerId, dataset, rowFilters = {}, viewSelector) {
         cacheIconPaths().catch(error => {
             throw new Error("Failed to preload icons:", error);
         });
@@ -13,6 +13,7 @@ export class FlexiTable {
         this.container = document.getElementById(containerId);
         this.dataset = dataset;
         this.rowFilters = rowFilters || {};
+        this.viewSelector = viewSelector;
 
         const uniqueUsers = this.#getUniqueUsers(dataset.rows);
         cacheUserImagePaths(uniqueUsers).then(() => {
@@ -55,7 +56,7 @@ export class FlexiTable {
             }
         });
     }
- 
+
     #setRowVisibility(selector, isVisible, updateClasses = false) {
         const rows = this.table.querySelectorAll(selector);
         rows.forEach(row => {
@@ -158,11 +159,11 @@ export class FlexiTable {
     }
     renderHeader() {
         const { headerRow, header } = this.#createHeader();
-        this.#addCollapseExpandIconsToHeaderFirstRow(headerRow);
+        this.#addCollapseExpandIconsToHeaderFirstCell(headerRow);
         this.#addGroupHeaders(headerRow);
         this.#addColumnsHeaders(header);
     }
-    
+
     #addColumnsHeaders(header) {
         const columnRow = header.insertRow();
         columnRow.classList.add('ftbl-header-row');
@@ -186,24 +187,52 @@ export class FlexiTable {
         });
     }
 
-    #addCollapseExpandIconsToHeaderFirstRow(headerRow) {
-        const toggleCell = headerRow.insertCell();
-        toggleCell.innerHTML = `${this.#getCaretCollapseAll()}${this.#getCaretExpandAll()}`;
-        toggleCell.classList.add('ftbl-header-toggle-cell');
+    #addExpandCollapseButtons(caretWrapper) {
+        // Create the collapse and expand icons and insert them into the caretWrapper
+        caretWrapper.innerHTML = `${this.#getCaretCollapseAll()}${this.#getCaretExpandAll()}`;
     
-        const collapseIcon = toggleCell.children[0];
-        const expandIcon = toggleCell.children[1];
+        const collapseIcon = caretWrapper.children[0];
+        const expandIcon = caretWrapper.children[1];
     
-        collapseIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', false, true)); // Updates classes when collapsing all
-        expandIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', true, true)); // Updates classes when expanding all
+        // Add event listeners for the icons
+        collapseIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', false, true));
+        expandIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', true, true));
     
+        // Add common classes and specific IDs to the icons
         collapseIcon.classList.add('ftbl-caret-toggle-all');
-        collapseIcon.id = 'collapseAll';  // Assign an ID to the collapse icon
+        collapseIcon.id = 'collapseAll';
         expandIcon.classList.add('ftbl-caret-toggle-all');
-        expandIcon.id = 'expandAll';  // Assign an ID to the expand icon
+        expandIcon.id = 'expandAll';
     }
     
-
+    #addCollapseExpandIconsToHeaderFirstCell(headerRow) {
+        // Create the main toolbar div and add it to the header cell
+        const headerToolbar = document.createElement('div');
+        headerToolbar.id = 'headerToolbar';
+        const toggleCell = headerRow.insertCell();
+        toggleCell.appendChild(headerToolbar);
+    
+        // Caret wrapper div
+        const caretWrapper = document.createElement('div');
+        caretWrapper.id = 'caretWrapper';
+        headerToolbar.appendChild(caretWrapper);
+        this.#addExpandCollapseButtons(caretWrapper);
+    
+        // viewSelector div
+        const viewSelector = document.createElement('div');
+        viewSelector.id = 'viewSelector';
+        headerToolbar.appendChild(viewSelector);
+        this.#attachViewSelector(viewSelector);
+    
+        // Add a class to the header toggle cell for styling
+        toggleCell.classList.add('ftbl-header-toggle-cell');
+    }
+    
+    #attachViewSelector(viewSelectorWrapper) {
+        if (this.viewSelector) {
+            this.viewSelector.attachTo(viewSelectorWrapper);
+        }
+    }
     #createHeader() {
         const header = this.table.createTHead();
         header.classList.add('ftbl-header');
@@ -244,7 +273,7 @@ export class FlexiTable {
             const renderFunc = this.#renderFuncMap[item.render.func];
             // Assuming render functions do not need 'this' from FlexiTable
             innerDiv.innerHTML = renderFunc(item.render.params);
-        } else { 
+        } else {
             innerDiv.innerHTML = item.name || '';
         }
 
@@ -255,12 +284,12 @@ export class FlexiTable {
         }
     }
     #areChildrenFilteredOut(itemType) {
-        const nextKey=(object, key) =>{
+        const nextKey = (object, key) => {
             const keys = Object.keys(object);
             const index = keys.indexOf(key);
             return index >= 0 && index < keys.length - 1 ? keys[index + 1] : undefined;
-        }
-        const nextFilter = nextKey(this.rowFilters,itemType);
+        };
+        const nextFilter = nextKey(this.rowFilters, itemType);
         return !this.rowFilters.hasOwnProperty(nextFilter) || !this.rowFilters[nextFilter];
     }
     #addToggleIcon(cell, isVisible, rowId) {
@@ -325,7 +354,7 @@ export class FlexiTable {
         this.rowFilters = event.detail;
         this.container.innerHTML = '';
         this.generateTable();
-        
+
     }
 
 }
