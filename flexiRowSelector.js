@@ -1,6 +1,6 @@
-// filterManager.js
+// flexiRowSelector.js
 import { retrieveTypeOrder } from "./utils.js";
-export class FilterManager {
+export class FlexiRowSelector {
     constructor(targetDivId, initialFilters = {}, dataRows) {
         this.targetDiv = document.getElementById(targetDivId);
         this.dataRows = dataRows;

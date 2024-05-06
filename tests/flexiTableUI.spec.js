@@ -1,7 +1,7 @@
 // tests/UI/flexiTableUI.spec.js
 import { describe, test, expect, beforeEach } from 'vitest';
 import { FlexiTable } from '../flexiTable.js';
-import { FilterManager } from '../filterManager.js';
+import { FlexiRowSelector } from '../flexiRowSelector.js';
 import data from './dataSamples/intervalsByEntityAndWorkItem.json';
 
 describe('UI Tests for flexiTable', async () => {
@@ -13,10 +13,10 @@ describe('UI Tests for flexiTable', async () => {
     `;
 
         // Initialize the components as done in the application
-        const filterManager = new FilterManager('filtersDiv', {
+        const flexiRowSelector = new FlexiRowSelector('filtersDiv', {
             project: true, workItem: true, user: true
         });
-        const flexiTable = new FlexiTable('tableContainer', data, filterManager.getFilters());
+        const flexiTable = new FlexiTable('tableContainer', data, flexiRowSelector.getFilters());
         await new Promise(r => setTimeout(r, 100)); // Wait 100ms for the DOM to update
     });
 
@@ -93,10 +93,10 @@ describe('Row Interaction Tests', async () => {
     `;
 
         // Initialize the components as done in the application
-        const filterManager = new FilterManager('filtersDiv', {
+        const flexiRowSelector = new FlexiRowSelector('filtersDiv', {
             project: true, workItem: true, user: true
         });
-        const flexiTable = new FlexiTable('tableContainer', data, filterManager.getFilters());
+        const flexiTable = new FlexiTable('tableContainer', data, flexiRowSelector.getFilters());
         await new Promise(r => setTimeout(r, 100)); // Wait 100ms for the DOM to update
     });
 
@@ -163,10 +163,10 @@ describe('Interaction Tests for FlexiTable Filters', () => {
 
         // Initialize components
         const dataRows = [{ type: "project", children: [{ type: "workItem", children: [{ type: "user", children: [] }] }] }];;
-        const filterManager = new FilterManager('filtersDiv', {
+        const flexiRowSelector = new FlexiRowSelector('filtersDiv', {
             project: true, workItem: true, user: true
         }, dataRows);
-        const flexiTable = new FlexiTable('tableContainer', data, filterManager.getFilters());
+        const flexiTable = new FlexiTable('tableContainer', data, flexiRowSelector.getFilters());
     });
 
     test('Check that users are initially present in the table', async () => {

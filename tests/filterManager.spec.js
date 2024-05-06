@@ -1,8 +1,8 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { FilterManager } from '../filterManager'; // Adjust the path as necessary
+import { FlexiRowSelector } from '../flexiRowSelector'; // Adjust the path as necessary
 // LEFT OFF fix these tests with the new implementation
-describe('FilterManager basics', () => {
-    let filterManager;
+describe('FlexiRowSelector basics', () => {
+    let flexiRowSelector;
     let initialFilters;
     let dataRows;
     beforeEach(() => {
@@ -14,11 +14,11 @@ describe('FilterManager basics', () => {
         // Setting initial filters state
         initialFilters = { project: true, workItem: true, user: true };
         dataRows = [{type:"project",children:[{type:"workItem",children:[{type:"user",children:[]}]}]}];;
-        filterManager = new FilterManager('filtersDiv', initialFilters, dataRows);
+        flexiRowSelector = new FlexiRowSelector('filtersDiv', initialFilters, dataRows);
     });
 
     test('should initialize with the given filter settings', () => {
-        expect(filterManager.getFilters()).toEqual(initialFilters, dataRows);
+        expect(flexiRowSelector.getFilters()).toEqual(initialFilters, dataRows);
     });
 
     test('should create filter checkboxes based on initialFilters', () => {
@@ -36,7 +36,7 @@ describe('FilterManager basics', () => {
         checkbox.checked = true;
         checkbox.dispatchEvent(new window.Event('change'));
         
-        expect(filterManager.getFilters().workItem).toBe(true);
+        expect(flexiRowSelector.getFilters().workItem).toBe(true);
     });
 
     test('should dispatch custom event when filters are updated', () => {

@@ -32,7 +32,7 @@
 
     <script type="module">
         import { FlexiTable } from './flexiTable.js';
-        import { FilterManager } from './filterManager.js';
+        import { FlexiRowSelector } from './flexiRowSelector.js';
         import { EffortTransformer } from './effortTransformer.js';
 
         const dataFileSelector = document.getElementById('dataFileSelector');
@@ -43,7 +43,7 @@
         dataFileSelector.value = localStorage.getItem('selectedDataMethod') || defaultDataMethod;
 
         let flexiTable; 
-        let filterManager;
+        let flexiRowSelector;
 
         document.addEventListener('DOMContentLoaded', () => {
             changeDataMethod(); 
@@ -90,11 +90,11 @@
 
 
             document.getElementById('filtersDiv').innerHTML = '';
-            filterManager = new FilterManager('filtersDiv', {
+            flexiRowSelector = new FlexiRowSelector('filtersDiv', {
                 project: true, workItem: true, user: true
             });
 
-            flexiTable = new FlexiTable('tableContainer', data, filterManager.getFilters()); 
+            flexiTable = new FlexiTable('tableContainer', data, flexiRowSelector.getFilters()); 
             
             window.flexiTable = flexiTable; // Assign to window object to access from outside. 
              
