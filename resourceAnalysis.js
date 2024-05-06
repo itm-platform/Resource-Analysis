@@ -50,30 +50,6 @@ export class ResourceAnalysis {
         // Initialize FlexiTable without data initially
         this.flexiTable = new FlexiTable(this.tableContainerDivId, [], {}, this.viewSelector);
     }
-
-    #addEventListeners() {
-        document.addEventListener('filterUpdated', event => {
-            // Update filters and fetch data
-            this.#setState({
-                filters: event.detail.filter,
-                analysisMode: event.detail.analysisMode
-            });
-            this.#fetchEffortData();
-        });
-
-        document.addEventListener('optionSelected', event => {
-            // Update view configuration and re-render table
-            this.#setState({ viewConfig: event.detail });
-            this.#loadEffortTable();
-        });
-
-        document.getElementById('loadAnalysisBtn').addEventListener('click', () => this.#fetchEffortData());
-    }
-
-    getResourceAnalysis() {
-        return this.#fetchEffortData();
-    }
-
     #fetchEffortData() {
         // Example fetching mechanism with files. Replace with actual POST fetch call, sending the payload
         /*  body: JSON.stringify({
@@ -101,6 +77,26 @@ export class ResourceAnalysis {
             })
             .catch(err => console.error('Error fetching data:', err));
     }
+
+    #addEventListeners() {
+        document.addEventListener('filterUpdated', event => {
+            // Update filters and fetch data
+            this.#setState({
+                filters: event.detail.filter,
+                analysisMode: event.detail.analysisMode
+            });
+            this.#fetchEffortData();
+        });
+
+        document.addEventListener('optionSelected', event => {
+            // Update view configuration and re-render table
+            this.#setState({ viewConfig: event.detail });
+            this.#loadEffortTable();
+        });
+
+        document.getElementById('loadAnalysisBtn').addEventListener('click', () => this.#fetchEffortData());
+    }
+
 
     #loadEffortTable() {
         if (this.state.responseData) {
