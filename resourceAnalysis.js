@@ -41,14 +41,20 @@ export class ResourceAnalysis {
         ]);
     
         this.#fetchEffortData().then(data => {
-            this.flexiRowSelector = new FlexiRowSelector(this.rowSelectorDivId, {
-                user: true, project: true, workItem: true // inject from tha parent HTML getting for the saved preferences for the user
-            }, data.rows);
-
-            this.flexiTable = new FlexiTable(this.tableContainerDivId, data, this.flexiRowSelector.getRows(), this.viewSelector);
+            this.#renderFlexiTable(data);
         }).catch(error => console.error('Error initializing components:', error));
     }
     
+    #renderFlexiTable(data) {
+        // empty the div
+        document.getElementById(this.tableContainerDivId).innerHTML = '';
+        this.flexiRowSelector = new FlexiRowSelector(this.rowSelectorDivId, {
+            user: true, project: true, workItem: false // inject from tha parent HTML getting for the saved preferences for the user
+        }, data.rows);
+
+        this.flexiTable = new FlexiTable(this.tableContainerDivId, data, this.flexiRowSelector.getRows(), this.viewSelector);
+    }
+
     async #fetchEffortData() {
         const { analysisMode } = this.state;
         console.log('Fetching data for analysis mode:', analysisMode);
@@ -71,12 +77,13 @@ export class ResourceAnalysis {
 
     #addEventListeners() {
         document.addEventListener('filterUpdated', event => {
-            console.log('Filter updated:', event.detail.analysisMode);
             this.#setState({
                 filters: event.detail.filter,
                 analysisMode: event.detail.analysisMode
             });
-            this.#fetchEffortData();
+            this.#fetchEffortData().then(data => {
+                this.#renderFlexiTable(data);
+            }).catch(error => console.error('Error updating data:', error));
         });
 
         document.addEventListener('optionSelected', event => {
