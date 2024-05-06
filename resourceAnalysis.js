@@ -31,51 +31,39 @@ export class ResourceAnalysis {
         this.#addEventListeners();
     }
 
-    #initComponents() {
-        // Initialize FilterConstructor
+    async #initComponents() {
         this.filterConstructor = new FilterConstructor(this.state.analysisMode, this.state.filters, [], this.filterDivId);
-
-        // TODO - A - flexiRowSelector should be injected in flexiTable as we do with viewSelector
         this.flexiRowSelector = new FlexiRowSelector('rowSelectorDiv', {
             project: true, workItem: true, user: true // make dynamic
         });
-
-        // Initialize ViewSelector with default options
         this.viewSelector = new ViewSelector([
             { name: VALID_VIEW_CONFIGS.entityWorkItem, tooltip: 'Entity - Work Item', svg: this.getSVG(VALID_VIEW_CONFIGS.entityWorkItem) },
             { name: VALID_VIEW_CONFIGS.entityUser, tooltip: 'Entity - User', svg: this.getSVG(VALID_VIEW_CONFIGS.entityUser) },
             { name: VALID_VIEW_CONFIGS.user, tooltip: 'User', svg: this.getSVG(VALID_VIEW_CONFIGS.user) }
         ]);
-
-        // Initialize FlexiTable without data initially
-        this.flexiTable = new FlexiTable(this.tableContainerDivId, [], {}, this.viewSelector);
+    
+        this.#fetchEffortData().then(data => {
+            this.flexiTable = new FlexiTable(this.tableContainerDivId, data, this.flexiRowSelector.getRows(), this.viewSelector);
+        }).catch(error => console.error('Error initializing components:', error));
     }
-    #fetchEffortData() {
-        // Example fetching mechanism with files. Replace with actual POST fetch call, sending the payload
-        /*  body: JSON.stringify({
-                analysisMode: this.state.analysisMode,
-                filters: this.state.filters
-            }) */
+    
+    async #fetchEffortData() {
         const { analysisMode } = this.state;
-
         let fileURL;
         if (analysisMode === VALID_ANALYSIS_MODES.intervals) {
             fileURL = './tests/dataSamples/responseResourceAnalysisIntervals.js';
         } else if (analysisMode === VALID_ANALYSIS_MODES.totals) {
             fileURL = './tests/dataSamples/responseResourceAnalysisTotals.js';
         }
-
-        //import the file. Replace with actual POST fetch call, sending the payload
-        /*  body: JSON.stringify({
-                analysisMode: this.state.analysisMode,
-                filters: this.state.filters
-            }) */
-        import(fileURL)
-            .then(module => {
-                this.#setState({ responseData: module.default });
-                this.#loadEffortTable();
-            })
-            .catch(err => console.error('Error fetching data:', err));
+    
+        try {
+            const module = await import(fileURL);
+            this.#setState({ responseData: module.default });
+            return this.#transformData(this.state.responseData, this.state.analysisMode, this.state.viewConfig);
+        } catch (err) {
+            console.error('Error fetching data:', err);
+            throw err;
+        }
     }
 
     #addEventListeners() {
