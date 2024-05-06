@@ -24,7 +24,8 @@ export class ResourceAnalysis {
             filters: {},
             analysisMode: VALID_ANALYSIS_MODES.intervals, // Default analysis mode
             viewConfig: VALID_VIEW_CONFIGS.entityUser, // Default view configuration
-            responseData: null // Data received from the server
+            responseData: null, // Data received from the server
+            transformedData: null // Data transformed for the table
         };
 
         this.#initComponents();
@@ -40,19 +41,19 @@ export class ResourceAnalysis {
             { name: VALID_VIEW_CONFIGS.user, tooltip: 'User', svg: this.getSVG(VALID_VIEW_CONFIGS.user) }
         ]);
     
-        this.#fetchEffortData().then(data => {
-            this.#renderFlexiTable(data);
+        this.#fetchEffortData().then(() => {
+            this.#renderFlexiTable();
         }).catch(error => console.error('Error initializing components:', error));
     }
     
-    #renderFlexiTable(data) {
+    #renderFlexiTable() {
         // empty the div
         document.getElementById(this.tableContainerDivId).innerHTML = '';
         this.flexiRowSelector = new FlexiRowSelector(this.rowSelectorDivId, {
             user: true, project: true, workItem: false // inject from tha parent HTML getting for the saved preferences for the user
-        }, data.rows);
+        }, this.transformedData.rows);
 
-        this.flexiTable = new FlexiTable(this.tableContainerDivId, data, this.flexiRowSelector.getRows(), this.viewSelector);
+        this.flexiTable = new FlexiTable(this.tableContainerDivId, this.transformedData, this.flexiRowSelector.getRows(), this.viewSelector);
     }
 
     async #fetchEffortData() {
@@ -68,7 +69,7 @@ export class ResourceAnalysis {
         try {
             const module = await import(fileURL);
             this.#setState({ responseData: module.default });
-            return this.#transformData(this.state.responseData, this.state.analysisMode, this.state.viewConfig);
+            this.transformedData= this.#transformData(this.state.responseData, this.state.analysisMode, this.state.viewConfig);
         } catch (err) {
             console.error('Error fetching data:', err);
             throw err;
@@ -81,8 +82,8 @@ export class ResourceAnalysis {
                 filters: event.detail.filter,
                 analysisMode: event.detail.analysisMode
             });
-            this.#fetchEffortData().then(data => {
-                this.#renderFlexiTable(data);
+            this.#fetchEffortData().then(() => {
+                this.#renderFlexiTable();
             }).catch(error => console.error('Error updating data:', error));
         });
 
