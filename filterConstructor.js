@@ -60,7 +60,7 @@ export class FilterConstructor {
         // Find the selected radio button
         const selectedMode = document.querySelector('input[name="analysisMode"]:checked').value;
         this.analysisMode = selectedMode;
-
+        console.log('Selected analysis mode:', selectedMode);
         // Dispatch the filterUpdated event with queryFilter as detail
         const event = new CustomEvent('filterUpdated', {
             detail: {analysisMode: this.analysisMode, filter:this.queryFilter},

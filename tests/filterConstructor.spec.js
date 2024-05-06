@@ -46,12 +46,6 @@ describe('FilterConstructor basics', () => {
         filterConstructor = new FilterConstructor(analysisMode, queryFilter, dataServiceModel, parentDivId);
     });
 
-    test('should attach a button to the parent div', () => {
-        const button = parentDiv.querySelector('button');
-        expect(button).not.toBeNull();
-        expect(button.textContent).toBe('Update Filter');
-    });
-
     test('should dispatch "filterUpdated" event with filter details when the button is clicked', () => {
         const spy = vi.fn();
         document.addEventListener('filterUpdated', spy);

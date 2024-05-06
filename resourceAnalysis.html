@@ -18,20 +18,19 @@
 
 <body>
     <div id="filterContainer"></div>
-    <div id="rowSelectorDiv"></div>
+    <div id="rowSelectorContainer"></div>
     <div id="tableContainer"></div>
     <button id="loadAnalysisBtn">Load Analysis</button>
     <script type="module">
         import { ResourceAnalysis } from './resourceAnalysis.js';
-        const resourceAnalysis = new ResourceAnalysis('filterContainer', 'rowSelectorDiv', 'tableContainer');
+        const parentDivIds= {
+            filterContainer: 'filterContainer',
+            rowSelectorContainer: 'rowSelectorContainer',
+            tableContainer: 'tableContainer'
+        };
+        const resourceAnalysis = new ResourceAnalysis(parentDivIds);
     </script>
-    <script>
-        // // simulate a click on the button when document is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('loadAnalysisBtn').click();
-        });
 
-    </script>
 </body>
 
 </html>

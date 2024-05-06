@@ -113,7 +113,6 @@ describe('Row Interaction Tests', async () => {
         // Expand the first row
         firstRowToggle.click();
         let row = document.querySelector(`tr[data-id="${rowId}"]`);
-        console.log(row.getAttribute('data-id'));
         expect(row.classList.contains('ftbl-row-level-1-expanded')).toBe(true);
 
         // Click again to collapse
@@ -188,16 +187,13 @@ describe('Interaction Tests for FlexiTable Filters', () => {
     test.skip('Check that checking "user" again brings back users', async () => {
         await new Promise(r => setTimeout(r, 100)); // Wait a bit for the DOM updates to apply
         let users = document.querySelectorAll('tr[data-type="user"]');
-        console.log(`users.length: ${users.length}`);
         const userCheckbox = document.querySelector('#user');
         userCheckbox.click(); // Uncheck
         await new Promise(r => setTimeout(r, 100)); // Wait a bit for the DOM updates to apply
         users = document.querySelectorAll('tr[data-type="user"]');
-        console.log(`users.length: ${users.length}`);
         userCheckbox.click(); // Check again
         await new Promise(r => setTimeout(r, 100)); // Wait a bit for the DOM updates to apply
         users = document.querySelectorAll('tr[data-type="user"]');
-        console.log(`users.length: ${users.length}`);
         expect(users.length).toBeGreaterThan(0); // Check that user entries are back
     });
 

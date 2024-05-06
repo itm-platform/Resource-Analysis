@@ -8,10 +8,10 @@ import { EffortTransformer } from './effortTransformer.js';
 const VALID_ANALYSIS_MODES = { intervals: 'intervals', totals: 'totals' };
 const VALID_VIEW_CONFIGS = { entityWorkItem: 'entity-workItem', entityUser: 'entity-user', user: 'user' };
 export class ResourceAnalysis {
-    constructor(filterDivId, rowSelectorDivId, tableContainerDivId) {
-        this.filterDivId = filterDivId;
-        this.rowSelectorDivId = rowSelectorDivId;
-        this.tableContainerDivId = tableContainerDivId;
+    constructor(parentDivIds) {
+        this.filterDivId = parentDivIds.filterContainer;
+        this.rowSelectorDivId = parentDivIds.rowSelectorContainer;
+        this.tableContainerDivId = parentDivIds.tableContainer;
 
         // Declare component properties
         this.filterConstructor = null;
@@ -23,7 +23,7 @@ export class ResourceAnalysis {
         this.state = {
             filters: {},
             analysisMode: VALID_ANALYSIS_MODES.intervals, // Default analysis mode
-            viewConfig: VALID_VIEW_CONFIGS.entityWorkItem, // Default view configuration
+            viewConfig: VALID_VIEW_CONFIGS.entityUser, // Default view configuration
             responseData: null // Data received from the server
         };
 
@@ -33,9 +33,7 @@ export class ResourceAnalysis {
 
     async #initComponents() {
         this.filterConstructor = new FilterConstructor(this.state.analysisMode, this.state.filters, [], this.filterDivId);
-        this.flexiRowSelector = new FlexiRowSelector('rowSelectorDiv', {
-            project: true, workItem: true, user: true // make dynamic
-        });
+
         this.viewSelector = new ViewSelector([
             { name: VALID_VIEW_CONFIGS.entityWorkItem, tooltip: 'Entity - Work Item', svg: this.getSVG(VALID_VIEW_CONFIGS.entityWorkItem) },
             { name: VALID_VIEW_CONFIGS.entityUser, tooltip: 'Entity - User', svg: this.getSVG(VALID_VIEW_CONFIGS.entityUser) },
@@ -43,12 +41,17 @@ export class ResourceAnalysis {
         ]);
     
         this.#fetchEffortData().then(data => {
+            this.flexiRowSelector = new FlexiRowSelector(this.rowSelectorDivId, {
+                user: true, project: true, workItem: true // inject from tha parent HTML getting for the saved preferences for the user
+            }, data.rows);
+
             this.flexiTable = new FlexiTable(this.tableContainerDivId, data, this.flexiRowSelector.getRows(), this.viewSelector);
         }).catch(error => console.error('Error initializing components:', error));
     }
     
     async #fetchEffortData() {
         const { analysisMode } = this.state;
+        console.log('Fetching data for analysis mode:', analysisMode);
         let fileURL;
         if (analysisMode === VALID_ANALYSIS_MODES.intervals) {
             fileURL = './tests/dataSamples/responseResourceAnalysisIntervals.js';
@@ -68,7 +71,7 @@ export class ResourceAnalysis {
 
     #addEventListeners() {
         document.addEventListener('filterUpdated', event => {
-            // Update filters and fetch data
+            console.log('Filter updated:', event.detail.analysisMode);
             this.#setState({
                 filters: event.detail.filter,
                 analysisMode: event.detail.analysisMode

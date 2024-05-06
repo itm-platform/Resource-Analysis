@@ -7,20 +7,20 @@ export class FlexiRowSelector {
         this.dataRows = dataRows;
         this.rowSelectionOrder = this.#getRowSelectionOrder(dataRows, initialRowSelection);
         this.rowSelection = this.#reorderRowSelection(initialRowSelection);
-        this.initFiltersUI();
+        this.initRowSelectorUI();
     }
 
-    initFiltersUI() {
+    initRowSelectorUI() {
         // Ensure the container is only created once
-        this.filterContainer = this.targetDiv.querySelector('.filter-container') || document.createElement('div');
-        this.filterContainer.className = 'filter-container';
-        this.filterContainer.innerHTML = ''; // Clear existing content
+        this.rowSelectorContainer = this.targetDiv.querySelector('.row-selector-container') || document.createElement('div');
+        this.rowSelectorContainer.className = 'row-selector-container';
+        this.rowSelectorContainer.innerHTML = ''; // Clear existing content
 
         // Create and attach filters
         this.createCheckboxes();
 
         // Append or re-append to ensure updates are visible
-        this.targetDiv.appendChild(this.filterContainer);
+        this.targetDiv.appendChild(this.rowSelectorContainer);
         this.manageCheckboxes(); // Initial setup for checkbox states
     }
     createCheckboxes() {
@@ -37,7 +37,7 @@ export class FlexiRowSelector {
 
             label.appendChild(checkbox);
             label.append(` ${type}`);
-            this.filterContainer.appendChild(label);
+            this.rowSelectorContainer.appendChild(label);
         });
     }
     manageCheckboxes() {
@@ -100,7 +100,7 @@ export class FlexiRowSelector {
     updateFilter(type, value) {
         this.rowSelection[type] = value;
         this.rowSelection = this.#setSubsequentFiltersFalse(this.rowSelection);
-        this.initFiltersUI(); // Reinitialize UI to reflect changes
+        this.initRowSelectorUI(); // Reinitialize UI to reflect changes
         document.dispatchEvent(new CustomEvent('filtersUpdated', { detail: this.rowSelection, bubbles: true}));
     }
 

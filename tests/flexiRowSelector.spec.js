@@ -23,7 +23,6 @@ describe('FlexiRowSelector basics', () => {
 
     test('should create filter checkboxes based on initialFilters', () => {
         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        console.log(checkboxes);
         expect(checkboxes.length).toBe(Object.keys(initialFilters).length);
         Object.keys(initialFilters).forEach(type => {
             const checkbox = document.getElementById(type);
