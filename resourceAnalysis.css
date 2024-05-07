@@ -1,0 +1,16 @@
+.reslysis-viewIconsContainer {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+
+.reslysis-iconWrapper {
+    display: inline-block;
+    margin: 5px;
+    cursor: pointer;
+    border: 1px solid transparent; /* Add border to maintain layout */
+}
+
+.reslysis-selected {
+    border-color: #007BFF; /* Highlight color, can be changed */
+}
