@@ -1,6 +1,5 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { FlexiRowSelector } from '../flexiRowSelector'; // Adjust the path as necessary
-// LEFT OFF fix these tests with the new implementation
+import { FlexiRowSelector } from '../flexiRowSelector'; 
 describe('FlexiRowSelector basics', () => {
     let flexiRowSelector;
     let initialFilters;
@@ -40,7 +39,7 @@ describe('FlexiRowSelector basics', () => {
 
     test('should dispatch custom event when filters are updated', () => {
         const spy = vi.fn();
-        document.addEventListener('filtersUpdated', spy);
+        document.addEventListener('rowSelectionUpdated', spy);
 
         const checkbox = document.getElementById('workItem');
         checkbox.checked = true;
@@ -53,4 +52,42 @@ describe('FlexiRowSelector basics', () => {
     });
 
     
+});
+
+describe('FlexiRowSelector integration', () => {
+    let flexiRowSelector;
+    let initialFilters;
+    let dataRows;
+    beforeEach(() => {
+        document.body.innerHTML = '';
+        const div = document.createElement('div');
+        div.id = 'rowSelectorDiv';
+        document.body.appendChild(div);
+
+        initialFilters = { project: true, workItem: true, user: true };
+        dataRows = [{ type: "project", children: [{ type: "workItem", children: [{ type: "user", children: [] }] }] }];
+        flexiRowSelector = new FlexiRowSelector('rowSelectorDiv', initialFilters, dataRows);
+    });
+
+    test('should handle dataUpdated event correctly', () => {
+        // Simulate new data order
+        const newDataRows = [{ type: "user", children: [{ type: "project", children: [{ type: "workItem", children: [] }] }] }];
+
+        // Dispatch the dataUpdated event
+        const dataUpdatedEvent = new CustomEvent('dataUpdated', { detail: { rows: newDataRows } });
+        document.dispatchEvent(dataUpdatedEvent);
+
+        // Check if the rowSelectionOrder is updated
+        expect(flexiRowSelector.rowSelectionOrder).toEqual(['user', 'project', 'workItem']);
+
+        // Check if the row selection reflects the new order
+        expect(flexiRowSelector.getRows()).toEqual({ user: true, project: true, workItem: true });
+
+        // Ensure the checkboxes are reordered accordingly in the UI
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        expect(checkboxes.length).toBe(3);
+        expect(checkboxes[0].id).toBe('user');
+        expect(checkboxes[1].id).toBe('project');
+        expect(checkboxes[2].id).toBe('workItem');
+    });
 });

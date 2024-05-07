@@ -21,7 +21,7 @@ export class FlexiTable {
         });
 
         // Event listeners
-        document.addEventListener('filtersUpdated', this.updateFilters.bind(this));
+        document.addEventListener('rowSelectionUpdated', this.updateFilters.bind(this));
         document.addEventListener('dataUpdated', this.updateData.bind(this));
     }
 

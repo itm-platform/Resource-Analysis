@@ -1,5 +1,4 @@
 // flexiRowSelector.js
-// TODO - B - Row selector order is broken and stays fixed
 import { retrieveTypeOrder } from "./utils.js";
 export class FlexiRowSelector {
     constructor(targetDivId, initialRowSelection = {}, dataRows) {
@@ -8,22 +7,20 @@ export class FlexiRowSelector {
         this.rowSelectionOrder = this.#getRowSelectionOrder(dataRows, initialRowSelection);
         this.rowSelection = this.#reorderRowSelection(initialRowSelection);
         this.initRowSelectorUI();
+        this.#registerDataUpdatedListener(); // Register listener for data updates
     }
 
     initRowSelectorUI() {
-        // Ensure the container is only created once
         this.rowSelectorContainer = this.targetDiv.querySelector('.row-selector-container') || document.createElement('div');
         this.rowSelectorContainer.className = 'row-selector-container';
         this.rowSelectorContainer.innerHTML = ''; // Clear existing content
 
-        // Create and attach filters
-        this.createCheckboxes();
+        this.#createCheckboxes();
 
-        // Append or re-append to ensure updates are visible
         this.targetDiv.appendChild(this.rowSelectorContainer);
-        this.manageCheckboxes(); // Initial setup for checkbox states
+        this.#manageCheckboxes(); // Initial setup for checkbox states
     }
-    createCheckboxes() {
+    #createCheckboxes() {
         Object.keys(this.rowSelection).forEach(type => {
             const label = document.createElement('label');
             const checkbox = document.createElement('input');
@@ -40,7 +37,7 @@ export class FlexiRowSelector {
             this.rowSelectorContainer.appendChild(label);
         });
     }
-    manageCheckboxes() {
+    #manageCheckboxes() {
         let firstUncheckedFound = false;
         let enableNext = false;
         Object.keys(this.rowSelection).forEach(type => {
@@ -70,7 +67,6 @@ export class FlexiRowSelector {
         }
     };
     
-
     #reorderRowSelection(previousFilters) {
         if (this.rowSelectionOrder) {
         const reorderedFilters = {};
@@ -93,6 +89,19 @@ export class FlexiRowSelector {
         });
         return filters;
     }
+
+    #registerDataUpdatedListener() {
+        document.addEventListener('dataUpdated', (event) => {
+            this.#handleDataUpdated(event.detail.rows); 
+        });
+    }
+
+    #handleDataUpdated(newDataRows) {
+        this.dataRows = newDataRows; // Update dataRows with new data
+        this.rowSelectionOrder = this.#getRowSelectionOrder(this.dataRows, this.rowSelection); // Re-compute the selection order based on new data
+        this.rowSelection = this.#reorderRowSelection(this.rowSelection); // Reorder the row selection based on updated order
+        this.initRowSelectorUI(); // Reinitialize the UI to reflect changes
+    }
     getRows() {
         return this.rowSelection;
     }
@@ -101,7 +110,7 @@ export class FlexiRowSelector {
         this.rowSelection[type] = value;
         this.rowSelection = this.#setSubsequentFiltersFalse(this.rowSelection);
         this.initRowSelectorUI(); // Reinitialize UI to reflect changes
-        document.dispatchEvent(new CustomEvent('filtersUpdated', { detail: this.rowSelection, bubbles: true}));
+        document.dispatchEvent(new CustomEvent('rowSelectionUpdated', { detail: this.rowSelection, bubbles: true}));
     }
 
 }

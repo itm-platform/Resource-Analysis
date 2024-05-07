@@ -50,7 +50,7 @@ export class ResourceAnalysis {
         // empty the div
         document.getElementById(this.tableContainerDivId).innerHTML = '';
         this.flexiRowSelector = new FlexiRowSelector(this.rowSelectorDivId, {
-            user: true, project: true, workItem: false // inject from tha parent HTML getting for the saved preferences for the user
+            user: true, project: true, workItem: true // inject from tha parent HTML getting for the saved preferences for the user
         }, this.transformedData.rows);
 
         this.flexiTable = new FlexiTable(this.tableContainerDivId, this.transformedData, this.flexiRowSelector.getRows(), this.viewSelector);
@@ -88,7 +88,6 @@ export class ResourceAnalysis {
         });
 
         document.addEventListener('optionSelected', event => {
-            // Update view configuration and re-render table
             this.#setState({ viewConfig: event.detail });
             this.#loadEffortTable();
         });
