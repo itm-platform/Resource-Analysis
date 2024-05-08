@@ -5,7 +5,7 @@
     --ftbl-row-height: 2.2em; 
     --ftbl-header-background-color: #f2f2f2;
     --ftbl-toolbar-background-color: #fdfdfd;
-    --ftbl-first-column-width: 15em;
+    --ftbl-first-column-width: 20em;
 }
 
 .ftbl-table-wrapper {
@@ -62,8 +62,8 @@
     align-items: center;
     text-align: left; 
     height:var(--ftbl-row-height);
-    min-width: var(--ftbl-first-column-width); /* Default width for name cell */
     width: var(--ftbl-first-column-width); /* Default width for name cell */
+    min-width: calc(var(--ftbl-first-column-width) - 5em);
     border-right: solid var(--ftbl-border-width) var(--ftbl-border-color);
     overflow: auto;
 }
@@ -77,8 +77,6 @@
     text-overflow: ellipsis; /* Show ellipsis for overflow */
     padding-left: 5px; /* Default padding */
 }
-
-
 
 
 .ftbl-data-row {
@@ -151,6 +149,7 @@
     align-items: center;
     margin: 0 10px;
     flex-wrap: wrap;
+    max-width: calc(var(--ftbl-first-column-width) );
 }
 
 .ftbl-toolbar-set-wrapper{
@@ -181,3 +180,6 @@
 }
 
 
+.ftbl-header-column-cell:first-child div:hover svg path {
+    fill: #888; /* Darker or different color on hover */
+}

@@ -28,7 +28,7 @@ export class FlexiTable {
     generateTable() {
         try {
             this.#validateDataset(this.dataset);
-       
+
             const tableWrapper = document.createElement('div');
             tableWrapper.classList.add('ftbl-table-wrapper');
             this.table = document.createElement('table');
@@ -42,9 +42,9 @@ export class FlexiTable {
             this.#updateAllRowClasses();
         }
         catch (error) {
-            console.warn ('Error generating table:', error.message);
+            console.warn('Error generating table:', error.message);
         }
-   
+
     }
     #renderFuncMap = {
         'renderUserName': renderUserName,
@@ -154,18 +154,19 @@ export class FlexiTable {
 
     #addResizingHandle(headerCell) {
         const resizeHandle = document.createElement('div');
-        resizeHandle.style.cssText = 'position: absolute; right: 0; top: 0; width: 5px; height: 100%; cursor: col-resize; user-select: none;';
+        resizeHandle.innerHTML = this.#getResizeArrow();
+        resizeHandle.style.cssText = 'position: absolute; right: -6px; top: 0; bottom: 0; width: 12px; cursor: col-resize; user-select: none; display: flex; align-items: center; justify-content: center;';
         headerCell.style.position = 'relative';
         headerCell.appendChild(resizeHandle);
 
         let startX, startWidth;
 
-        resizeHandle.addEventListener('mousedown', function(e) {
+        resizeHandle.addEventListener('mousedown', function (e) {
             startX = e.clientX;
             startWidth = headerCell.offsetWidth;
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
-            e.preventDefault(); // Prevent text selection
+            e.preventDefault(); // Prevent text selection during drag
         });
 
         function onMouseMove(e) {
@@ -182,10 +183,11 @@ export class FlexiTable {
         }
     }
 
+
     #addColumnsHeaders(header) {
         const columnRow = header.insertRow();
         columnRow.classList.add('ftbl-header-row');
-       // columnRow.insertCell(); // First empty cell for the first column
+        // columnRow.insertCell(); // First empty cell for the first column
 
         this.dataset.groups.forEach(group => {
             group.columns.forEach(column => {
@@ -212,26 +214,26 @@ export class FlexiTable {
         const collapseIcon = document.createElement('span');
         collapseIcon.innerHTML = this.#getCaretCollapseAll();
         collapseIconWrapper.appendChild(collapseIcon);
-        
+
         const expandIconWrapper = document.createElement('div');
         expandIconWrapper.className = 'ftbl-toolbar-icon';
         const expandIcon = document.createElement('span');
         expandIcon.innerHTML = this.#getCaretExpandAll();
         expandIconWrapper.appendChild(expandIcon);
-        
+
         // Create a separator div
         const separator = document.createElement('div');
         separator.className = 'ftbl-icon-separator';
-        
+
         // Append icon wrappers and separator to the caretWrapper
         caretWrapper.appendChild(collapseIconWrapper);
         caretWrapper.appendChild(separator);
         caretWrapper.appendChild(expandIconWrapper);
-        
+
         // Add event listeners for the icons
         collapseIconWrapper.addEventListener('click', () => this.#setRowVisibility('tbody tr', false, true));
         expandIconWrapper.addEventListener('click', () => this.#setRowVisibility('tbody tr', true, true));
-        
+
         // Add common classes and specific IDs to the icon wrappers
         collapseIconWrapper.classList.add('ftbl-caret-toggle-all');
         collapseIconWrapper.id = 'collapseAll';
@@ -246,8 +248,8 @@ export class FlexiTable {
             viewSelectorWrapper.classList.add('ftbl-toolbar-set-wrapper');
             headerToolbar.appendChild(viewSelectorWrapper);
             this.#attachViewSelector(viewSelectorWrapper);
-        }
-    
+        };
+
         const createCollapseExpandAllToolbar = (headerToolbar) => {
             const caretWrapper = document.createElement('div');
             caretWrapper.id = 'caretWrapper';
@@ -255,16 +257,16 @@ export class FlexiTable {
             caretWrapper.classList.add('ftbl-caret-wrapper');
             headerToolbar.appendChild(caretWrapper);
             this.#addExpandCollapseButtons(caretWrapper);
-        }
-    
+        };
+
         const createHeaderToolbar = () => {
             const headerToolbar = document.createElement('div');
             headerToolbar.id = 'headerToolbar';
             headerToolbar.classList.add('ftbl-header-toolbar');
             toolbarCell.appendChild(headerToolbar);
             return headerToolbar;
-        }
-    
+        };
+
         const toolbarCell = headerRow.insertCell();
         // rowspan 2 to make the toolbar cell span two rows
         toolbarCell.setAttribute('rowspan', '2');
@@ -387,6 +389,16 @@ export class FlexiTable {
             <path d="M7.30711 0.375C6.80711 -0.125 5.99511 -0.125 5.49511 0.375L0.375111 5.495C0.00711113 5.863 -0.100889 6.411 0.0991111 6.891C0.299111 7.371 0.763111 7.683 1.28311 7.683H11.5231C12.0391 7.683 12.5071 7.371 12.7071 6.891C12.9071 6.411 12.7951 5.863 12.4311 5.495L7.31111 0.375H7.30711Z"/>
         </svg>`;
     };
+    #getResizeArrow() {
+        return `
+        <svg width="13" height="7" viewBox="0 0 13 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clip0_353_21)">
+        <path opacity="0.75" d="M12.7613 2.92618C13.0787 3.24357 13.0787 3.759 12.7613 4.07638L10.3238 6.51388C10.0064 6.83126 9.49102 6.83126 9.17363 6.51388C8.85625 6.1965 8.85625 5.68107 9.17363 5.36368L10.2248 4.31251H6.5V2.68751H10.2248L9.17363 1.63634C8.85625 1.31896 8.85625 0.803528 9.17363 0.486145C9.49102 0.168762 10.0064 0.168762 10.3238 0.486145L12.7613 2.92365V2.92618Z" fill="black"/>
+        <path opacity="0.4" d="M0.23867 2.92618C-0.0787125 3.24357 -0.0787125 3.759 0.23867 4.07638L2.67617 6.51388C2.99355 6.83126 3.50898 6.83126 3.82637 6.51388C4.14375 6.1965 4.14375 5.68107 3.82637 5.36368L2.77519 4.31251H6.5V2.68751H2.77519L3.82637 1.63634C4.14375 1.31896 4.14375 0.803528 3.82637 0.486145C3.50898 0.168762 2.99355 0.168762 2.67617 0.486145L0.23867 2.92365V2.92618Z" fill="black"/>
+        </g><defs><clipPath id="clip0_353_21"><rect width="13" height="7" fill="white"/></clipPath></defs>
+        </svg>      
+`;
+    }
 
     updateData(event) {
         this.dataset = event.detail;
