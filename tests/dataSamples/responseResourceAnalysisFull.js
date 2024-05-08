@@ -82,7 +82,7 @@ export default {
                 },
                 {
                     Id: "task2",
-                    Name: "Task name 2",
+                    Name: "Task name 2 with a longuer name that exceeds usual length",
                     AssignedEfforts: [
                         {
                             UserId: "user1",

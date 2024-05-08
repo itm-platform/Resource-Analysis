@@ -296,7 +296,7 @@ export default {
               },
               {
                 "type": "workItem",
-                "name": "Task name 2",
+                "name": "Task name 2 with a longuer name that exceeds usual length",
                 "values": [
                   {
                     "groupId": 1,

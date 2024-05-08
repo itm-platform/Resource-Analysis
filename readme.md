@@ -247,7 +247,7 @@ In this example we requested two week intervals.
                 },
                 {
                     Id: "task2",
-                    Name: "Task name 2",
+                    Name: "Task name 2 with a longuer name that exceeds usual length",
                     AssignedEfforts: [
                         {
                             UserId: "user1",
@@ -400,7 +400,7 @@ In this example we requested totals.
                 },
                 {
                     Id: "task2",
-                    Name: "Task name 2",
+                    Name: "Task name 2 with a longuer name that exceeds usual length",
                     AssignedEfforts: [
                         {
                             UserId: "user1",

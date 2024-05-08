@@ -209,22 +209,40 @@ export class FlexiTable {
     }
 
     #addExpandCollapseButtons(caretWrapper) {
-        // Create the collapse and expand icons and insert them into the caretWrapper
-        caretWrapper.innerHTML = `${this.#getCaretCollapseAll()}${this.#getCaretExpandAll()}`;
-
-        const collapseIcon = caretWrapper.children[0];
-        const expandIcon = caretWrapper.children[1];
-
+        // Create the collapse and expand icons wrapped in divs with the appropriate class
+        const collapseIconWrapper = document.createElement('div');
+        collapseIconWrapper.className = 'ftbl-toolbar-icon';
+        const collapseIcon = document.createElement('span');
+        collapseIcon.innerHTML = this.#getCaretCollapseAll();
+        collapseIconWrapper.appendChild(collapseIcon);
+        
+        const expandIconWrapper = document.createElement('div');
+        expandIconWrapper.className = 'ftbl-toolbar-icon';
+        const expandIcon = document.createElement('span');
+        expandIcon.innerHTML = this.#getCaretExpandAll();
+        expandIconWrapper.appendChild(expandIcon);
+        
+        // Create a separator div
+        const separator = document.createElement('div');
+        separator.className = 'ftbl-icon-separator';
+        
+        // Append icon wrappers and separator to the caretWrapper
+        caretWrapper.appendChild(collapseIconWrapper);
+        caretWrapper.appendChild(separator);
+        caretWrapper.appendChild(expandIconWrapper);
+        
         // Add event listeners for the icons
-        collapseIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', false, true));
-        expandIcon.addEventListener('click', () => this.#setRowVisibility('tbody tr', true, true));
-
-        // Add common classes and specific IDs to the icons
-        collapseIcon.classList.add('ftbl-caret-toggle-all');
-        collapseIcon.id = 'collapseAll';
-        expandIcon.classList.add('ftbl-caret-toggle-all');
-        expandIcon.id = 'expandAll';
+        collapseIconWrapper.addEventListener('click', () => this.#setRowVisibility('tbody tr', false, true));
+        expandIconWrapper.addEventListener('click', () => this.#setRowVisibility('tbody tr', true, true));
+        
+        // Add common classes and specific IDs to the icon wrappers
+        collapseIconWrapper.classList.add('ftbl-caret-toggle-all');
+        collapseIconWrapper.id = 'collapseAll';
+        expandIconWrapper.classList.add('ftbl-caret-toggle-all');
+        expandIconWrapper.id = 'expandAll';
     }
+    
+    
 
     #addToolbarToHeaderFirstCell(headerRow) {
         const createViewSelectorWrapper = (headerToolbar) => {
@@ -361,7 +379,7 @@ export class FlexiTable {
     }
     #getCaretCollapseAll() {
         return `
-        <svg xmlns="http://www.w3.org/2000/svg" fill="#000" viewBox="0 0 13 17" height="17">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 13 17" height="16">
             <path d="m5.536 7.344c0.5 0.5 1.312 0.5 1.812 0l5.12-5.12c0.368-0.368 0.476-0.916 0.276-1.396-0.2-0.48-0.664-0.792-1.184-0.792l-10.24 0.0040003c-0.516 0-0.984 0.312-1.184 0.792-0.2 0.48-0.088 1.028 0.276 1.396l5.12 5.12 4e-3 -4e-3z"/>
             <path d="m7.3071 9.375c-0.5-0.5-1.312-0.5-1.812 0l-5.12 5.12c-0.368 0.368-0.476 0.916-0.276 1.396 0.2 0.48 0.664 0.792 1.184 0.792h10.24c0.516 0 0.984-0.312 1.184-0.792s0.088-1.028-0.276-1.396l-5.12-5.12h-4e-3z"/>
         </svg>
@@ -369,7 +387,7 @@ export class FlexiTable {
     };
     #getCaretExpandAll() {
         return `
-        <svg xmlns="http://www.w3.org/2000/svg" fill="#000" viewBox="0 0 13 17" height="17">     
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 13 17" height="16">     
             <path d="M5.49823 16.308C5.99823 16.808 6.81023 16.808 7.31023 16.308L12.4302 11.188C12.7982 10.82 12.9062 10.272 12.7062 9.792C12.5062 9.312 12.0422 9 11.5222 9L1.28223 9.004C0.766227 9.004 0.298227 9.316 0.0982268 9.796C-0.101773 10.276 0.0102268 10.824 0.374227 11.192L5.49423 16.312L5.49823 16.308Z"/>
             <path d="M7.30711 0.375C6.80711 -0.125 5.99511 -0.125 5.49511 0.375L0.375111 5.495C0.00711113 5.863 -0.100889 6.411 0.0991111 6.891C0.299111 7.371 0.763111 7.683 1.28311 7.683H11.5231C12.0391 7.683 12.5071 7.371 12.7071 6.891C12.9071 6.411 12.7951 5.863 12.4311 5.495L7.31111 0.375H7.30711Z"/>
         </svg>`;

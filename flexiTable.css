@@ -140,15 +140,32 @@
     justify-content: space-between;
     align-content: center;
     align-items: center;
-    margin: 0 15px;
+    margin: 0 10px;
+    flex-wrap: wrap;
 }
 
 .ftbl-toolbar-set-wrapper{
     border: solid var(--ftbl-border-width) var(--ftbl-border-color);
     border-radius: 3px;
     padding: 2px;
+    height: 100%;
+    display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+    height: 23px;
 }
 
-.ftbl-caret-wrapper{
-    padding:5px;
+.ftbl-icon-separator{
+    width: 1px;
+    margin: 0 0.4em;
+    border-right: solid 1px #ccc;
+    height: 14px;
+}
+
+.ftbl-toolbar-icon {
+    height: 15px;
+    fill:#666; 
+}
+.ftbl-toolbar-icon:hover {
+    fill:#333; 
 }
