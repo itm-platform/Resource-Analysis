@@ -13,8 +13,8 @@ describe('ViewSelector basics', () => {
         document.body.appendChild(parentDiv);
 
         options = [
-            { svg: '<svg>...</svg>', name: 'Option 1', tooltip: 'Option 1 tooltip' },
-            { svg: '<svg>...</svg>', name: 'Option 2', tooltip: 'Option 2 tooltip' }
+            { svg: '<svg class="reslysis-view-selector-icon">...</svg>', name: 'Option 1', tooltip: 'Option 1 tooltip' },
+            { svg: '<svg class="reslysis-view-selector-icon">...</svg>', name: 'Option 2', tooltip: 'Option 2 tooltip' }
         ];
 
         viewSelector = new ViewSelector(options);
@@ -56,4 +56,34 @@ describe('ViewSelector basics', () => {
         
         expect(firstIconWrapper.classList).toContain('reslysis-view-selector-icon-selected');
     });
+    test('should render separators between icon wrappers but not before the first or after the last icon', () => {
+        viewSelector.attachTo(parentDiv);
+        const separators = parentDiv.querySelectorAll('.reslysis-view-selector-icon-separator');
+        expect(separators.length).toBe(options.length - 1); // There should be one less separator than there are options
+    });
+    test('should ensure custom events bubble up the DOM', () => {
+        const spy = vi.fn();
+        document.addEventListener('optionSelected', spy);
+        viewSelector.attachTo(parentDiv);
+    
+        const firstIconWrapper = parentDiv.querySelector('.reslysis-view-selector-iconWrapper');
+        firstIconWrapper.click();
+    
+        expect(spy).toHaveBeenCalled();
+        document.removeEventListener('optionSelected', spy); // Clean up
+    });
+    test('should handle rapid clicks across different options', () => {
+        viewSelector.attachTo(parentDiv);
+        const iconWrappers = parentDiv.querySelectorAll('.reslysis-view-selector-iconWrapper');
+    
+        iconWrappers[0].click();
+        expect(iconWrappers[0].classList).toContain('reslysis-view-selector-icon-selected');
+        
+        iconWrappers[1].click();
+        expect(iconWrappers[1].classList).toContain('reslysis-view-selector-icon-selected');
+        expect(iconWrappers[0].classList).not.toContain('reslysis-view-selector-icon-selected');
+    });
+    
+    
+    
 });
