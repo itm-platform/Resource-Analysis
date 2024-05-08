@@ -2,7 +2,9 @@
 :root {
     --ftbl-border-color: #ccc;
     --ftbl-border-width: 1px;  
-    --ftbl-row-height: 2.3em; 
+    --ftbl-row-height: 2.2em; 
+    --ftbl-header-background-color: #f2f2f2;
+    --ftbl-toolbar-background-color: #fdfdfd;
 }
 
 .ftbl-table-wrapper {
@@ -21,7 +23,7 @@
 .ftbl-header-row {
 
     border-collapse: collapse;
-    background-color: #eee;
+    background-color: var(--ftbl-header-background-color);
 }
 
 .ftbl-header-group-cell {
@@ -66,6 +68,9 @@
     display: flex;
     align-items: center;
     flex: 1; /* Take available space */
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Show ellipsis for overflow */
     padding-left: 5px; /* Default padding */
 }
 
@@ -153,6 +158,7 @@
     align-content: center;
     flex-wrap: wrap;
     height: 23px;
+    background-color: var(--ftbl-toolbar-background-color);
 }
 
 .ftbl-icon-separator{
