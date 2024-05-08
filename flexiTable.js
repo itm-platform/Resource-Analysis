@@ -149,6 +149,37 @@ export class FlexiTable {
         this.#addToolbarToHeaderFirstCell(headerRow);
         this.#addGroupHeaders(headerRow);
         this.#addColumnsHeaders(header);
+        this.#addResizingHandle(headerRow.cells[0]); // Assuming first cell is the name column header
+    }
+
+    #addResizingHandle(headerCell) {
+        const resizeHandle = document.createElement('div');
+        resizeHandle.style.cssText = 'position: absolute; right: 0; top: 0; width: 5px; height: 100%; cursor: col-resize; user-select: none;';
+        headerCell.style.position = 'relative';
+        headerCell.appendChild(resizeHandle);
+
+        let startX, startWidth;
+
+        resizeHandle.addEventListener('mousedown', function(e) {
+            startX = e.clientX;
+            startWidth = headerCell.offsetWidth;
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            e.preventDefault(); // Prevent text selection
+        });
+
+        function onMouseMove(e) {
+            const newWidth = startWidth + e.clientX - startX;
+            headerCell.style.width = `${newWidth}px`;
+            document.querySelectorAll('.ftbl-name-cell').forEach(cell => {
+                cell.style.width = `${newWidth}px`;
+            });
+        }
+
+        function onMouseUp() {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
     }
 
     #addColumnsHeaders(header) {

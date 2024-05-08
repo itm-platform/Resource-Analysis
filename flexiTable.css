@@ -35,6 +35,7 @@
     text-align: center;
     font-size: .9em;
     color: #666;
+    overflow: hidden;
 }
 
 .ftbl-row-level-1-expanded {
@@ -60,7 +61,7 @@
     align-items: center;
     text-align: left; 
     height:var(--ftbl-row-height);
-    width: 15em; /* Specific width for the first column/cell */
+    min-width: 15em; /* Specific width for the first column/cell */
     border-right: solid var(--ftbl-border-width) var(--ftbl-border-color);
     overflow: auto;
 }
@@ -176,3 +177,5 @@
 .ftbl-toolbar-icon:hover {
     fill:#333; 
 }
+
+
