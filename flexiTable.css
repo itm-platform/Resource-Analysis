@@ -120,9 +120,10 @@
 }
 
 .ftbl-caret-toggle-all {
-    height: .95em;
+    height: 15px;
     cursor: pointer;
-    fill: #444
+    margin: 0 2px;
+    fill: #444;
 }
 .ftbl-caret-toggle-all-enabled {
     cursor: pointer;
@@ -132,4 +133,22 @@
 .ftbl-caret-toggle-all-disabled {
     cursor: default;
     fill: #999
+}
+
+.ftbl-header-toolbar{
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+    margin: 0 15px;
+}
+
+.ftbl-toolbar-set-wrapper{
+    border: solid var(--ftbl-border-width) var(--ftbl-border-color);
+    border-radius: 3px;
+    padding: 2px;
+}
+
+.ftbl-caret-wrapper{
+    padding:5px;
 }

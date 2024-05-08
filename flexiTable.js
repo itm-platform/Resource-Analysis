@@ -227,27 +227,37 @@ export class FlexiTable {
     }
 
     #addToolbarToHeaderFirstCell(headerRow) {
-        // Create the main toolbar div and add it to the header cell
-        const headerToolbar = document.createElement('div');
-        headerToolbar.id = 'headerToolbar';
-        const toggleCell = headerRow.insertCell();
-        toggleCell.appendChild(headerToolbar);
-
-        // Caret wrapper div
-        const caretWrapper = document.createElement('div');
-        caretWrapper.id = 'caretWrapper';
-        headerToolbar.appendChild(caretWrapper);
-        this.#addExpandCollapseButtons(caretWrapper);
-
-        // viewSelector div
-        const viewSelector = document.createElement('div');
-        viewSelector.id = 'viewSelector';
-        headerToolbar.appendChild(viewSelector);
-        this.#attachViewSelector(viewSelector);
-
-        // Add a class to the header toggle cell for styling
-        toggleCell.classList.add('ftbl-header-toggle-cell');
+        const createViewSelectorWrapper = (headerToolbar) => {
+            const viewSelectorWrapper = document.createElement('div');
+            viewSelectorWrapper.id = 'viewSelector';
+            viewSelectorWrapper.classList.add('ftbl-toolbar-set-wrapper');
+            headerToolbar.appendChild(viewSelectorWrapper);
+            this.#attachViewSelector(viewSelectorWrapper);
+        }
+    
+        const createCollapseExpandAllToolbar = (headerToolbar) => {
+            const caretWrapper = document.createElement('div');
+            caretWrapper.id = 'caretWrapper';
+            caretWrapper.classList.add('ftbl-toolbar-set-wrapper');
+            caretWrapper.classList.add('ftbl-caret-wrapper');
+            headerToolbar.appendChild(caretWrapper);
+            this.#addExpandCollapseButtons(caretWrapper);
+        }
+    
+        const createHeaderToolbar = () => {
+            const headerToolbar = document.createElement('div');
+            headerToolbar.id = 'headerToolbar';
+            headerToolbar.classList.add('ftbl-header-toolbar');
+            toolbarCell.appendChild(headerToolbar);
+            return headerToolbar;
+        }
+    
+        const toolbarCell = headerRow.insertCell();
+        const headerToolbar = createHeaderToolbar();
+        createCollapseExpandAllToolbar(headerToolbar);
+        createViewSelectorWrapper(headerToolbar);
     }
+    
 
     #attachViewSelector(viewSelectorWrapper) {
         if (this.viewSelector) {

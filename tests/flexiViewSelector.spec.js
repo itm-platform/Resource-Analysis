@@ -22,7 +22,7 @@ describe('ViewSelector basics', () => {
 
     test('should render icon wrappers for each option with SVGs', () => {
         viewSelector.attachTo(parentDiv);
-        const iconWrappers = parentDiv.querySelectorAll('.reslysis-iconWrapper');
+        const iconWrappers = parentDiv.querySelectorAll('.reslysis-view-selector-iconWrapper');
         expect(iconWrappers.length).toBe(options.length);
         iconWrappers.forEach((wrapper, index) => {
             expect(wrapper.innerHTML).toContain(options[index].svg);
@@ -35,7 +35,7 @@ describe('ViewSelector basics', () => {
         parentDiv.addEventListener('optionSelected', spy);
         viewSelector.attachTo(parentDiv);
 
-        const firstIconWrapper = parentDiv.querySelector('.reslysis-iconWrapper');
+        const firstIconWrapper = parentDiv.querySelector('.reslysis-view-selector-iconWrapper');
         firstIconWrapper.click();
         
         expect(spy).toHaveBeenCalled();
@@ -51,9 +51,9 @@ describe('ViewSelector basics', () => {
 
     test('should highlight the selected icon when clicked', () => {
         viewSelector.attachTo(parentDiv);
-        const firstIconWrapper = parentDiv.querySelector('.reslysis-iconWrapper');
+        const firstIconWrapper = parentDiv.querySelector('.reslysis-view-selector-iconWrapper');
         firstIconWrapper.click(); // Simulate a click to select the first option
         
-        expect(firstIconWrapper.classList).toContain('reslysis-selected');
+        expect(firstIconWrapper.classList).toContain('reslysis-view-selector-icon-selected');
     });
 });

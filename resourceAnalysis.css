@@ -1,16 +1,25 @@
-.reslysis-viewIconsContainer {
+.reslysis-view-selector-viewIconsContainer {
     display: flex;
     align-items: center;
     justify-content: start;
 }
 
-.reslysis-iconWrapper {
+.reslysis-view-selector-iconWrapper {
     display: inline-block;
     margin: 5px;
     cursor: pointer;
     border: 1px solid transparent; /* Add border to maintain layout */
+    fill:#666; /* Default color, can be changed */
 }
 
-.reslysis-selected {
-    border-color: #007BFF; /* Highlight color, can be changed */
+.reslysis-view-selector-icon-separator{
+    width: 1px;
+    margin: 0 0.4em;
+    border-right: solid 1px #ccc;
+    height: 14px;
 }
+
+.reslysis-view-selector-icon-selected {
+    fill:#333; /* Selected color */
+}
+

@@ -7,7 +7,7 @@ export class ViewSelector {
     constructor(options) {
         this.options = options;
         this.element = document.createElement('div');
-        this.element.className = 'reslysis-viewIconsContainer';
+        this.element.className = 'reslysis-view-selector-viewIconsContainer';
         // Ensure at least one option is selected (the first one by default if none is specified)
         const selectedOption = this.options.find(opt => opt.selected);
         if (!selectedOption && this.options.length > 0) {
@@ -17,33 +17,61 @@ export class ViewSelector {
     }
 
     render() {
-        this.element.innerHTML = ''; // Clear existing content before re-rendering
-        this.options.forEach(option => {
-            const iconWrapper = document.createElement('div');
-            iconWrapper.className = 'reslysis-iconWrapper';
-            iconWrapper.innerHTML = option.svg;
-            iconWrapper.title = option.tooltip;
-            iconWrapper.style.width = '16px';
-            iconWrapper.style.height = '16px';
-            iconWrapper.onclick = () => this.selectOption(option);
-            if (option.selected) {
-                iconWrapper.classList.add('reslysis-selected');
+        this.element.innerHTML = ''; // Clear existing content
+    
+        this.options.forEach((option, index) => {
+            if (index > 0) {
+                const separator = document.createElement('div');
+                separator.className = 'reslysis-view-selector-icon-separator';
+                this.element.appendChild(separator);
             }
+    
+            const iconWrapper = document.createElement('div');
+            iconWrapper.className = 'reslysis-view-selector-iconWrapper';
+            iconWrapper.title = option.tooltip;
+            iconWrapper.setAttribute('data-index', index); // Set data-index attribute
+            iconWrapper.onclick = () => this.selectOption(option);
+            
+            const svgContainer = document.createElement('div');
+            svgContainer.innerHTML = option.svg;
+            const svgElement = svgContainer.firstElementChild;
+            if (svgElement) {
+                svgElement.classList.add('reslysis-view-selector-icon');
+                iconWrapper.appendChild(svgElement);
+            }
+    
+            if (option.selected) {
+                iconWrapper.classList.add('reslysis-view-selector-icon-selected');
+            }
+    
             this.element.appendChild(iconWrapper);
         });
     }
+    
+    
 
     selectOption(option) {
         this.options.forEach(opt => {
             opt.selected = false;
-            this.element.children[this.options.indexOf(opt)].classList.remove('reslysis-selected');
         });
+    
+        // Remove selected class from all icon wrappers
+        const iconWrappers = this.element.querySelectorAll('.reslysis-view-selector-iconWrapper');
+        iconWrappers.forEach(wrapper => {
+            wrapper.classList.remove('reslysis-view-selector-icon-selected');
+        });
+    
         option.selected = true;
-        const index = this.options.indexOf(option);
-        this.element.children[index].classList.add('reslysis-selected');
+        const selectedIconWrapper = this.element.querySelector(`.reslysis-view-selector-iconWrapper[data-index="${this.options.indexOf(option)}"]`);
+        if (selectedIconWrapper) {
+            selectedIconWrapper.classList.add('reslysis-view-selector-icon-selected');
+        }
+    
+        console.log(`Selected option: ${option.name} with index: ${this.options.indexOf(option)}`);
         const event = new CustomEvent('optionSelected', { detail: option.name, bubbles: true });
         this.element.dispatchEvent(event);
     }
+    
 
     attachTo(parent) {
         parent.appendChild(this.element);
