@@ -5,6 +5,7 @@
     --ftbl-row-height: 2.2em; 
     --ftbl-header-background-color: #f2f2f2;
     --ftbl-toolbar-background-color: #fdfdfd;
+    --ftbl-first-column-width: 15em;
 }
 
 .ftbl-table-wrapper {
@@ -61,7 +62,8 @@
     align-items: center;
     text-align: left; 
     height:var(--ftbl-row-height);
-    min-width: 15em; /* Specific width for the first column/cell */
+    min-width: var(--ftbl-first-column-width); /* Default width for name cell */
+    width: var(--ftbl-first-column-width); /* Default width for name cell */
     border-right: solid var(--ftbl-border-width) var(--ftbl-border-color);
     overflow: auto;
 }
