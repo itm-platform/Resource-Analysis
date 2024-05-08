@@ -62,6 +62,7 @@
     height:var(--ftbl-row-height);
     width: 15em; /* Specific width for the first column/cell */
     border-right: solid var(--ftbl-border-width) var(--ftbl-border-color);
+    overflow: auto;
 }
 
 .ftbl-inner-content {
