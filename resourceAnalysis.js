@@ -14,7 +14,6 @@ export class ResourceAnalysis {
         this.rowSelectorDivId = parentDivIds.rowSelectorContainer;
         this.tableContainerDivId = parentDivIds.tableContainer;
 
-        // Declare component properties
         this.filterConstructor = null;
         this.viewSelector = null;
         this.flexiRowSelector = null;
@@ -39,7 +38,7 @@ export class ResourceAnalysis {
         this.viewSelector = new ViewSelector([
             { name: VALID_VIEW_CONFIGS.entityWorkItem, tooltip: 'Entity - Work Item', svg: this.getSVG(VALID_VIEW_CONFIGS.entityWorkItem) },
             { name: VALID_VIEW_CONFIGS.entityUser, tooltip: 'Entity - User', svg: this.getSVG(VALID_VIEW_CONFIGS.entityUser)},
-            { name: VALID_VIEW_CONFIGS.user, tooltip: 'User', svg: this.getSVG(VALID_VIEW_CONFIGS.user)}
+            { name: VALID_VIEW_CONFIGS.user, tooltip: 'User - Entity', svg: this.getSVG(VALID_VIEW_CONFIGS.user)}
         ]);
     
         this.#fetchEffortData().then(() => {
@@ -47,22 +46,13 @@ export class ResourceAnalysis {
         }).catch(error => console.error('Error initializing components:', error));
     }
     
-    #renderFlexiTable() {
-        // empty the div
-        document.getElementById(this.tableContainerDivId).innerHTML = '';
-        this.flexiRowSelector = new FlexiRowSelector(this.rowSelectorDivId, {
-            user: true, project: true, workItem: true // inject from tha parent HTML getting for the saved preferences for the user
-        }, this.transformedData.rows);
-
-        this.flexiTable = new FlexiTable(this.tableContainerDivId, this.transformedData, this.flexiRowSelector.getRows(), this.viewSelector);
-    }
 
     async #fetchEffortData() {
         const { analysisMode } = this.state;
         let fileURL;
         if (analysisMode === VALID_ANALYSIS_MODES.intervals) {
-            //fileURL = './tests/dataSamples/responseResourceAnalysisIntervals.js';
-            fileURL = './tests/dataSamples/mock_interval_Quarter.js';
+            fileURL = './tests/dataSamples/responseResourceAnalysisIntervals.js';
+            //fileURL = './tests/dataSamples/mock_interval_Quarter.js';
         } else if (analysisMode === VALID_ANALYSIS_MODES.totals) {
             fileURL = './tests/dataSamples/responseResourceAnalysisTotals.js';
         }
@@ -76,6 +66,16 @@ export class ResourceAnalysis {
             console.error('Error fetching data:', err);
             throw err;
         }
+    }
+
+    #renderFlexiTable() {
+        // empty the div
+        document.getElementById(this.tableContainerDivId).innerHTML = '';
+        this.flexiRowSelector = new FlexiRowSelector(this.rowSelectorDivId, {
+            user: true, project: true, workItem: true // inject from tha parent HTML getting for the saved preferences for the user
+        }, this.transformedData.rows);
+
+        this.flexiTable = new FlexiTable(this.tableContainerDivId, this.transformedData, this.flexiRowSelector.getRows(), this.viewSelector);
     }
 
     #addEventListeners() {
