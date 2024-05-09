@@ -1,3 +1,4 @@
+import resourceAnalysisJSONResponseValidator from './resourceAnalysisJSONResponseValidator.js';
 import { FilterConstructor } from './filterConstructor.js';
 import { ViewSelector } from './flexiViewSelector.js';
 import { FlexiTable } from './flexiTable.js';
@@ -60,7 +61,8 @@ export class ResourceAnalysis {
         const { analysisMode } = this.state;
         let fileURL;
         if (analysisMode === VALID_ANALYSIS_MODES.intervals) {
-            fileURL = './tests/dataSamples/responseResourceAnalysisIntervals.js';
+            //fileURL = './tests/dataSamples/responseResourceAnalysisIntervals.js';
+            fileURL = './tests/dataSamples/mock_interval_Quarter.js';
         } else if (analysisMode === VALID_ANALYSIS_MODES.totals) {
             fileURL = './tests/dataSamples/responseResourceAnalysisTotals.js';
         }
@@ -68,6 +70,7 @@ export class ResourceAnalysis {
         try {
             const module = await import(fileURL);
             this.#setState({ responseData: module.default });
+            resourceAnalysisJSONResponseValidator.validate(this.state.responseData);
             this.transformedData= this.#transformData(this.state.responseData, this.state.analysisMode, this.state.viewConfig);
         } catch (err) {
             console.error('Error fetching data:', err);

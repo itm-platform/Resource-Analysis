@@ -402,7 +402,6 @@ export class FlexiTable {
 
     updateData(event) {
         this.dataset = event.detail;
-        console.log('Updating data:', this.dataset);
         this.container.innerHTML = '';
         this.generateTable();
     }
