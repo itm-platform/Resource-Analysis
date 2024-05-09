@@ -127,7 +127,6 @@ The response structure will be the like so. You can see a [full example below](#
                             TotalUserWorkItemEffort?: { EstimatedEffort, AcceptedEffort }
                         },
                     ],
-                    UnassignedEfforts: { CategoryN: Integer, ...others},
                 },
             ],
         },
@@ -144,6 +143,8 @@ The response structure will be the like so. You can see a [full example below](#
 Explanation:
 - `Intervals` will be present depending on `analysisMode`. StartDate and EndDate include time, although the time is always 00:00:00 for the start and 23:59:59 for the end.
 - Totals (such as `UserWorkItemTotals`, `WorkItemTotals`, and `EntityTotals`) will not consider intervals; they are the totals. (beware of double calculations)
+  
+Note: we removed the unassigned efforts from the response. `UnassignedEfforts: { CategoryN: Integer, ...others},` If needed, we can add them back
 
 #### Response testing
 The response must pass the validation. 
@@ -164,6 +165,17 @@ resourceAnalysisJSONResponseValidator.validate(response);
 
 ### Query approach
 For intervals, instead of using ITM.Tasks for running the queries, I suggest to look into the current `/resourceCapacity` endpoint. The reason is so fast, I think, is because it looks into the "effort" table rather than querying the project, then task, then user, then estimate and actuals. Just an option to explore, since performance here is paramount and it is well solved in `/resourceCapacity`.
+
+#### Tables involved
+Used for Intervals
+
+- Daily Estimated:` [tblWorkHourDistribute] - [intTaskId] ,[intUserId] ,[dtsDate] ,[intWorkMin]` !!! No AccountID
+- Daily Actuals: `[tblTaskTime] - [intTaskTimeId] ,[intAccountId] ,[intProjectId] ,[intTaskId] ,[intUserId], ,[dtsWorkdate], ,[intWorkHour], ,[intWorkMin]` !!! No AccountID
+
+Ussed for Totals:
+
+Total Estimated and Accepted: `[tblTaskUser] [intTaskUserId] ,[intTaskId] ,[intProjectUserId], ,[intEstimatedHours], ,[intEstimatedMins] ,[intActualEffortAcceptedHours] ,[intActualEffortAcceptedMins]`
+
 
 > ❓Are services in v2? If not, we can remove the `service` filter and offer the feature only for projects in the first version.
 

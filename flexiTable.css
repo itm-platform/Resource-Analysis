@@ -162,6 +162,7 @@
     flex-wrap: wrap;
     height: 23px;
     background-color: var(--ftbl-toolbar-background-color);
+    margin-right: 6px;
 }
 
 .ftbl-icon-separator{

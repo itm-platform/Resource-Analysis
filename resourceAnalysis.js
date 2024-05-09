@@ -3,7 +3,7 @@ import { ViewSelector } from './flexiViewSelector.js';
 import { FlexiTable } from './flexiTable.js';
 import { FlexiRowSelector } from './flexiRowSelector.js';
 import { EffortTransformer } from './effortTransformer.js';
-
+// TODO - A - Translations
 
 const VALID_ANALYSIS_MODES = { intervals: 'intervals', totals: 'totals' };
 const VALID_VIEW_CONFIGS = { entityWorkItem: 'entity-workItem', entityUser: 'entity-user', user: 'user' };
