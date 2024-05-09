@@ -66,15 +66,16 @@ In this example, we are requesting five weeks starting on 2024-01-01. The respon
 > 👉🏼 Note: Copy the current way of calculating intervals of `/resourceCapacity`: weeks are 7 days, months are sensitive to whether they have 28, 29, 03 or 31 days. 
 
 #### `Filter` 
-Optional. Determines which entities and users are requested. Filters can apply to entities and users. 
+    filter:{project, service, user}
+Optional. Determines which entities and users are requested. Filters can apply to entities (`project`, `service`) and users (`user`). 
 
 1. The general form is:
     ```js
     filter:{project, service, user}
     ```
-2. When a filter is applied, it will return the main property. For example, `"ExternalClient.Id":{"$in":[*]}`  will return the `ExternalClient:{Id, Name}` property.
-    > ⚠️ Confirm the format `"$in":[*]` works. This is the way to include properties in the response without filtering the,.
-3. If no filters are present, it will return all active entities and their users.
+2. When a filter is applied, it will return the main property. For example, `{project: "ExternalClient.Id":{"$in":[*]}}`  will return the project's `ExternalClient:{Id, Name}` property.
+    > ⚠️ Confirm the format `"$in":[*]` works. This is the way to include properties in the response without filtering.
+3. If no filters are present, it will return all **active** entities (inactive must not be present).
 
 
 **Filter examples**
@@ -160,7 +161,7 @@ const result = await fetch('http://localhost:3000/resourceAnalysis', {
     body: JSON.stringify(payload)
 });
 const response = await result.json();
-resourceAnalysisJSONResponseValidator.validate(response);
+resourceAnalysisValidator.validateResponse(response);
 ``` 
 
 

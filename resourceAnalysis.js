@@ -1,4 +1,4 @@
-import resourceAnalysisJSONResponseValidator from './resourceAnalysisJSONResponseValidator.js';
+import resourceAnalysisValidator from './resourceAnalysisValidator.js';
 import { FilterConstructor } from './filterConstructor.js';
 import { ViewSelector } from './flexiViewSelector.js';
 import { FlexiTable } from './flexiTable.js';
@@ -60,7 +60,7 @@ export class ResourceAnalysis {
         try {
             const module = await import(fileURL);
             this.#setState({ responseData: module.default });
-            resourceAnalysisJSONResponseValidator.validate(this.state.responseData);
+            resourceAnalysisValidator.validateResponse(this.state.responseData);
             this.transformedData= this.#transformData(this.state.responseData, this.state.analysisMode, this.state.viewConfig);
         } catch (err) {
             console.error('Error fetching data:', err);

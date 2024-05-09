@@ -1,6 +1,6 @@
-// resourceAnalysisJSONResponseValidator.js
+// resourceAnalysisValidator.js
 export default {
-    validate(response) {
+    validateResponse(response) {
         if (!response.Entities || !response.Users || !response.Categories) {
             throw new Error('Missing one of the main objects: Entities, Users, or Categories.');
         }
@@ -87,6 +87,42 @@ export default {
                 throw new Error(`Each category must have an "Id" and "Name". Found: ${category.Id} and ${category.Name}`);
             }
         });
-    }
+    },
+    validateRequest(request) {
+        // Check if analysisMode is present and valid
+        if (!request.analysisMode || (request.analysisMode !== 'intervals' && request.analysisMode !== 'totals')) {
+            throw new Error('Invalid analysisMode: must be either "intervals" or "totals".');
+        }
 
+        // Validate intervals if analysisMode is intervals
+        if (request.analysisMode === 'intervals') {
+            if (!request.intervals) {
+                throw new Error('Intervals section is required for analysisMode "intervals".');
+            }
+
+            if (!request.intervals.startDate || typeof request.intervals.startDate !== 'string') {
+                throw new Error('Invalid or missing startDate in intervals.');
+            }
+
+            if (!request.intervals.intervalType || typeof request.intervals.intervalType !== 'string') {
+                throw new Error('Invalid or missing intervalType in intervals.');
+            }
+
+            if (!['day', 'week', 'month', 'quarter'].includes(request.intervals.intervalType)) {
+                throw new Error('Invalid intervalType in intervals. Must be one of: day, week, month, quarter.');
+            }
+
+            if (!request.intervals.noOfIntervals || typeof request.intervals.noOfIntervals !== 'number') {
+                throw new Error('Invalid or missing noOfIntervals in intervals.');
+            }
+        }
+
+        if (request.filter) {
+            ['project', 'service', 'user'].forEach(filterKey => {
+                if (request.filter[filterKey] && typeof request.filter[filterKey] !== 'object') {
+                    throw new Error(`Filter for ${filterKey} should be an object with valid query parameters.`);
+                }
+            });
+        }
+    }
 };
