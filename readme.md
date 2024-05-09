@@ -164,18 +164,18 @@ resourceAnalysisJSONResponseValidator.validate(response);
 
 
 ### Query approach
-For intervals, instead of using ITM.Tasks for running the queries, I suggest to look into the current `/resourceCapacity` endpoint. The reason is so fast, I think, is because it looks into the "effort" table rather than querying the project, then task, then user, then estimate and actuals. Just an option to explore, since performance here is paramount and it is well solved in `/resourceCapacity`.
+We have to use the effort tables as primary sources:
 
-#### Tables involved
-Used for Intervals
+#### Used for Intervals
 
-- Daily Estimated:` [tblWorkHourDistribute] - [intTaskId] ,[intUserId] ,[dtsDate] ,[intWorkMin]` !!! No AccountID
-- Daily Actuals: `[tblTaskTime] - [intTaskTimeId] ,[intAccountId] ,[intProjectId] ,[intTaskId] ,[intUserId], ,[dtsWorkdate], ,[intWorkHour], ,[intWorkMin]` !!! No AccountID
+- Daily Estimated:` [tblWorkHourDistribute] - [intTaskId] ,[intUserId] ,[dtsDate] ,[intWorkMin]` ⚠️ No AccountID
+- Daily Actuals: `[tblTaskTime] - [intTaskTimeId] ,[intAccountId] ,[intProjectId] ,[intTaskId] ,[intUserId], ,[dtsWorkdate], ,[intWorkHour], ,[intWorkMin]` ⚠️ No AccountID. Must convert HH:MM to minutes.
 
-Ussed for Totals:
+#### Used for Totals:
 
-Total Estimated and Accepted: `[tblTaskUser] [intTaskUserId] ,[intTaskId] ,[intProjectUserId], ,[intEstimatedHours], ,[intEstimatedMins] ,[intActualEffortAcceptedHours] ,[intActualEffortAcceptedMins]`
+Total Estimated and Accepted: `[tblTaskUser] [intTaskUserId] ,[intTaskId] ,[intProjectUserId], ,[intEstimatedHours], ,[intEstimatedMins] ,[intActualEffortAcceptedHours] ,[intActualEffortAcceptedMins]` ⚠️ No AccountID. Must convert HH:MM to minutes.
 
+We need to decide if filtering will happen before, after or it will be a join.
 
 > ❓Are services in v2? If not, we can remove the `service` filter and offer the feature only for projects in the first version.
 
