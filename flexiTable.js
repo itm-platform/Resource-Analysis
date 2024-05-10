@@ -5,7 +5,7 @@ import { renderUserName, renderEntityName, renderDuration } from './renderFuncti
 // TODO - A - Render hours with minutes
 // TODO - B- Export
 export class FlexiTable {
-    constructor(containerId, dataset, rowFilters = {}, viewSelector) {
+    constructor(containerId, dataset, rowFilters = {}, pivotSelector) {
         cacheIconPaths().catch(error => {
             throw new Error("Failed to preload icons:", error);
         });
@@ -13,7 +13,7 @@ export class FlexiTable {
         this.container = document.getElementById(containerId);
         this.dataset = dataset;
         this.rowFilters = rowFilters || {};
-        this.viewSelector = viewSelector;
+        this.pivotSelector = pivotSelector;
 
         const uniqueUsers = this.#getUniqueUsers(dataset.rows);
         cacheUserImagePaths(uniqueUsers).then(() => {
@@ -244,7 +244,7 @@ export class FlexiTable {
     #addToolbarToHeaderFirstCell(headerRow) {
         const createViewSelectorWrapper = (headerToolbar) => {
             const viewSelectorWrapper = document.createElement('div');
-            viewSelectorWrapper.id = 'viewSelector';
+            viewSelectorWrapper.id = 'pivotSelector';
             viewSelectorWrapper.classList.add('ftbl-toolbar-set-wrapper');
             headerToolbar.appendChild(viewSelectorWrapper);
             this.#attachViewSelector(viewSelectorWrapper);
@@ -275,8 +275,8 @@ export class FlexiTable {
         createViewSelectorWrapper(headerToolbar);
     }
     #attachViewSelector(viewSelectorWrapper) {
-        if (this.viewSelector) {
-            this.viewSelector.attachTo(viewSelectorWrapper);
+        if (this.pivotSelector) {
+            this.pivotSelector.attachTo(viewSelectorWrapper);
         }
     }
     #createHeader() {

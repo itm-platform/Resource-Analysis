@@ -1,11 +1,10 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { FilterConstructor } from '../filterConstructor'; // Adjust the path as necessary
+import { RequestConstructor } from '../requestConstructor'; // Adjust the path as necessary
 
-describe('FilterConstructor basics', () => {
-    let filterConstructor;
+describe('RequestConstructor basics', () => {
+    let requestConstructor;
     let parentDivId;
-    let analysisMode;
-    let queryFilter;
+    let requestObject ={};
     let dataServiceModel;
     let parentDiv;
 
@@ -18,10 +17,15 @@ describe('FilterConstructor basics', () => {
         document.body.appendChild(parentDiv);
 
         // Setting up initial states
-        analysisMode = 'intervals';
-        queryFilter = {
+        requestObject.analysisMode = 'intervals';
+        requestObject.filter = {
             project: { "Program.Id": { $in: [12, 23] } },
             service: { "Program.Id": { $in: [12, 23] } }
+        };
+        requestObject.intervals = {
+            startDate: '2021-01-01',
+            intervalType: 'quarter',
+            noOfIntervals: 4
         };
         dataServiceModel = {
             tables: {
@@ -43,12 +47,14 @@ describe('FilterConstructor basics', () => {
             }
         };
 
-        filterConstructor = new FilterConstructor(analysisMode, queryFilter, dataServiceModel, parentDivId);
+        requestConstructor = new RequestConstructor(
+            { analysisMode: requestObject.analysisMode, filter: requestObject.filter, intervals: requestObject.intervals },
+            dataServiceModel, parentDivId);
     });
 
-    test('should dispatch "filterUpdated" event with filter details when the button is clicked', () => {
+    test('should dispatch "requestUpdated" event with filter details when the button is clicked', () => {
         const spy = vi.fn();
-        document.addEventListener('filterUpdated', spy);
+        document.addEventListener('requestUpdated', spy);
 
         const button = parentDiv.querySelector('button');
         button.click();
@@ -56,8 +62,8 @@ describe('FilterConstructor basics', () => {
         expect(spy).toHaveBeenCalled();
         expect(spy).toHaveBeenCalledWith(expect.objectContaining({
             detail: {
-                analysisMode: analysisMode,
-                filter: queryFilter
+                analysisMode: requestObject.analysisMode,
+                filter: requestObject.filter
             }
         }));
     });

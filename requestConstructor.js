@@ -1,14 +1,17 @@
-/** filterConstructor.js
-* @param {string} analysisMode - The analysis mode that can either be 'intervals' or 'totals'
-* @param {Object} queryFilter - The query filter object. Example: {project:{"Program.Id":{$in:[12,23]}},service:{"Program.Id":{$in:[12,23]}}}
-* @param {Array} dataServiceModel - The filter values. Example {tables:{tableName:{labels:{},fields:[{name:"Id",labels:{en:"Id",es:"Id",pt:"Id"},type:"Number | String | Date",primaryKey:!0}]}},relationships:{tableName1:{tableName2:{foreignKey:"ProjectId"},risks:{foreignKey:"ProjectId"}}}};
-* @param {string} parentDivId - The parent div ID to attach the filter UI to
-*/
+import resourceAnalysisValidator  from './resourceAnalysisValidator.js';
+
 const VALID_ANALYSIS_MODES = { intervals: 'intervals', totals: 'totals' };
-export class FilterConstructor {
-    constructor(analysisMode, queryFilter, dataServiceModel, parentDivId) {
-        this.analysisMode = analysisMode;
-        this.queryFilter = queryFilter;
+export class RequestConstructor {
+    /** requestConstructor.js
+    * @param {Object} requestObject - The request object. Example {analysisMode: "intervals", filter: {ProjectId: 1}, intervals: [1, 2, 3]}.    
+    * @param {Array} dataServiceModel - The filter values. Example {tables:{tableName:{labels:{},fields:[{name:"Id",labels:{en:"Id",es:"Id",pt:"Id"},type:"Number | String | Date",primaryKey:!0}]}},relationships:{tableName1:{tableName2:{foreignKey:"ProjectId"},risks:{foreignKey:"ProjectId"}}}};
+    * @param {string} parentDivId - The parent div ID to attach the filter UI to
+    */
+    constructor(requestObject, dataServiceModel, parentDivId) {
+        resourceAnalysisValidator.validateRequest(requestObject);
+        this.requestAnalysisMode = requestObject.analysisMode;
+        this.requestFilter = requestObject.filter;
+        this.requestIntervals = requestObject.intervals;
         this.dataServiceModel = dataServiceModel;
         this.parentDivId = parentDivId;
         this.initUI();
@@ -29,7 +32,7 @@ export class FilterConstructor {
             radioInput.id = mode;
             radioInput.name = 'analysisMode';
             radioInput.value = mode;
-            if (mode === this.analysisMode) {
+            if (mode === this.requestAnalysisMode) {
                 radioInput.checked = true;
             }
 
@@ -59,11 +62,11 @@ export class FilterConstructor {
     updateFilter() {
         // Find the selected radio button
         const selectedMode = document.querySelector('input[name="analysisMode"]:checked').value;
-        this.analysisMode = selectedMode;
+        this.requestAnalysisMode = selectedMode;
         console.log('Selected analysis mode:', selectedMode);
-        // Dispatch the filterUpdated event with queryFilter as detail
-        const event = new CustomEvent('filterUpdated', {
-            detail: {analysisMode: this.analysisMode, filter:this.queryFilter},
+        // Dispatch the requestUpdated event with queryFilter as detail
+        const event = new CustomEvent('requestUpdated', {
+            detail: { analysisMode: this.requestAnalysisMode, filter: this.requestFilter },
             bubbles: true
         });
         document.dispatchEvent(event);

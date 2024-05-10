@@ -97,23 +97,23 @@ export default {
         // Validate intervals if analysisMode is intervals
         if (request.analysisMode === 'intervals') {
             if (!request.intervals) {
-                throw new Error('Intervals section is required for analysisMode "intervals".');
+                throw new Error(`Missing intervals object for analysisMode: ${JSON.stringify(request)}`);
             }
 
             if (!request.intervals.startDate || typeof request.intervals.startDate !== 'string') {
-                throw new Error('Invalid or missing startDate in intervals.');
+                throw new Error(`Invalid or missing startDate in intervals: ${JSON.stringify(request)}`);
             }
 
             if (!request.intervals.intervalType || typeof request.intervals.intervalType !== 'string') {
-                throw new Error('Invalid or missing intervalType in intervals.');
+                throw new Error(`Invalid or missing intervalType in intervals: ${JSON.stringify(request)}`);
             }
 
             if (!['day', 'week', 'month', 'quarter'].includes(request.intervals.intervalType)) {
-                throw new Error('Invalid intervalType in intervals. Must be one of: day, week, month, quarter.');
+                throw new Error(`Invalid intervalType: ${request.intervals.intervalType}. Must be one of: day, week, month, quarter.`);
             }
 
             if (!request.intervals.noOfIntervals || typeof request.intervals.noOfIntervals !== 'number') {
-                throw new Error('Invalid or missing noOfIntervals in intervals.');
+                throw new Error(`Invalid or missing noOfIntervals in intervals: ${JSON.stringify(request)}`);
             }
         }
 

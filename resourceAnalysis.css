@@ -1,10 +1,10 @@
-.reslysis-view-selector-viewIconsContainer {
+.reslysis-pivot-selector-pivotIconsContainer {
     display: flex;
     align-items: center;
     justify-content: start;
 }
 
-.reslysis-view-selector-iconWrapper {
+.reslysis-pivot-selector-iconWrapper {
     display: inline-block;
     margin: 5px;
     cursor: pointer;
@@ -12,14 +12,14 @@
     fill:#666; /* Default color, can be changed */
 }
 
-.reslysis-view-selector-icon-separator{
+.reslysis-pivot-selector-icon-separator{
     width: 1px;
     margin: 0 0.4em;
     border-right: solid 1px #ccc;
     height: 14px;
 }
 
-.reslysis-view-selector-icon-selected {
+.reslysis-pivot-selector-icon-selected {
     fill:#333; /* Selected color */
 }
 
