@@ -1,4 +1,4 @@
-import resourceAnalysisValidator  from './resourceAnalysisValidator.js';
+import resourceAnalysisValidator from './resourceAnalysisValidator.js';
 
 const VALID_ANALYSIS_MODES = { intervals: 'intervals', totals: 'totals' };
 export class RequestConstructor {
@@ -7,16 +7,31 @@ export class RequestConstructor {
     * @param {Array} dataServiceModel - The filter values. Example {tables:{tableName:{labels:{},fields:[{name:"Id",labels:{en:"Id",es:"Id",pt:"Id"},type:"Number | String | Date",primaryKey:!0}]}},relationships:{tableName1:{tableName2:{foreignKey:"ProjectId"},risks:{foreignKey:"ProjectId"}}}};
     * @param {string} parentDivId - The parent div ID to attach the filter UI to
     */
+    _langTranslations = {};
     constructor(requestObject, dataServiceModel, parentDivId) {
-        resourceAnalysisValidator.validateRequest(requestObject);
-        this.requestAnalysisMode = requestObject.analysisMode;
-        this.requestFilter = requestObject.filter;
-        this.requestIntervals = requestObject.intervals;
-        this.dataServiceModel = dataServiceModel;
-        this.parentDivId = parentDivId;
-        this.initUI();
+        this._lang = typeof strLanguage !== 'undefined' ? strLanguage : 'es';
+        this._initPromise = this.#initDependencies().then(() => {
+            resourceAnalysisValidator.validateRequest(requestObject);
+            this.requestAnalysisMode = requestObject.analysisMode;
+            this.requestFilter = requestObject.filter;
+            this.requestIntervals = requestObject.intervals;
+            this.dataServiceModel = dataServiceModel;
+            this.parentDivId = parentDivId;
+            this.initUI();
+        });
+
+    }
+    async #initDependencies() {
+        await itmGlobal.ensureDiContainerReady();
+
+        this.getTranslations = window.diContainer.get('getTranslations');
+        await this.#loadTranslations();
+        console.log('Translations loaded:', this._langTranslations);
     }
 
+    async #loadTranslations() {
+        this._langTranslations = await this.getTranslations('resourceAnalysis', this._lang);
+    }
     initUI() {
         // Find the div by its ID
         const div = document.getElementById(this.parentDivId);
@@ -39,7 +54,8 @@ export class RequestConstructor {
             // Create label for the radio input
             const label = document.createElement('label');
             label.htmlFor = mode;
-            label.textContent = mode.charAt(0).toUpperCase() + mode.slice(1); // Capitalize first letter
+            label.textContent = this._langTranslations.t(mode);
+            // mode.charAt(0).toUpperCase() + mode.slice(1); // Capitalize first letter
 
             // Append radio input and label to the form
             form.appendChild(radioInput);
