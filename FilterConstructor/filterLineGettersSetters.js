@@ -129,9 +129,40 @@ export default {
         } catch (error) {
             return false;
         }
+    },
+    breakFilterInLines(queryFilter) {
+        if (!queryFilter) return [];
+        let lines = []
+        let tables = Object.keys(queryFilter)
+    
+        tables.forEach((table) => {
+            let line = this.addGettersSetters({})
+            Object.keys(queryFilter[table]).forEach((field) => {
+                if (!line[table]) line[table] = {};
+                line[table][field] = queryFilter[table][field]
+                lines.push(line);
+                line = this.addGettersSetters({});
+            });
+        });
+    
+        return lines;
+    },
+    recomposeFilterFromLines(filterLines) {
+        // should return an empty object when filterLines is null
+        if (!filterLines) return {};
+        let queryFilter = {};
+        filterLines.forEach((line) => {
+            for (let table in line) {
+                if (!queryFilter[table]) {
+                    queryFilter[table] = {};
+                }
+                for (let field in line[table]) {
+                    queryFilter[table][field] = line[table][field];
+                }
+            }
+        });
+        return queryFilter;
     }
-    
-    
-    
+       
     
 }

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FilterMock</title>
+</head>
+<body>
+    <div id="parentDivId"></div>
+    <script type="module">
+        import { FilterConstructor } from './FilterConstructor.js';
+
+        const filterConstructor = new FilterConstructor(
+            {"projects":{"Program":{"$eq":233},"StartDate":{"$lte":"2023-11-30"}}}, 
+            {dataServiceModel:{}}, 
+            "parentDivId"
+        );
+        window.filterConstructor = filterConstructor;
+    </script>
+</body>
+</html>

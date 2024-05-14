@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import filterLineGettersSetters from '../filterLineGettersSetters';  // Adjust the import path as necessary
 
-describe("filterHandler", () => {
+describe("Getters and Setters", () => {
   test("addGettersSetters should correctly initialize an empty filterLine object", () => {
     const filterLine = {};
     filterLineGettersSetters.addGettersSetters(filterLine);
@@ -71,33 +71,93 @@ describe("filterHandler", () => {
     expect(filterLine.projects.Program.$eq).toBe(233);
 });
 
-  test("isValidLine returns true for a valid filterLine object", () => {
-    const filterLine = { projects: { Program: { $eq: 233 } } };
-    filterLineGettersSetters.addGettersSetters(filterLine);
-    expect(filterLineGettersSetters.isValidLine(filterLine)).toBeTruthy();
+});
+
+describe("IsValid Line", () => {
+
+    test("isValidLine returns true for a valid filterLine object", () => {
+        const filterLine = { projects: { Program: { $eq: 233 } } };
+        filterLineGettersSetters.addGettersSetters(filterLine);
+        expect(filterLineGettersSetters.isValidLine(filterLine)).toBeTruthy();
+      });
+    
+      test("isValidLine returns true for a valid filterLine object with direct equality", () => {
+        const filterLine = {};
+        filterLineGettersSetters.addGettersSetters(filterLine);
+        filterLine.tableName = "projects";
+        filterLine.fieldName = "Program";
+        filterLine.value = 233; // Directly set the value without an operator
+        expect(filterLineGettersSetters.isValidLine(filterLine)).toBeTruthy();
+    });
+    
+    
+    test("isValidLine returns false for an invalid filterLine object", () => {
+        const filterLine = { projects: { Program: {} } }; // Program has no value or operator
+        filterLineGettersSetters.addGettersSetters(filterLine);
+        filterLine.tableName = "projects";
+        filterLine.fieldName = "Program";
+        expect(filterLineGettersSetters.isValidLine(filterLine)).toBeFalsy();
+    });
+    
+    
+      test("isValidLine handles error by returning false", () => {
+        const filterLine = null;  // Invalid input that should cause the method to throw
+        expect(filterLineGettersSetters.isValidLine(filterLine)).toBeFalsy();
+      });
+
+});
+
+describe ("Break Filter In Lines", () => {
+  test("breakFilterInLines should return an array of filterLine objects", () => {
+    const queryFilter = {
+      projects: { Program: { $eq: 233 } },
+      tasks: { Task: { $gt: 100 } }
+    };
+    const filterLines = filterLineGettersSetters.breakFilterInLines(queryFilter);
+    expect(filterLines.length).toBe(2);
+    expect(filterLines[0].tableName).toBe("projects");
+    expect(filterLines[0].fieldName).toBe("Program");
+    expect(filterLines[0].operator).toBe("$eq");
+    expect(filterLines[0].value).toBe(233);
+    expect(filterLines[1].tableName).toBe("tasks");
+    expect(filterLines[1].fieldName).toBe("Task");
+    expect(filterLines[1].operator).toBe("$gt");
+    expect(filterLines[1].value).toBe(100);
   });
 
-  test("isValidLine returns true for a valid filterLine object with direct equality", () => {
-    const filterLine = {};
-    filterLineGettersSetters.addGettersSetters(filterLine);
-    filterLine.tableName = "projects";
-    filterLine.fieldName = "Program";
-    filterLine.value = 233; // Directly set the value without an operator
-    expect(filterLineGettersSetters.isValidLine(filterLine)).toBeTruthy();
-});
+  test("breakFilterInLines should return an empty array when queryFilter is empty", () => {
+    const queryFilter = {};
+    const filterLines = filterLineGettersSetters.breakFilterInLines(queryFilter);
+    expect(filterLines.length).toBe(0);
+  });
 
-
-test("isValidLine returns false for an invalid filterLine object", () => {
-    const filterLine = { projects: { Program: {} } }; // Program has no value or operator
-    filterLineGettersSetters.addGettersSetters(filterLine);
-    filterLine.tableName = "projects";
-    filterLine.fieldName = "Program";
-    expect(filterLineGettersSetters.isValidLine(filterLine)).toBeFalsy();
-});
-
-
-  test("isValidLine handles error by returning false", () => {
-    const filterLine = null;  // Invalid input that should cause the method to throw
-    expect(filterLineGettersSetters.isValidLine(filterLine)).toBeFalsy();
+  test("breakFilterInLines should return an empty array when queryFilter is null", () => {
+    const queryFilter = null;
+    const filterLines = filterLineGettersSetters.breakFilterInLines(queryFilter);
+    expect(filterLines.length).toBe(0);
   });
 });
+
+describe("recomposeFilterFromLines", () => {
+    test("recomposeFilterFromLines should return a valid queryFilter object", () => {
+        const filterLines = [
+        { projects: { Program: { $eq: 233 } } },
+        { tasks: { Task: { $gt: 100 } }}
+        ];
+        const queryFilter = filterLineGettersSetters.recomposeFilterFromLines(filterLines);
+        expect(queryFilter.projects.Program.$eq).toBe(233);
+        expect(queryFilter.tasks.Task.$gt).toBe(100);
+    });
+    
+    test("recomposeFilterFromLines should return an empty object when filterLines is empty", () => {
+        const filterLines = [];
+        const queryFilter = filterLineGettersSetters.recomposeFilterFromLines(filterLines);
+        expect(Object.keys(queryFilter).length).toBe(0);
+    });
+    
+    test("recomposeFilterFromLines should return an empty object when filterLines is null", () => {
+        const filterLines = null;
+        const queryFilter = filterLineGettersSetters.recomposeFilterFromLines(filterLines);
+        expect(Object.keys(queryFilter).length).toBe(0);
+    }); 
+});  
