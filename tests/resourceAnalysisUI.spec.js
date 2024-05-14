@@ -18,7 +18,6 @@ global.localStorage = {
 };
 
 async function mockGeneralJS() {
-    // Mock diContainer and its methods
     const diContainer = (function () {
         const _services = {};
     
@@ -39,22 +38,23 @@ async function mockGeneralJS() {
         }
     
         return { register, get, getServices };
-    })()
+    })();
 
-    // Replace window.diContainer with the mock
     global.window.diContainer = diContainer;
 
-    // Simulate the async dynamic imports and their effects
     const errorHandler = { logFrontEndError: vi.fn() };
-    const languageLoader = { getTranslations: vi.fn() };
+    const languageLoader = {
+        getTranslations: vi.fn().mockResolvedValue({
+            t: vi.fn((key) => `Translated: ${key}`)  // Mocks translation function t
+        })
+    };
 
     diContainer.register('logFrontEndError', errorHandler.logFrontEndError);
-    diContainer.register('getTranslations', languageLoader.getTranslations);
+    diContainer.register('getTranslations', async () => await languageLoader.getTranslations());
 
-    // Simulate diContainerReady event
     global.window.diContainerReady = true;
     global.window.dispatchEvent(new CustomEvent('diContainerReady'));
-    // Mock itmGlobal and its ensureDiContainerReady method
+
     global.window.itmGlobal = {
         ensureDiContainerReady: function () {
             return new Promise((resolve) => {
@@ -67,7 +67,6 @@ async function mockGeneralJS() {
         }
     };
 
-    // Mock JSVersion function if needed
     global.window.getJSVersion = function () {
         const today = new Date();
         return today.toISOString().substring(0, 10); // Formats the date as YYYY-MM-DD

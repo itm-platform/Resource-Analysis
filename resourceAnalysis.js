@@ -55,6 +55,9 @@ export class ResourceAnalysis {
         this.requestConstructor = new RequestConstructor(
             this.state.request,
             dataServiceModel, this.requestConstructorDivId);
+
+        window.requestConstructor = this.requestConstructor; // For testing purposes
+
         // TODO - B - Add selected: true to the default pivotConfig, and apply the data transformation
         this.pivotSelector = new PivotSelector([
             { name: VALID_PIVOT_CONFIGS.entityWorkItem, tooltip: 'Entity - Work Item', svg: this.getSVG(VALID_PIVOT_CONFIGS.entityWorkItem) },
@@ -189,7 +192,7 @@ export class ResourceAnalysis {
 
     #addEventListeners() {
         document.addEventListener('requestUpdated', event => {
-            console.log('Filter updated:', event.detail);
+            console.log('Request updated:', event.detail);
             this.#setState({
                 request: {
                     filter: event.detail.filter,

@@ -23,3 +23,8 @@
     fill:#333; /* Selected color */
 }
 
+.req-constructor-modeWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
