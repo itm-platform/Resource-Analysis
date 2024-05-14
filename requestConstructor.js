@@ -11,8 +11,8 @@ export class RequestConstructor {
         requestFilter: {},
         requestIntervals: {}
     };
-    constructor(requestObject={}, dataServiceModel, parentDivId) {
-        if (requestObject=={}) {resourceAnalysisValidator.validateRequest(requestObject);}
+    constructor(requestObject = {}, dataServiceModel, parentDivId) {
+        if (requestObject == {}) { resourceAnalysisValidator.validateRequest(requestObject); }
         this.state.requestAnalysisMode = requestObject.analysisMode || VALID_ANALYSIS_MODES.intervals;
         this.state.requestFilter = requestObject.filter || {};
         this.state.requestIntervals = requestObject.intervals || {};
@@ -36,19 +36,30 @@ export class RequestConstructor {
     }
 
     initUI() {
-        const div = document.getElementById(this.parentDivId);
+        const parentDiv = document.getElementById(this.parentDivId);
 
-        const reqConstructorWrapper = document.createElement('div');
-        reqConstructorWrapper.className = 'req-constructor-wrapper';
+        const requestConstructorWrapper = document.createElement('div');
+        requestConstructorWrapper.id = 'req-constructor-wrapper';
+        requestConstructorWrapper.className = 'req-constructor-wrapper';
 
-        // Intervals section
+        const requestConstructorModesWrapper = document.createElement('div');
+        requestConstructorModesWrapper.id = 'req-constructor-modesWrapper';
+        requestConstructorModesWrapper.className = 'req-constructor-modesWrapper';
+
         const intervalsSection = this.#createIntervalsSection();
         const totalsSection = this.#createTotalsSection();
 
-        reqConstructorWrapper.appendChild(intervalsSection);
-        reqConstructorWrapper.appendChild(totalsSection);
+        requestConstructorModesWrapper.appendChild(intervalsSection);
+        requestConstructorModesWrapper.appendChild(totalsSection);
 
-        div.appendChild(reqConstructorWrapper);
+        requestConstructorWrapper.appendChild(requestConstructorModesWrapper);
+
+        const requestConstructorFilterWrapper = document.createElement('div');
+        requestConstructorFilterWrapper.id = 'req-constructor-filterWrapper';
+        requestConstructorFilterWrapper.className = 'req-constructor-filterWrapper';
+        
+
+        parentDiv.appendChild(requestConstructorWrapper);
 
         const updateButton = document.createElement('button');
         updateButton.textContent = "Change Request";
@@ -56,7 +67,7 @@ export class RequestConstructor {
             event.preventDefault();
             this.#updateRequest();
         });
-        div.appendChild(updateButton);
+        parentDiv.appendChild(updateButton);
     }
     #createIntervalsSection() {
         const intervalsSection = document.createElement('div');
@@ -73,7 +84,7 @@ export class RequestConstructor {
         }
         intervalsRadio.addEventListener('change', () => {
             this.state.requestAnalysisMode = 'intervals';
-        }  );
+        });
 
         const intervalsLabel = document.createElement('label');
         intervalsLabel.htmlFor = 'intervals';
@@ -162,7 +173,7 @@ export class RequestConstructor {
             totalsDateRangeModeDropdown.appendChild(option);
         });
 
-        const {totalsDateRangeMode, startDate, endDate} = this.#getTotalsDateRangeMode();
+        const { totalsDateRangeMode, startDate, endDate } = this.#getTotalsDateRangeMode();
         totalsDateRangeModeDropdown.value = totalsDateRangeMode;
 
         totalsDateRangeModeDropdown.addEventListener('change', () => {
@@ -180,7 +191,7 @@ export class RequestConstructor {
         totalOptionsWrapper.appendChild(startDatePicker);
 
         const endDatePicker = document.createElement('input');
-        endDatePicker.id = 'req-constructor-totals-endDate';    
+        endDatePicker.id = 'req-constructor-totals-endDate';
         endDatePicker.type = 'date';
         endDatePicker.value = endDate;
         endDatePicker.addEventListener('change', () => {
@@ -195,11 +206,11 @@ export class RequestConstructor {
     #updateFilterStateForTotals() {
         // TODO - A - We are only adding filter to 'project' object. 
         // Filters can apply to entities (`project`, `service`) and users (`user`). 
-        const totalsDateRangeMode= document.getElementById('req-constructor-totalsDateRangeMode').value;
+        const totalsDateRangeMode = document.getElementById('req-constructor-totalsDateRangeMode').value;
         const startDate = document.getElementById('req-constructor-totals-startDate').value;
-        const endDate= document.getElementById('req-constructor-totals-endDate').value;
+        const endDate = document.getElementById('req-constructor-totals-endDate').value;
         const filter = { ...this.state.requestFilter };
-        filter.project={};
+        filter.project = {};
         if (totalsDateRangeMode === 'Live between') {
             filter.project.StartDate = { $lte: endDate };
             filter.project.EndDate = { $gte: startDate };

@@ -42,8 +42,10 @@ This is an example of "live between" filter. We're requesting that the StartDate
 {
     "analysisMode": "totals",
     "filter": {
-        "StartDate": { "$lte": "2023-11-30" },
-        "EndDate": { "$gte": "2023-09-01" }
+        "project": {
+            "StartDate": { "$lte": "2023-11-30" },
+            "EndDate": { "$gte": "2023-09-01" }
+        },
     }
 }
 ```

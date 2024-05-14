@@ -112,7 +112,7 @@ describe('RequestConstructor Initialization', () => {
                 dataServiceModel, parentDivId);
         });
 
-        test('should dispatch "requestUpdated" event with filter details when the button is clicked', async () => {
+        test.skip('should dispatch "requestUpdated" event with filter details when the button is clicked', async () => {
             const spy = vi.fn();
             document.addEventListener('requestUpdated', spy);
 

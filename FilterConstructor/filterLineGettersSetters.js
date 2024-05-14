@@ -1,0 +1,137 @@
+export default {
+    /**
+     * Adds getters and setters to the filterLine object: tableName, fieldName, operator, value. 
+     * This way, the programmer doesn't have to worry about th structure of a filterLine, such as `{"projects":{"Program":{"$eq":233}}}`
+     * In this example, filterLine.tableName = "projects", filterLine.fieldName = "Program", filterLine.operator = "$eq", filterLine.value = 233
+     * @returns 
+     */
+    addGettersSetters(filterLine) {
+        Object.defineProperty(filterLine, "tableName", {
+            get: function () {
+                if (Object.keys(this).length > 0)
+                    return Object.keys(this)[0];
+            },
+            set: function (tableName) {
+                if (this.tableName && typeof tableName == 'string') {
+                    let oldTableName = this.tableName;
+                    Object.defineProperty(
+                        this,
+                        tableName,
+                        Object.getOwnPropertyDescriptor(this, oldTableName)
+                    );
+                    delete this[oldTableName];
+                } else this[tableName] = {};
+            },
+        });
+        Object.defineProperty(filterLine, "fieldName", {
+            get: function () {
+                let tableName = this.tableName;
+                if (!tableName) return undefined
+                else return Object.keys(this[tableName])[0];
+            },
+            set: function (fieldName) {
+                if (this.tableName && typeof fieldName == 'string') {
+                    if (this.fieldName) {
+                        let oldFieldName = this.fieldName;
+                        Object.defineProperty(
+                            this[this.tableName],
+                            fieldName,
+                            Object.getOwnPropertyDescriptor(this[this.tableName], oldFieldName)
+                        );
+                        delete this[this.tableName][oldFieldName];
+                    } else this[this.tableName][fieldName] = {};
+                }
+            },
+        });
+
+        Object.defineProperty(filterLine, "operator", {
+            get: function () {
+                let tableName = this.tableName;
+                let fieldName = this.fieldName;
+                if (!tableName || !fieldName) return null;
+                if (typeof this[tableName][fieldName] === "object") {
+                    return Object.keys(this[tableName][fieldName])[0];
+                } else {
+                    return null;
+                }
+            },
+            set: function (operator) {
+                let tableName = this.tableName;
+                let fieldName = this.fieldName;
+                if (tableName && fieldName && typeof operator === 'string') {
+                    if (this.operator) {
+                        let oldOperator = this.operator;
+                        this[tableName][fieldName][operator] = this[tableName][fieldName][oldOperator];
+                        delete this[tableName][fieldName][oldOperator];
+                    } else {
+                        this[tableName][fieldName] = { [operator]: this.value };
+                    }
+                }
+            },
+        });
+        
+        Object.defineProperty(filterLine, "value", {
+            get: function () {
+                let tableName = this.tableName;
+                let fieldName = this.fieldName;
+                if (!tableName || !fieldName) return undefined;
+                let operator = this.operator;
+                if (operator) {
+                    return this[tableName][fieldName][operator];
+                } else {
+                    return this[tableName][fieldName];
+                }
+            },
+            set: function (value) {
+                let tableName = this.tableName;
+                let fieldName = this.fieldName;
+                let operator = this.operator;
+                if (tableName && fieldName) {
+                    if (operator) {
+                        if (this[tableName][fieldName][operator] !== undefined) {
+                            this[tableName][fieldName][operator] = value;
+                        } else {
+                            // Create new object if operator is set but doesn't exist yet
+                            this[tableName][fieldName] = {[operator]: value};
+                        }
+                    } else {
+                        // If no operator is set, directly set the value
+                        this[tableName][fieldName] = value;
+                    }
+                }
+            },
+        });
+        
+        return filterLine
+    },
+    isValidLine(line) {
+        try {
+            // Apply getters and setters if they aren't already applied
+            if (!line.tableName && !line.fieldName && line.value === undefined) {
+                line = this.addGettersSetters(line);
+            }
+    
+            // Check for the presence and non-emptiness of table, field, and value
+            const tableFieldValue = (
+                line.tableName &&
+                line.fieldName &&
+                line.value !== undefined && line.value !== null
+            );
+    
+            // If there is an operator, the corresponding field must contain an object or a direct value
+            const operatorFieldIsValid = (
+                line.operator === undefined ||
+                (line.operator && typeof line[line.tableName][line.fieldName] === 'object') ||
+                line.value === line[line.tableName][line.fieldName] // Checks for direct value assignment
+            );
+    
+            return tableFieldValue && operatorFieldIsValid;
+        } catch (error) {
+            return false;
+        }
+    }
+    
+    
+    
+    
+}
