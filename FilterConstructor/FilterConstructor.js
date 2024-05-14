@@ -7,10 +7,10 @@ export class FilterConstructor {
         this.dataServiceModel = dataServiceModel;
         this.parentDivId = parentDivId;
         this.filterLines = [];
-        this.init();
+        this.#init();
     }
 
-    init() {
+    #init() {
         this._breakFilterInLines();
         this.render();
         document.getElementById('buttonAddFilterLine').addEventListener('click', () => {

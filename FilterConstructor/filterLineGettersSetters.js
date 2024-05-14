@@ -132,37 +132,45 @@ export default {
     },
     breakFilterInLines(queryFilter) {
         if (!queryFilter) return [];
-        let lines = []
-        let tables = Object.keys(queryFilter)
+        let lines = [];
+        let tables = Object.keys(queryFilter);
     
         tables.forEach((table) => {
-            let line = this.addGettersSetters({})
             Object.keys(queryFilter[table]).forEach((field) => {
-                if (!line[table]) line[table] = {};
-                line[table][field] = queryFilter[table][field]
+                let line = this.addGettersSetters({});
+                line.tableName = table; 
+                line.fieldName = field; 
+                line.value = queryFilter[table][field];
                 lines.push(line);
-                line = this.addGettersSetters({});
             });
         });
     
         return lines;
     },
+    
     recomposeFilterFromLines(filterLines) {
-        // should return an empty object when filterLines is null
         if (!filterLines) return {};
         let queryFilter = {};
+    
         filterLines.forEach((line) => {
-            for (let table in line) {
+            Object.keys(line).forEach(table => {  // Get table name from object key
                 if (!queryFilter[table]) {
                     queryFilter[table] = {};
                 }
-                for (let field in line[table]) {
-                    queryFilter[table][field] = line[table][field];
-                }
-            }
+                Object.keys(line[table]).forEach(field => {  // Get field name from object key
+                    if (!queryFilter[table][field]) {
+                        queryFilter[table][field] = {};
+                    }
+                    const operator = Object.keys(line[table][field])[0];  // Get operator from nested field object
+                    queryFilter[table][field][operator] = line[table][field][operator];  // Set value for operator
+                });
+            });
         });
+    
         return queryFilter;
     }
+    
+    
        
     
 }

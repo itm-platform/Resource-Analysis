@@ -1,0 +1,12 @@
+:root {
+  --filter-border-dropdown: #ccc;
+}
+.filter-line-field {
+    padding-left: 0.25em;
+  }
+  .filter-line-field-table {
+    width: 8em;
+    border-radius: 0.125em;
+    border-width: 1px;
+    border-color: var(--filter-border-dropdown);
+  }
