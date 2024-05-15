@@ -1,6 +1,6 @@
 // Component/ComponentGenericTemplate.js
-import {ChildComponent} from './ChildComponent.js';
-import {css} from '../Modules/helperFunctions.js';
+import { ChildComponent } from './ChildComponent.js';
+import { css } from '../Modules/helperFunctions.js';
 
 export class ComponentGenericTemplate {
     constructor(initialData, index, serviceModel) {
@@ -12,8 +12,25 @@ export class ComponentGenericTemplate {
         this.#applyStyles();
         this.#setupEventListeners();
     }
+    #init() {
+        /**Purpose: To perform any setup or initialization tasks that need to happen after the DOM elements are created.
+
+        What to include:
+
+        State Initialization: Initialize any state variables that depend on the DOM being present.
+        Data Binding: Bind data to the DOM elements if needed.
+        Calling Methods: Call other methods to perform tasks like fetching data or setting up the initial state. */
+    }
 
     #createElement() {
+        /**Purpose: To create and assemble the DOM structure of the component.
+
+        What to include:
+
+        Element Creation: Create the main container and any child elements.
+        Setting Attributes and Classes: Set IDs, classes, and other attributes on the elements.
+        Appending Children: Append child elements to their respective parent elements.
+        Initial Content: Set initial content or placeholder text. */
         const component = document.createElement('div');
         component.id = 'component-' + this.index;
         component.className = 'component-class';
@@ -52,7 +69,7 @@ export class ComponentGenericTemplate {
     #updatePart2(data) {
         console.log(`${this.index} part2 data: ${data}`);
     }
-    
+
     #getStyles() {
         return css`
             .component-class {

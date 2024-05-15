@@ -2,18 +2,30 @@
 import {FilterLineTable} from './FilterLineTable.js';
 import {FilterLineField} from './FilterLineField.js';
 import {css} from '../Modules/helperFunctions.js';
-
+import { getLang } from './globalState.js'; 
 export class FilterLine {
-    constructor(initialFilterLine, indexInFilterLines, dataServiceModel) {
-        this.initialFilterLine = initialFilterLine;
+    constructor(
+        filterLine, 
+        indexInFilterLines,
+        dataServiceModel,
+        ) 
+        {
+        this.filterLine = filterLine;
         this.index = indexInFilterLines;
         this.dataServiceModel = dataServiceModel;
+        this.tables = [];
+        
         this.elements = {};
+        this.#init();
         this.element = this.#createElement();
         this.#applyStyles();
         this.#setupEventListeners();
     }
 
+    #init() {
+        this.tables =this.dataServiceModel.tableListLanguage(getLang());
+        console.log(this.tables);
+    }
     #createElement() {
         const filterLine = document.createElement('div');
         filterLine.id = 'filter-line-' + this.index;
@@ -43,7 +55,7 @@ export class FilterLine {
             }];
             const fieldSelected = "Id";
 
-        const filterLineTable = new FilterLineTable(tables, tableSelected);
+        const filterLineTable = new FilterLineTable(this.tables, tableSelected);
         this.elements.filterLineTable = filterLineTable.element;
         filterLine.appendChild(this.elements.filterLineTable);
 

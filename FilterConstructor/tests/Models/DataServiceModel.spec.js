@@ -57,14 +57,31 @@ test('DataServiceModel tableNames ', () => {
 });
 
 test('DataServiceModel tableListLanguage ', () => {
+    const dataServiceModelJSON = {
+        "tables": {
+            "projects": {
+                "labels": {
+                    "en": "Projects",
+                    "es": "Proyectos",
+                    "pt": "Projetos"
+                }
+            },
+            "tasks": {
+                "labels": {
+                    "en": "Tasks",
+                    "es": "Tareas",
+                    "pt": "Tarefas"
+                }
+            }
+        }
+    };
     let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
     expect(dataServiceModel.tableListLanguage('es'))
         .toEqual([
             { value: 'projects', text: 'Proyectos' },
             { value: 'tasks', text: 'Tareas' },
-            {
-                text: "Riesgos", value: "risks",
-            }]);
+            ])
+
 });
 
 describe('keepOnlyTables', () => {

@@ -2,10 +2,12 @@
 import { FilterLine } from './FilterLine.js';
 import filterLineModel from '../Models/filterLineModel.js';
 import DataServiceModel from '../Models/DataServiceModel.js';
+import { setLang } from './globalState.js';
 import { css } from '../Modules/helperFunctions.js';
 
 export class Filter {
-    constructor(queryFilter, dataServiceModelJSON, parentDivId, tablesAllowed = [], lang = "en") {
+    constructor(queryFilter, dataServiceModelJSON, 
+        parentDivId, tablesAllowed = [], lang = "es") {
         this.queryFilter = queryFilter || {};
         this.dataServiceModel = new DataServiceModel(dataServiceModelJSON);
         this.parentDivId = parentDivId;
@@ -20,8 +22,9 @@ export class Filter {
     }
 
     #init() {
+        setLang(this.lang);
         this.dataServiceModel.keepOnlyTables(this.tablesAllowed);
-        this.#breakFilterInLines();
+        this.filterLines = filterLineModel.breakFilterInLines(this.queryFilter);
         this.render();
     }
 
@@ -61,14 +64,10 @@ export class Filter {
         });
     }
 
-    #breakFilterInLines() {
-        this.filterLines = filterLineModel.breakFilterInLines(this.queryFilter);
-    }
-
-    render() {
+     render() {
         this.elements.filterLinesDiv.innerHTML = '';
-        this.filterLines.forEach((line, index) => {
-            this.renderFilterLine(line, index);
+        this.filterLines.forEach((filterLine, index) => {
+            this.renderFilterLine(filterLine, index);
         });
     }
 
