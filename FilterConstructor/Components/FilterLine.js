@@ -89,6 +89,10 @@ export class FilterLine {
         this.elements.filterLineOperator.addEventListener('filterOperatorUpdated', (event) => {
             this.#updateFilterOperator(event.detail);
         });
+
+        this.elements.filterLineValue.addEventListener('filterValueUpdated', (event) => {
+            this.#updateFilterValue(event.detail);
+        });
     }
 
     render() {
@@ -152,6 +156,11 @@ export class FilterLine {
 
     #updateFilterOperator(operator) {
         console.log(`${this.index} operator: ${operator}`);
+    }
+
+    #updateFilterValue(value) {
+        this.filterLine.value = value;
+        console.log(`${this.index} value: ${value}`);
     }
 
     #getStyles() {
