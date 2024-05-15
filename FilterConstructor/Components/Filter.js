@@ -1,62 +1,82 @@
-//Filter/Filter.js
+// Filter/Filter.js
+import { FilterLine } from './FilterLine.js';
 import filterLineModel from '../Models/filterLineModel.js';
-import {FilterLine} from './FilterLine.js';
+import DataServiceModel from '../Models/DataServiceModel.js';
+import { css } from '../Modules/helperFunctions.js';
+
 export class Filter {
-    constructor(queryFilter, dataServiceModel, parentDivId) {
+    constructor(queryFilter, dataServiceModelJSON, parentDivId, tablesAllowed = [], lang = "en") {
         this.queryFilter = queryFilter || {};
-        this.dataServiceModel = dataServiceModel;
+        this.dataServiceModel = new DataServiceModel(dataServiceModelJSON);
         this.parentDivId = parentDivId;
+        this.tablesAllowed = tablesAllowed;
+        this.lang = lang;
         this.filterLines = [];
+        this.elements = {};
+        this.element = this.#createElement();
+        this.#applyStyles();
+        this.#setupEventListeners();
         this.#init();
     }
 
     #init() {
-        this._breakFilterInLines();
+        this.dataServiceModel.keepOnlyTables(this.tablesAllowed);
+        this.#breakFilterInLines();
         this.render();
-        document.getElementById('buttonAddFilterLine').addEventListener('click', () => {
+    }
+
+    #createElement() {
+        const filterConstructor = document.createElement('div');
+        filterConstructor.id = 'filterConstructor';
+        filterConstructor.className = 'filter-class';
+        this.elements.filterConstructor = filterConstructor;
+
+        const filterLinesDiv = document.createElement('div');
+        filterLinesDiv.id = 'filterLines';
+        this.elements.filterLinesDiv = filterLinesDiv;
+
+        const buttonAddFilterLine = document.createElement('button');
+        buttonAddFilterLine.id = 'buttonAddFilterLine';
+        buttonAddFilterLine.textContent = '+';
+        this.elements.buttonAddFilterLine = buttonAddFilterLine;
+
+        filterConstructor.appendChild(filterLinesDiv);
+        filterConstructor.appendChild(buttonAddFilterLine);
+
+        const parentDiv = document.getElementById(this.parentDivId);
+        parentDiv.appendChild(filterConstructor);
+
+        return filterConstructor;
+    }
+
+    #applyStyles() {
+        const style = document.createElement('style');
+        style.textContent = this.#getStyles();
+        this.element.appendChild(style);
+    }
+
+    #setupEventListeners() {
+        this.elements.buttonAddFilterLine.addEventListener('click', () => {
             this.addFilterLine();
         });
     }
 
-    _breakFilterInLines() {
+    #breakFilterInLines() {
         this.filterLines = filterLineModel.breakFilterInLines(this.queryFilter);
     }
-    
 
     render() {
-        const parentDiv = document.getElementById(this.parentDivId);
-    
-        // Create the main container for filter constructor
-        const filterConstructor = document.createElement('div');
-        filterConstructor.id = 'filterConstructor';
-    
-        // Create the container for filter lines
-        const filterLinesDiv = document.createElement('div');
-        filterLinesDiv.id = 'filterLines';
-    
-        // Create the button to add new filter lines
-        const buttonAddFilterLine = document.createElement('button');
-        buttonAddFilterLine.id = 'buttonAddFilterLine';
-        buttonAddFilterLine.textContent = '+';
-    
-        // Append the filter lines div and button to the main filter constructor div
-        filterConstructor.appendChild(filterLinesDiv);
-        filterConstructor.appendChild(buttonAddFilterLine);
-    
-        // Append the main filter constructor div to the parent div
-        parentDiv.appendChild(filterConstructor);
-    
-        // Render each filter line
+        this.elements.filterLinesDiv.innerHTML = '';
         this.filterLines.forEach((line, index) => {
-            this.renderFilterLine(line, index, filterLinesDiv);
+            this.renderFilterLine(line, index);
         });
     }
-    
-    renderFilterLine(line, index, filterLinesDiv) {
+
+    renderFilterLine(line, index) {
         const filterLine = new FilterLine(line, index, this.dataServiceModel);
-        filterLinesDiv.appendChild(filterLine.element);
+        this.filterLines.push(filterLine);
+        this.elements.filterLinesDiv.appendChild(filterLine.element);
     }
-    
 
     addFilterLine() {
         const newFilterLine = {};
@@ -65,7 +85,6 @@ export class Filter {
     }
 
     updateFilterWithLine(index, event) {
-        // Update logic to modify filterLines and recompose queryFilter
         this.filterLines[index] = event.detail;
         this.recomposeFilterFromLines();
         this.dispatchFilterUpdated();
@@ -78,5 +97,21 @@ export class Filter {
     dispatchFilterUpdated() {
         const event = new CustomEvent('filterUpdated', { detail: this.queryFilter });
         document.dispatchEvent(event);
+    }
+
+    #getStyles() {
+        return css`
+            .filter-class {
+                display: flex;
+                flex-direction: column;
+                // Additional styles
+            }
+            #filterLines {
+                margin-bottom: 10px;
+            }
+            #buttonAddFilterLine {
+                align-self: flex-start;
+            }
+        `;
     }
 }

@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from 'vitest';
-import { FilterLineField } from '../Components/FilterLineField';
+import { FilterLineField } from '../../Components/FilterLineField';
 
 describe('FilterLineField', () => {
     test('should initialize with given fields and selected field', () => {

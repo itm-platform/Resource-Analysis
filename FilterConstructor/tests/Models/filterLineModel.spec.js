@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import filterLineModel from '../Models/filterLineModel';  // Adjust the import path as necessary
+import filterLineModel from '../../Models/filterLineModel';  // Adjust the import path as necessary
 
 describe("Getters and Setters", () => {
   test("addGettersSetters should correctly initialize an empty filterLine object", () => {

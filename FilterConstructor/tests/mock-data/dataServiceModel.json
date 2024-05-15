@@ -1,0 +1,180 @@
+{
+    "tables": {
+        "projects": {
+            "labels": {
+                "en": "Projects",
+                "es": "Proyectos",
+                "pt": "Projetos"
+            },
+            "fields": [
+                {
+                    "name": "Id",
+                    "labels": {
+                        "en": "Id",
+                        "es": "Id",
+                        "pt": "Id"
+                    },
+                    "type": "Number",
+                    "primaryKey": true
+                },
+                {
+                    "name": "Name",
+                    "labels": {
+                        "en": "Name",
+                        "es": "Nombre",
+                        "pt": "Name"
+                    },
+                    "type": "String"
+                },
+                {
+                    "name": "Duration",
+                    "labels": {
+                        "en": "Duration",
+                        "es": "Duración",
+                        "pt": "Duration"
+                    },
+                    "type": "Number"
+                },
+                {
+                    "name": "ProgressComplete",
+                    "labels": {
+                        "en": "Progress",
+                        "es": "Progreso",
+                        "pt": "Progress"
+                    },
+                    "type": "Number"
+                },
+                {
+                    "name": "Status",
+                    "location": "Status.Name",
+                    "labels": {
+                        "en": "Status",
+                        "es": "Estado",
+                        "pt": "Status"
+                    },
+                    "type": "String"
+                },
+                {
+                    "name": "ProgressDate",
+                    "labels": {
+                        "en": "Progress Report Date",
+                        "es": "Fecha Reporte Progreso",
+                        "pt": "Fecha Reporte Progreso"
+                    },
+                    "type": "Date"
+                }
+            ]
+        },
+        "tasks": {
+            "labels": {
+                "en": "Tasks",
+                "es": "Tareas",
+                "pt": "Tarefas"
+            },
+            "fields": [
+                {
+                    "name": "Id",
+                    "labels": {
+                        "en": "Id",
+                        "es": "Id",
+                        "pt": "Id"
+                    },
+                    "type": "Number",
+                    "primaryKey": true
+                },
+                {
+                    "name": "ProjectId",
+                    "labels": {
+                        "en": "Project Id",
+                        "es": "Id  Proyecto",
+                        "pt": "Id Projeto"
+                    },
+                    "type": "Number",
+                    "foreignKey": true
+                },
+                {
+                    "name": "Name",
+                    "labels": {
+                        "en": "Name",
+                        "es": "Nombre",
+                        "pt": "Name"
+                    },
+                    "type": "String"
+                },
+                {
+                    "name": "Status",
+                    "location": "Status.Name",
+                    "labels": {
+                        "en": "Status",
+                        "es": "Estado",
+                        "pt": "Status"
+                    },
+                    "type": "String"
+                }
+            ]
+        },
+        "risks": {
+            "labels": {
+                "en": "Risks",
+                "es": "Riesgos",
+                "pt": "Riscos"
+            },
+            "fields": [
+                {
+                    "name": "Id",
+                    "labels": {
+                        "en": "Id",
+                        "es": "Id",
+                        "pt": "Id"
+                    },
+                    "type": "Number",
+                    "primaryKey": true
+                },
+                {
+                    "name": "ProjectId",
+                    "labels": {
+                        "en": "Project Id",
+                        "es": "Id  Proyecto",
+                        "pt": "Id Projeto"
+                    },
+                    "type": "Number",
+                    "foreignKey": true
+                },
+                {
+                    "name": "Name",
+                    "labels": {
+                        "en": "Name",
+                        "es": "Nombre",
+                        "pt": "Name"
+                    },
+                    "type": "String"
+                },
+                {
+                    "name": "Status",
+                    "location": "Status.Name",
+                    "labels": {
+                        "en": "Status",
+                        "es": "Estado",
+                        "pt": "Status"
+                    },
+                    "type": "String"
+                }
+            ]
+        }
+    },
+    "relationships": {
+        "projects": {
+            "tasks": {
+                "foreignKey": "ProjectId"
+            },
+            "risks": {
+                "foreignKey": "ProjectId"
+            }
+        },
+        "tasks": {
+            "users": {
+                "foreignKey": "taskId"
+            }
+        }
+    }
+}

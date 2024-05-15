@@ -1,21 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FilterMock</title>
 </head>
+
 <body>
     <div id="parentDivId"></div>
     <script type="module">
         import { Filter } from './Components/Filter.js';
+        /* To avoid CORS issues, use a proxy. In VS Code, settings.json     "
+        liveServer.settings.proxy": {
+        "enable": true,
+        "baseUri": "/api",
+        "proxyUri": "http://localhost/ITM.API"
+        }*/
+        async function fetchToken() {
+            const response = await fetch('/api/itmrozas/login/fc55f846-d7f7-4abb-afc8-d25338a71ef6');
+            const data = await response.json();
+            return data.Token;
+        }
 
-        const filterConstructor = new Filter(
-            {"projects":{"Program":{"$eq":233},"StartDate":{"$lte":"2023-11-30"}}}, 
-            {dataServiceModel:{}}, 
-            "parentDivId"
-        );
-        window.filterConstructor = filterConstructor;
+        async function fetchDataServiceModel(token) {
+            const response = await fetch('/api/v2/itmrozas/dataServiceModel', {
+                headers: {
+                    'Token': token
+                }
+            });
+            const data = await response.json();
+            return data;
+        }
+
+        async function initializeFilter() {
+            try {
+                const token = await fetchToken();
+                const dataServiceModel = await fetchDataServiceModel(token);
+                const tablesAllowed = ['projects', 'users'];
+                const language = 'es';
+                const filterConstructor = new Filter(
+                    { "projects": { "Program": { "$eq": 233 }, "StartDate": { "$lte": "2023-11-30" } } },
+                    dataServiceModel, "parentDivId", tablesAllowed, language
+                );
+                window.filterConstructor = filterConstructor;
+            } catch (error) {
+                console.error('Error initializing filter:', error);
+            }
+        }
+
+        initializeFilter();
     </script>
 </body>
+
 </html>

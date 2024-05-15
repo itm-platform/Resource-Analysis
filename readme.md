@@ -26,10 +26,10 @@ Interval example:
         "noOfIntervals": 5
     },
     "filter": {
-        "project": {
+        "projects": {
             "Program.Id": { "$in": [12, 23] }
         },
-        "service": {
+        "services": {
             "Program.Id": { "$in": [12, 23] }
         }
     }
@@ -42,7 +42,7 @@ This is an example of "live between" filter. We're requesting that the StartDate
 {
     "analysisMode": "totals",
     "filter": {
-        "project": {
+        "projects": {
             "StartDate": { "$lte": "2023-11-30" },
             "EndDate": { "$gte": "2023-09-01" }
         },
@@ -73,9 +73,9 @@ Optional. Determines which entities and users are requested. Filters can apply t
 
 1. The general form is:
     ```js
-    filter:{project, service, user}
+    filter:{projects, services, users}
     ```
-2. When a filter is applied, it will return the main property. For example, `{project: "ExternalClient.Id":{"$in":[*]}}`  will return the project's `ExternalClient:{Id, Name}` property.
+2. When a filter is applied, it will return the main property. For example, `{projects: "ExternalClient.Id":{"$in":[*]}}`  will return the project's `ExternalClient:{Id, Name}` property.
     > ⚠️ Confirm the format `"$in":[*]` works. This is the way to include properties in the response without filtering.
 3. If no filters are present, it will return all **active** entities (inactive must not be present).
 
@@ -85,10 +85,10 @@ Optional. Determines which entities and users are requested. Filters can apply t
 All projects and services of the program Ids 12 and 23
 ```json
 filter:{
-    "project":{
+    "projects":{
 		"Program.Id":{"$in":[12, 23]}
 	    },
-	"service":{
+	"services":{
 		"Program.Id":{"$in":[12, 23]}
 	}
 ```
@@ -96,7 +96,7 @@ filter:{
 Projects whose start date is within a range and are assigned to clients 21 and 223
 ```json
 "filter":{
-    "project":{
+    "projects":{
 		"StartDate":{"$bt":["2023-09-01","2023-11-30"]},
 	    "Client.Id":{"$in":[21, 223]}
 	}}
@@ -105,7 +105,7 @@ Projects whose start date is within a range and are assigned to clients 21 and 2
 Tasks with a start date between some values and only users of category 21
 ```json
 "filter":{
-	"user":{
+	"users":{
 		 "Category.Id": {"$in":[21]}}
 	}
 ```
@@ -181,7 +181,7 @@ Total Estimated and Accepted: `[tblTaskUser] [intTaskUserId] ,[intTaskId] ,[intP
 
 We need to decide if filtering will happen before, after or it will be a join.
 
-> ❓Are services in v2? If not, we can remove the `service` filter and offer the feature only for projects in the first version.
+> ❓Are services in v2? If not, we can remove the `services` filter and offer the feature only for projects in the first version.
 
 
 ### Response examples
@@ -263,7 +263,7 @@ In this example we requested two week intervals.
                 },
                 {
                     Id: "task2",
-                    Name: "Task name 2 with a longuer name that exceeds usual length",
+                    Name: "Task name 2 with a longer name that exceeds usual length",
                     AssignedEfforts: [
                         {
                             UserId: "user1",
@@ -416,7 +416,7 @@ In this example we requested totals.
                 },
                 {
                     Id: "task2",
-                    Name: "Task name 2 with a longuer name that exceeds usual length",
+                    Name: "Task name 2 with a longer name that exceeds usual length",
                     AssignedEfforts: [
                         {
                             UserId: "user1",

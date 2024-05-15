@@ -1,0 +1,13 @@
+{
+    "proxy": {
+      "/api": {
+        "target": "http://localhost/ITM.API",
+        "changeOrigin": true,
+        "pathRewrite": {
+          "^/api": ""
+        }
+      }
+    },
+    "port": 5500
+  }
+  
