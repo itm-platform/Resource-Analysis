@@ -2,10 +2,8 @@ import { ChildComponent } from './ChildComponent.js';
 import { css } from '../Modules/helperFunctions.js';
 
 export class ComponentGenericTemplate {
-    constructor(initialData, index, serviceModel) {
-        this.initialData = initialData;
-        this.index = index;
-        this.serviceModel = serviceModel;
+    constructor(param) {
+        this.param = param;
         this.elements = {};
 
         this.#init();

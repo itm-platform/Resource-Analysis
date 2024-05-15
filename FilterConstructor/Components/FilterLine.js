@@ -1,6 +1,10 @@
 import { FilterLineTable } from './FilterLineTable.js';
 import { FilterLineField } from './FilterLineField.js';
 import { FilterLineOperator } from './FilterLineOperator.js';
+import {FilterLineValueSingle} from './FilterLineValueSingle.js';
+import {FilterLineValueSingleBoolean} from './FilterLineValueSingleBoolean.js';
+import {FilterLineValueDate} from './FilterLineValueDate.js';
+
 import OperatorModel from '../Models/OperatorModel.js';
 import { css } from '../Modules/helperFunctions.js';
 import { getLang } from './globalState.js';
@@ -51,6 +55,18 @@ export class FilterLine {
             this.filterLine.operator ? this.filterLine.operator : 'equality');
         this.elements.filterLineOperator = filterLineOperator.element;
         filterLine.appendChild(this.elements.filterLineOperator);
+
+        let filterLineValue;
+        if (['String', 'Number'].includes(this.fieldType)) {
+            filterLineValue = new FilterLineValueSingle(this.filterLine.value, this.fieldType);
+        } else if (this.fieldType === 'Boolean') {
+            filterLineValue = new FilterLineValueSingleBoolean(this.filterLine.value);
+        }
+        else if (this.fieldType === 'Date') {
+            filterLineValue = new FilterLineValueDate(this.filterLine.value);
+        }
+        this.elements.filterLineValue = filterLineValue.element;
+        filterLine.appendChild(this.elements.filterLineValue);
 
         return filterLine;
     }
@@ -129,7 +145,7 @@ export class FilterLine {
             const filterLineOperator = new FilterLineOperator(this.fieldOperators, this.filterLine.operator);
             this.elements.filterLineOperator = filterLineOperator.element;
             
-            this.elements.filterLine.appendChild(this.elements.filterLineOperator);
+            this.elements.filterLine.insertBefore(this.elements.filterLineOperator, this.elements.filterLineValue); // Insert the new filterLineOperator element before the filterLineValue element 
         }
         console.log(`${this.index} fieldName: ${fieldName}`);
     }
