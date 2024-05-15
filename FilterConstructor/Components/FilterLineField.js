@@ -1,10 +1,10 @@
+// TODO - C - If the selectedfield doesn't exist in the list, 
 import { css } from '../Modules/helperFunctions.js';
-
 export class FilterLineField {
     /**
      * Return a div containing a dropdown with the list of fields
      * and fieldSelected as the selected one. On change, it emits the event `filterFieldUpdated` with the selected field value.
-     * @param {Array} fields Example: [{name:"Id",labels:{en:"Id",es:"Id",pt:"Id"},type:"Number",primaryKey:true},{name:"IsActive",labels:{en:"Active",es:"Activo",pt:"Ativo"},type:"Boolean"}]
+     * @param {Array} fields Example: [{value: "projects", text: "Projects"}, {value: "tasks", text: "Tasks"}]
      * @param {String} fieldSelected Example: "projects"
      * @emits filterFieldUpdated
      */
@@ -20,6 +20,10 @@ export class FilterLineField {
     }
 
     #init() {
+        const selectedFieldPresentInFields = this.fields.some(field => field.value === this.fieldSelected);
+        if (!selectedFieldPresentInFields) {
+            this.fieldSelected = null; 
+        }
     }
 
     #createElement() {
@@ -31,6 +35,13 @@ export class FilterLineField {
         const selectElement = document.createElement('select');
         this.elements.selectElement = selectElement;
 
+        if (!this.fieldSelected) {
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.text = '<--Select Field-->';
+            defaultOption.selected = true;
+            selectElement.appendChild(defaultOption);
+        }
         this.fields.forEach(field => {
             const option = document.createElement('option');
             option.value = field.value;
