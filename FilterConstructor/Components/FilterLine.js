@@ -1,7 +1,7 @@
 import { FilterLineTable } from './FilterLineTable.js';
 import { FilterLineField } from './FilterLineField.js';
 import { css } from '../Modules/helperFunctions.js';
-import { getLang } from './globalState.js'; 
+import { getLang } from './globalState.js';
 
 export class FilterLine {
     constructor(filterLine, indexInFilterLines, dataServiceModel) {
@@ -9,6 +9,7 @@ export class FilterLine {
         this.index = indexInFilterLines;
         this.dataServiceModel = dataServiceModel;
         this.tables = [];
+        this.tableFields = [];
         this.elements = {};
 
         this.#init();
@@ -18,36 +19,23 @@ export class FilterLine {
         this.render();
     }
 
+    /** Perform any initialization logic that doesn't depend on DOM elements. */
     #init() {
         this.tables = this.dataServiceModel.tableListLanguage(getLang());
+        this.#feedTableFields();
     }
-
+    /**Create and setup DOM elements*/
     #createElement() {
         const filterLine = document.createElement('div');
         filterLine.id = 'filter-line-' + this.index;
         filterLine.className = 'filter-line';
         this.elements.filterLine = filterLine;
 
-        const filterLineTable = new FilterLineTable(this.tables, "projects");
+        const filterLineTable = new FilterLineTable(this.tables, this.filterLine.tableName);
         this.elements.filterLineTable = filterLineTable.element;
         filterLine.appendChild(this.elements.filterLineTable);
 
-        const fields = [
-            {
-                text: "Status Name",
-                value: "Status",
-                location: "Status.Name",
-                type: "String",
-                table: "projects"
-            }, 
-            {
-                text: "Id",
-                value: "Id",
-                type: "Number",
-                table: "projects"
-            }
-        ];
-        const filterLineField = new FilterLineField(fields, "Id");
+        const filterLineField = new FilterLineField(this.tableFields, this.filterLine.fieldName);
         this.elements.filterLineField = filterLineField.element;
         filterLine.appendChild(this.elements.filterLineField);
 
@@ -71,12 +59,39 @@ export class FilterLine {
     }
 
     render() {
-        // If there is any additional render logic required, it can be added here.
+
+    }
+
+    #feedTableFields() {
+        const tableFieldsOptions = {
+            tables: [this.filterLine.tableName],
+            types: 'all',
+            lang: getLang()
+        };
+
+        this.tableFields = this.dataServiceModel
+            .reshapeAndTranslateFieldsByTableAndType(tableFieldsOptions);
     }
 
     #updateFilterTable(tableName) {
-        console.log(`${this.index} tableName: ${tableName}`);
+        const hasTableChanged = this.filterLine.tableName !== tableName;
+        if (hasTableChanged) {
+            this.filterLine.tableName = tableName;
+            this.#feedTableFields(); // Update the fields based on the new table
+
+            // Remove the old FilterLineField element
+            this.elements.filterLineField.remove();
+
+            // Create a new FilterLineField with updated fields
+            const filterLineField = new FilterLineField(this.tableFields, this.filterLine.fieldName);
+            this.elements.filterLineField = filterLineField.element;
+
+            // Append the new FilterLineField to the filter line
+            this.elements.filterLine.appendChild(this.elements.filterLineField);
+        }
+        console.log(`${this.index} tableName changed to: ${this.filterLine.tableName}`);
     }
+
 
     #updateFilterField(fieldName) {
         console.log(`${this.index} fieldName: ${fieldName}`);

@@ -107,7 +107,7 @@ reshapeAndTranslateFieldsByTableAndType(options = {}) {
     const typesArray = toArray(types);
 
     const filterFields = (field, table) => {
-        if (field.type === undefined || typesArray === 'all' || typesArray.includes(field.type)) {
+        if (field.type === undefined || types === 'all' || typesArray.includes(field.type)) {
             const { labels, name, type, ...otherAttributes } = field;
             return {
                 "text": labels[lang],
@@ -122,7 +122,7 @@ reshapeAndTranslateFieldsByTableAndType(options = {}) {
 
     const fields = [];
     for (const table in this.tables) {
-        if (tablesArray === 'all' || tablesArray.includes(table)) {
+        if (tables === 'all' || tablesArray.includes(table)) {
             this.tables[table].fields.forEach(field => {
                 const filteredField = filterFields(field, table);
                 if (filteredField) fields.push(filteredField);
@@ -131,6 +131,7 @@ reshapeAndTranslateFieldsByTableAndType(options = {}) {
     }
     return fields;
 }
+
 
 
 }

@@ -34,16 +34,120 @@ test('getForeignKeys', () => {
 
 });
 
-test('DataServiceModel reshapeAndTranslateFieldsByTableAndType filtered', () => {
-    let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
-    let options = { tables: 'projects', types: ['Date'], lang: 'es' };
-    expect(dataServiceModel.reshapeAndTranslateFieldsByTableAndType(options))
-        .toEqual([{
-            table: "projects", text: "Fecha Reporte Progreso",
-            type: "Date", value: "ProgressDate"
-        }]);
+describe('reshapeAndTranslateFieldsByTableAndType using mock file', () => {
+    
+    test('DataServiceModel reshapeAndTranslateFieldsByTableAndType filtered one type, one project', () => {
+        let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
+        let options = { tables: 'projects', types: ['Date'], lang: 'es' };
+        expect(dataServiceModel.reshapeAndTranslateFieldsByTableAndType(options))
+            .toEqual([{
+                table: "projects", text: "Fecha Reporte Progreso",
+                type: "Date", value: "ProgressDate"
+            }]);
+    });
+
+    test('DataServiceModel reshapeAndTranslateFieldsByTableAndType filtered one project in array, all types', () => {
+        let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
+        let options = { "tables": ["projects"], "types": ['Date'], "lang": "es" };
+        expect(dataServiceModel.reshapeAndTranslateFieldsByTableAndType(options))
+            .toEqual([{
+                table: "projects", text: "Fecha Reporte Progreso",
+                type: "Date", value: "ProgressDate"
+            }]);
+    });
 });
 
+
+describe('DataServiceModel reshapeAndTranslateFieldsByTableAndType', () => {
+    const dataServiceModelJSON = {
+        tables: {
+            projects: {
+                fields: [
+                    { name: "ProgressDate", type: "Date", labels: { en: "Progress Report Date", es: "Fecha Reporte Progreso" } },
+                    { name: "ProjectName", type: "String", labels: { en: "Project Name", es: "Nombre del Proyecto" } }
+                ]
+            },
+            tasks: {
+                fields: [
+                    { name: "TaskDate", type: "Date", labels: { en: "Task Date", es: "Fecha de Tarea" } },
+                    { name: "TaskName", type: "String", labels: { en: "Task Name", es: "Nombre de Tarea" } }
+                ]
+            }
+        }
+    };
+    const dataServiceModel = new DataServiceModel(dataServiceModelJSON);
+
+    test('filters one type, one project', () => {
+        const options = { tables: 'projects', types: ['Date'], lang: 'es' };
+        expect(dataServiceModel.reshapeAndTranslateFieldsByTableAndType(options))
+            .toEqual([{
+                table: "projects", text: "Fecha Reporte Progreso",
+                type: "Date", value: "ProgressDate"
+            }]);
+    });
+
+    test('filters one project in array, all types', () => {
+        const options = { tables: ["projects"], types: "all", lang: "es" };
+        expect(dataServiceModel.reshapeAndTranslateFieldsByTableAndType(options))
+            .toEqual([
+                {
+                    table: "projects", text: "Fecha Reporte Progreso",
+                    type: "Date", value: "ProgressDate"
+                },
+                {
+                    table: "projects", text: "Nombre del Proyecto",
+                    type: "String", value: "ProjectName"
+                }
+            ]);
+    });
+
+    test('filters all tables, one type', () => {
+        const options = { tables: "all", types: ["String"], lang: "en" };
+        expect(dataServiceModel.reshapeAndTranslateFieldsByTableAndType(options))
+            .toEqual([
+                {
+                    table: "projects", text: "Project Name",
+                    type: "String", value: "ProjectName"
+                },
+                {
+                    table: "tasks", text: "Task Name",
+                    type: "String", value: "TaskName"
+                }
+            ]);
+    });
+
+    test('filters all tables, all types, Spanish language', () => {
+        const options = { tables: "all", types: "all", lang: "es" };
+        expect(dataServiceModel.reshapeAndTranslateFieldsByTableAndType(options))
+            .toEqual([
+                {
+                    table: "projects", text: "Fecha Reporte Progreso",
+                    type: "Date", value: "ProgressDate"
+                },
+                {
+                    table: "projects", text: "Nombre del Proyecto",
+                    type: "String", value: "ProjectName"
+                },
+                {
+                    table: "tasks", text: "Fecha de Tarea",
+                    type: "Date", value: "TaskDate"
+                },
+                {
+                    table: "tasks", text: "Nombre de Tarea",
+                    type: "String", value: "TaskName"
+                }
+            ]);
+    });
+
+    test('filters one table, one type, English language', () => {
+        const options = { tables: ["tasks"], types: ["Date"], lang: "en" };
+        expect(dataServiceModel.reshapeAndTranslateFieldsByTableAndType(options))
+            .toEqual([{
+                table: "tasks", text: "Task Date",
+                type: "Date", value: "TaskDate"
+            }]);
+    });
+});
 test('DataServiceModel init ', () => {
     let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
     expect(dataServiceModel)
@@ -80,7 +184,7 @@ test('DataServiceModel tableListLanguage ', () => {
         .toEqual([
             { value: 'projects', text: 'Proyectos' },
             { value: 'tasks', text: 'Tareas' },
-            ])
+        ]);
 
 });
 
@@ -100,7 +204,7 @@ describe('keepOnlyTables', () => {
             .toEqual(['projects', 'tasks', 'risks']);
     });
 
-    test ('should not break if a non-exisiting table is specified',() => {
+    test('should not break if a non-exisiting table is specified', () => {
         let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
         let remainingTables = ['projects', 'tasks', 'non-existing'];
         dataServiceModel.keepOnlyTables(remainingTables);
