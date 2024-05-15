@@ -1,9 +1,17 @@
 // FilterLineValueSingleBoolean.js
 import { css } from '../Modules/helperFunctions.js';
-
+import { getLang } from './globalState.js';
+const boolLang = {
+    "true": {
+        "en": "True", "es": "Verdadero", "pt": "True"
+    },
+    "false": {
+        "en": "False", "es": "Falso", "pt": "False"
+    }
+};
 export class FilterLineValueSingleBoolean {
-    constructor(param) {
-        this.param = param;
+    constructor(value) {
+        this.value = value;
         this.elements = {};
 
         this.#init();
@@ -15,15 +23,25 @@ export class FilterLineValueSingleBoolean {
 
     /** Perform any initialization logic that doesn't depend on DOM elements. */
     #init() {
-        
+
     }
 
     /**Create and setup DOM elements*/
     #createElement() {
-        
+
         const component = document.createElement('div');
-        component.className = 'component-class';
+        component.className = 'filter-line-value';
         this.elements.component = component;
+
+        const inputElement = document.createElement('select');
+        inputElement.innerHTML = `
+            <option value="true">${boolLang.true[getLang()]}</option>
+            <option value="false">${boolLang.false[getLang()]}</option>
+        `;
+        inputElement.value = this.value;
+        this.elements.inputElement = inputElement;
+
+        component.appendChild(inputElement);
 
         return component;
     }
@@ -35,14 +53,24 @@ export class FilterLineValueSingleBoolean {
     }
 
     #setupEventListeners() {
+        this.elements.inputElement.addEventListener('change', (event) => {
+            this.value = event.target.value;
+            this.elements.component.dispatchEvent(new CustomEvent('filterValueUpdated', {
+                detail: this.value,
+                bubbles: true
+            }));
+        });
     }
+
     render() {
-    
+
     }
+
+
 
     #getStyles() {
         return css`
-            .component-class {
+            .filter-line-value {
                 display: flex;
                 // Additional styles
             }
