@@ -8,9 +8,9 @@
 <body>
     <div id="parentDivId"></div>
     <script type="module">
-        import { FilterConstructor } from './FilterConstructor.js';
+        import { Filter } from './Components/Filter.js';
 
-        const filterConstructor = new FilterConstructor(
+        const filterConstructor = new Filter(
             {"projects":{"Program":{"$eq":233},"StartDate":{"$lte":"2023-11-30"}}}, 
             {dataServiceModel:{}}, 
             "parentDivId"

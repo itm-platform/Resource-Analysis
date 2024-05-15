@@ -1,14 +1,14 @@
 import { describe, expect, test, vi } from 'vitest';
-import { FilterLineTable } from '../FilterLineField';
+import { FilterLineField } from '../Components/FilterLineField';
 
-describe('FilterLineTable', () => {
+describe('FilterLineField', () => {
     test('should initialize with given fields and selected field', () => {
         const fields = [
             { value: 'Id', text: 'Id' },
             { value: 'IsActive', text: 'Active' }
         ];
         const fieldSelected = 'Id';
-        const component = new FilterLineTable(fields, fieldSelected);
+        const component = new FilterLineField(fields, fieldSelected);
 
         expect(component.fields).toEqual(fields);
         expect(component.fieldSelected).toBe(fieldSelected);
@@ -20,7 +20,7 @@ describe('FilterLineTable', () => {
             { value: 'IsActive', text: 'Active' }
         ];
         const fieldSelected = 'Id';
-        const component = new FilterLineTable(fields, fieldSelected);
+        const component = new FilterLineField(fields, fieldSelected);
         const selectElement = component.element.querySelector('select');
 
         expect(selectElement.children.length).toBe(2);
@@ -36,7 +36,7 @@ describe('FilterLineTable', () => {
             { value: 'IsActive', text: 'Active' }
         ];
         const fieldSelected = 'Id';
-        const component = new FilterLineTable(fields, fieldSelected);
+        const component = new FilterLineField(fields, fieldSelected);
         const selectElement = component.element.querySelector('select');
 
         // Simulate changing selection to 'IsActive'
@@ -52,7 +52,7 @@ describe('FilterLineTable', () => {
             { value: 'IsActive', text: 'Active' }
         ];
         const fieldSelected = 'Id';
-        const component = new FilterLineTable(fields, fieldSelected);
+        const component = new FilterLineField(fields, fieldSelected);
         const selectElement = component.element.querySelector('select');
         const mockHandler = vi.fn();
 

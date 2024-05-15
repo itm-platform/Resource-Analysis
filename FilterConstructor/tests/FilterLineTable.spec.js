@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from 'vitest';
-import { FilterLineTable } from '../FilterLineTable';
+import { FilterLineTable } from '../Components/FilterLineTable';
 
 describe('FilterLineTable', () => {
     test('should initialize with given tables and selected table', () => {

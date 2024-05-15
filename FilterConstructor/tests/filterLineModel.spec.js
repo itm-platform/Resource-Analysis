@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'vitest';
-import filterLineGettersSetters from '../filterLineGettersSetters';  // Adjust the import path as necessary
+import filterLineModel from '../Models/filterLineModel';  // Adjust the import path as necessary
 
 describe("Getters and Setters", () => {
   test("addGettersSetters should correctly initialize an empty filterLine object", () => {
     const filterLine = {};
-    filterLineGettersSetters.addGettersSetters(filterLine);
+    filterLineModel.addGettersSetters(filterLine);
     expect(filterLine.tableName).toBeUndefined();
     expect(filterLine.fieldName).toBeUndefined();
     expect(filterLine.operator).toBeNull();
@@ -13,14 +13,14 @@ describe("Getters and Setters", () => {
 
   test("set tableName should add a new table when none exists", () => {
     const filterLine = {};
-    filterLineGettersSetters.addGettersSetters(filterLine);
+    filterLineModel.addGettersSetters(filterLine);
     filterLine.tableName = "projects";
     expect(filterLine.tableName).toBe("projects");
   });
 
   test("change tableName should rename the table property", () => {
     const filterLine = { projects: {} };
-    filterLineGettersSetters.addGettersSetters(filterLine);
+    filterLineModel.addGettersSetters(filterLine);
     filterLine.tableName = "tasks";
     expect(filterLine.tableName).toBe("tasks");
     expect(filterLine.projects).toBeUndefined();
@@ -29,7 +29,7 @@ describe("Getters and Setters", () => {
 
   test("set fieldName should add a new field when none exists in the defined table", () => {
     const filterLine = {};
-    filterLineGettersSetters.addGettersSetters(filterLine);
+    filterLineModel.addGettersSetters(filterLine);
     filterLine.tableName = "projects";
     filterLine.fieldName = "Program";
     expect(filterLine.fieldName).toBe("Program");
@@ -37,7 +37,7 @@ describe("Getters and Setters", () => {
 
   test("change fieldName should rename the field property within the table", () => {
     const filterLine = { projects: { Program: {} } };
-    filterLineGettersSetters.addGettersSetters(filterLine);
+    filterLineModel.addGettersSetters(filterLine);
     filterLine.fieldName = "Task";
     expect(filterLine.fieldName).toBe("Task");
     expect(filterLine.projects.Program).toBeUndefined();
@@ -46,7 +46,7 @@ describe("Getters and Setters", () => {
 
   test("operator and value properties set and get correctly", () => {
     const filterLine = { projects: { Program: { $eq: 233 } } };
-    filterLineGettersSetters.addGettersSetters(filterLine);
+    filterLineModel.addGettersSetters(filterLine);
     expect(filterLine.operator).toBe("$eq");
     expect(filterLine.value).toBe(233);
     filterLine.operator = "$gt";
@@ -57,7 +57,7 @@ describe("Getters and Setters", () => {
 
   test("value properties handle direct and operator-based assignments correctly", () => {
     const filterLine = {};
-    filterLineGettersSetters.addGettersSetters(filterLine);
+    filterLineModel.addGettersSetters(filterLine);
     filterLine.tableName = "projects";
     filterLine.fieldName = "Program";
     // Direct assignment without an operator
@@ -77,32 +77,32 @@ describe("IsValid Line", () => {
 
     test("isValidLine returns true for a valid filterLine object", () => {
         const filterLine = { projects: { Program: { $eq: 233 } } };
-        filterLineGettersSetters.addGettersSetters(filterLine);
-        expect(filterLineGettersSetters.isValidLine(filterLine)).toBeTruthy();
+        filterLineModel.addGettersSetters(filterLine);
+        expect(filterLineModel.isValidLine(filterLine)).toBeTruthy();
       });
     
       test("isValidLine returns true for a valid filterLine object with direct equality", () => {
         const filterLine = {};
-        filterLineGettersSetters.addGettersSetters(filterLine);
+        filterLineModel.addGettersSetters(filterLine);
         filterLine.tableName = "projects";
         filterLine.fieldName = "Program";
         filterLine.value = 233; // Directly set the value without an operator
-        expect(filterLineGettersSetters.isValidLine(filterLine)).toBeTruthy();
+        expect(filterLineModel.isValidLine(filterLine)).toBeTruthy();
     });
     
     
     test("isValidLine returns false for an invalid filterLine object", () => {
         const filterLine = { projects: { Program: {} } }; // Program has no value or operator
-        filterLineGettersSetters.addGettersSetters(filterLine);
+        filterLineModel.addGettersSetters(filterLine);
         filterLine.tableName = "projects";
         filterLine.fieldName = "Program";
-        expect(filterLineGettersSetters.isValidLine(filterLine)).toBeFalsy();
+        expect(filterLineModel.isValidLine(filterLine)).toBeFalsy();
     });
     
     
       test("isValidLine handles error by returning false", () => {
         const filterLine = null;  // Invalid input that should cause the method to throw
-        expect(filterLineGettersSetters.isValidLine(filterLine)).toBeFalsy();
+        expect(filterLineModel.isValidLine(filterLine)).toBeFalsy();
       });
 
 });
@@ -113,7 +113,7 @@ describe ("Break Filter In Lines", () => {
       projects: { Program: { $eq: 233 } },
       tasks: { Task: { $gt: 100 } }
     };
-    const filterLines = filterLineGettersSetters.breakFilterInLines(queryFilter);
+    const filterLines = filterLineModel.breakFilterInLines(queryFilter);
     expect(filterLines.length).toBe(2);
     expect(filterLines[0].tableName).toBe("projects");
     expect(filterLines[0].fieldName).toBe("Program");
@@ -127,13 +127,13 @@ describe ("Break Filter In Lines", () => {
 
   test("breakFilterInLines should return an empty array when queryFilter is empty", () => {
     const queryFilter = {};
-    const filterLines = filterLineGettersSetters.breakFilterInLines(queryFilter);
+    const filterLines = filterLineModel.breakFilterInLines(queryFilter);
     expect(filterLines.length).toBe(0);
   });
 
   test("breakFilterInLines should return an empty array when queryFilter is null", () => {
     const queryFilter = null;
-    const filterLines = filterLineGettersSetters.breakFilterInLines(queryFilter);
+    const filterLines = filterLineModel.breakFilterInLines(queryFilter);
     expect(filterLines.length).toBe(0);
   });
 });
@@ -144,20 +144,20 @@ describe("recomposeFilterFromLines", () => {
         { projects: { Program: { $eq: 233 } } },
         { tasks: { Task: { $gt: 100 } }}
         ];
-        const queryFilter = filterLineGettersSetters.recomposeFilterFromLines(filterLines);
+        const queryFilter = filterLineModel.recomposeFilterFromLines(filterLines);
         expect(queryFilter.projects.Program.$eq).toBe(233);
         expect(queryFilter.tasks.Task.$gt).toBe(100);
     });
     
     test("recomposeFilterFromLines should return an empty object when filterLines is empty", () => {
         const filterLines = [];
-        const queryFilter = filterLineGettersSetters.recomposeFilterFromLines(filterLines);
+        const queryFilter = filterLineModel.recomposeFilterFromLines(filterLines);
         expect(Object.keys(queryFilter).length).toBe(0);
     });
     
     test("recomposeFilterFromLines should return an empty object when filterLines is null", () => {
         const filterLines = null;
-        const queryFilter = filterLineGettersSetters.recomposeFilterFromLines(filterLines);
+        const queryFilter = filterLineModel.recomposeFilterFromLines(filterLines);
         expect(Object.keys(queryFilter).length).toBe(0);
     }); 
 });  

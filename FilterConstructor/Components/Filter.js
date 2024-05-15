@@ -1,7 +1,7 @@
-//FilterConstructor/FilterConstructor.js
-import filterLineGettersSetters from './filterLineGettersSetters.js';
+//Filter/Filter.js
+import filterLineModel from '../Models/filterLineModel.js';
 import {FilterLine} from './FilterLine.js';
-export class FilterConstructor {
+export class Filter {
     constructor(queryFilter, dataServiceModel, parentDivId) {
         this.queryFilter = queryFilter || {};
         this.dataServiceModel = dataServiceModel;
@@ -19,7 +19,7 @@ export class FilterConstructor {
     }
 
     _breakFilterInLines() {
-        this.filterLines = filterLineGettersSetters.breakFilterInLines(this.queryFilter);
+        this.filterLines = filterLineModel.breakFilterInLines(this.queryFilter);
     }
     
 
@@ -72,7 +72,7 @@ export class FilterConstructor {
     }
 
     recomposeFilterFromLines() {
-        this.queryFilter = filterLineGettersSetters.recomposeFilterFromLines(this.filterLines);
+        this.queryFilter = filterLineModel.recomposeFilterFromLines(this.filterLines);
     }
 
     dispatchFilterUpdated() {
