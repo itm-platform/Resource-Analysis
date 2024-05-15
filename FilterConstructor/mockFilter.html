@@ -41,8 +41,8 @@
                 const tablesAllowed = ['projects', 'tasks'];
                 const language = 'es';
                 const filterConstructor = new Filter(
-                    { "projects": { "Duration": { "$eq": 10 }, "EndDate": { "$lte": "2023-11-30" } },
-                        "tasks": { "ProjectId": 21 } },
+                    { "projects": { "Duration": { "$gt": 10 }, "EndDate": { "$lte": "2023-11-30" } },
+                        "tasks": { "ProjectId": 21, } },
                     dataServiceModel, "parentDivId", tablesAllowed, language
                 );
                 window.filterConstructor = filterConstructor;

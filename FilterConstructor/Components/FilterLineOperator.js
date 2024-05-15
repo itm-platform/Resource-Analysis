@@ -1,15 +1,15 @@
 import { css } from '../Modules/helperFunctions.js';
-export class FilterLineField {
+export class FilterLineOperator {
     /**
-     * Return a div containing a dropdown with the list of fields
-     * and fieldSelected as the selected one. On change, it emits the event `filterFieldUpdated` with the selected field value.
-     * @param {Array} fields Example: [{value: "projects", text: "Projects"}, {value: "tasks", text: "Tasks"}]
-     * @param {String} fieldSelected Example: "projects"
-     * @emits filterFieldUpdated
+     * Return a div containing a dropdown with the list of operators
+     * and operatorSelected as the selected one. On change, it emits the event `filterOperatorUpdated` with the selected operator value.
+     * @param {Array} operators Example: [{value: "projects", text: "Projects"}, {value: "tasks", text: "Tasks"}]
+     * @param {String} operatorSelected Example: "projects"
+     * @emits filterOperatorUpdated
      */
-    constructor(fields, fieldSelected) {
-        this.fields = fields;
-        this.fieldSelected = fieldSelected;
+    constructor(operators, operatorSelected) {
+        this.operators = operators;
+        this.operatorSelected = operatorSelected;
         this.elements = {};
 
         this.#init();
@@ -19,32 +19,32 @@ export class FilterLineField {
     }
 
     #init() {
-        const selectedFieldPresentInFields = this.fields.some(field => field.value === this.fieldSelected);
-        if (!selectedFieldPresentInFields) {
-            this.fieldSelected = null; 
+        const selectedOperatorPresentInOperators = this.operators.some(operator => operator.value === this.operatorSelected);
+        if (!selectedOperatorPresentInOperators) {
+            this.operatorSelected = null; 
         }
     }
 
     #createElement() {
         const container = document.createElement('div');
-        container.className = 'filter-line-field';
+        container.className = 'filter-line-operator';
         this.elements.container = container;
 
         const selectElement = document.createElement('select');
         this.elements.selectElement = selectElement;
 
-        if (!this.fieldSelected) {
+        if (!this.operatorSelected) {
             const defaultOption = document.createElement('option');
             defaultOption.value = '';
-            defaultOption.text = '<--Select Field-->';
+            defaultOption.text = '<--Select Operator-->';
             defaultOption.selected = true;
             selectElement.appendChild(defaultOption);
         }
-        this.fields.forEach(field => {
+        this.operators.forEach(operator => {
             const option = document.createElement('option');
-            option.value = field.value;
-            option.text = field.text;
-            option.selected = field.value === this.fieldSelected;
+            option.value = operator.value;
+            option.text = operator.text;
+            option.selected = operator.value === this.operatorSelected;
             selectElement.appendChild(option);
         });
 
@@ -60,9 +60,9 @@ export class FilterLineField {
 
     #setupEventListeners() {
         this.elements.selectElement.addEventListener('change', (event) => {
-            this.fieldSelected = event.target.value;
-            this.elements.container.dispatchEvent(new CustomEvent('filterFieldUpdated', {
-                detail: this.fieldSelected,
+            this.operatorSelected = event.target.value;
+            this.elements.container.dispatchEvent(new CustomEvent('filterOperatorUpdated', {
+                detail: this.operatorSelected,
                 bubbles: true
             }));
         });
@@ -74,12 +74,12 @@ export class FilterLineField {
 
     #getStyles() {
         return css`
-            .filter-line-field {
+            .filter-line-operator {
                 display: flex;
                 align-items: center;
             }
 
-            .filter-line-field select {
+            .filter-line-operator select {
                 margin-left: 10px;
                 padding: 5px;
             }

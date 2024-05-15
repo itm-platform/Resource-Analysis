@@ -213,3 +213,49 @@ describe('keepOnlyTables', () => {
     });
 
 });
+
+describe('DataServiceModel getFieldType', () => {
+    const dataServiceModelJSON = {
+        tables: {
+            projects: {
+                fields: [
+                    { name: "ProgressDate", type: "Date" },
+                    { name: "ProjectName", type: "String" }
+                ]
+            },
+            tasks: {
+                fields: [
+                    { name: "TaskDate", type: "Date" },
+                    { name: "TaskName", type: "String" }
+                ]
+            }
+        }
+    };
+    const dataServiceModel = new DataServiceModel(dataServiceModelJSON);
+
+    test('returns correct field type for projects table', () => {
+        expect(dataServiceModel.getFieldType('projects', 'ProgressDate')).toBe('Date');
+        expect(dataServiceModel.getFieldType('projects', 'ProjectName')).toBe('String');
+    });
+
+    test('returns correct field type for tasks table', () => {
+        expect(dataServiceModel.getFieldType('tasks', 'TaskDate')).toBe('Date');
+        expect(dataServiceModel.getFieldType('tasks', 'TaskName')).toBe('String');
+    });
+
+    test('returns null for non-existent field', () => {
+        expect(dataServiceModel.getFieldType('projects', 'NonExistentField')).toBe(null);
+        expect(dataServiceModel.getFieldType('tasks', 'NonExistentField')).toBe(null);
+    });
+
+    test('returns null for non-existent table', () => {
+        expect(dataServiceModel.getFieldType('nonExistentTable', 'ProjectName')).toBe(null);
+    });
+
+    test('returns null for missing tableName or fieldName', () => {
+        expect(dataServiceModel.getFieldType(null, 'ProjectName')).toBe(null);
+        expect(dataServiceModel.getFieldType('projects', null)).toBe(null);
+        expect(dataServiceModel.getFieldType(null, null)).toBe(null);
+    });
+});
+

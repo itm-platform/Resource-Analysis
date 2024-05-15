@@ -68,6 +68,15 @@ export default class DataServiceModel {
         else return [];
     }
 
+    getFieldType(tableName, fieldName) {
+        if (tableName && fieldName && this.tables[tableName]) {
+            let field = this.tables[tableName].fields.find(field => field.name === fieldName);
+            if (field) return field.type;
+        }
+        return null;
+    }
+    
+
     /** Removes all non explicity included tables from the model */
     keepOnlyTables(tables) {
         if (!Array.isArray(tables)) {return;};
