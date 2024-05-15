@@ -1,4 +1,3 @@
-// FilterLineField.js
 import { css } from '../Modules/helperFunctions.js';
 
 export class FilterLineField {
@@ -13,9 +12,14 @@ export class FilterLineField {
         this.fields = fields;
         this.fieldSelected = fieldSelected;
         this.elements = {};
+
+        this.#init();
         this.element = this.#createElement();
         this.#applyStyles();
         this.#setupEventListeners();
+    }
+
+    #init() {
     }
 
     #createElement() {
@@ -45,6 +49,20 @@ export class FilterLineField {
         this.element.appendChild(style);
     }
 
+    #setupEventListeners() {
+        this.elements.selectElement.addEventListener('change', (event) => {
+            this.fieldSelected = event.target.value;
+            this.elements.container.dispatchEvent(new CustomEvent('filterFieldUpdated', {
+                detail: this.fieldSelected,
+                bubbles: true
+            }));
+        });
+
+    }
+
+    render() {
+    }
+
     #getStyles() {
         return css`
             .filter-line-field {
@@ -57,17 +75,5 @@ export class FilterLineField {
                 padding: 5px;
             }
         `;
-    }
-
-    #setupEventListeners() {
-        this.elements.selectElement.addEventListener('change', (event) => {
-            this.fieldSelected = event.target.value;
-            this.elements.container.dispatchEvent(new CustomEvent('filterFieldUpdated', {
-                detail: this.fieldSelected,
-                bubbles: true
-            }));
-        });
-
-        // Add any additional event listeners here if necessary
     }
 }

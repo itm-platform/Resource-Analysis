@@ -37,7 +37,7 @@
             try {
                 const token = await fetchToken();
                 const dataServiceModel = await fetchDataServiceModel(token);
-                const tablesAllowed = ['projects', 'users'];
+                const tablesAllowed = ['projects', 'tasks'];
                 const language = 'es';
                 const filterConstructor = new Filter(
                     { "projects": { "Program": { "$eq": 233 }, "StartDate": { "$lte": "2023-11-30" } } },

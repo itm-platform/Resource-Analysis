@@ -90,38 +90,47 @@ export default class DataServiceModel {
         }
         return tableList;
     }
-    /**  Retrieves fields filtering by table and type. 
+
+/**
+ * Retrieves fields filtering by table and type. 
  * @param {object} options tables, types and lang. All optional.
  * @param {String[]|String} options.tables Tables.
  * @param {String[]|String} options.types Types.
  * @param {String} options.lang Language.
- * @returns {Object [] { "text": field.labels[lang], "value": field.name, "type": field.type, "table": table }}
+ * @returns {Object [] { "text": field.labels[lang], "value": field.name, "type": field.type, "table": table, ...otherAttributes }}
  */
-    fieldNamesByType(options = {}) {
-        let tables = 'all'; let types = 'all'; let lang = 'en';
-        if (Array.isArray(options.tables)) tables = options.tables;
-        else if (typeof options.tables == 'string') tables = [options.tables];
-        if (Array.isArray(options.types)) types = options.types;
-        else if (typeof options.types == 'string') types = [options.types];
-        if (options.lang) lang = options.lang;
-        let fields = [];
-        let field;
-        for (const table in this.tables) {
-            if (tables == 'all' || tables.includes(table)) {
-                for (var f = 0; f < this.tables[table].fields.length; f++) {
-                    field = this.tables[table].fields[f];
-                    if (field.type == undefined || types == 'all' || types.includes(field.type)) {
-                        fields.push({
-                            "text": field.labels[lang],
-                            "value": field.name,
-                            "type": field.type,
-                            "table": table
-                        });
-                    }
-                }
-            }
-        }
-        return fields;
+reshapeAndTranslateFieldsByTableAndType(options = {}) {
+    const { tables = 'all', types = 'all', lang = 'en' } = options;
 
+    const toArray = (item) => (Array.isArray(item) ? item : item ? [item] : []);
+    const tablesArray = toArray(tables);
+    const typesArray = toArray(types);
+
+    const filterFields = (field, table) => {
+        if (field.type === undefined || typesArray === 'all' || typesArray.includes(field.type)) {
+            const { labels, name, type, ...otherAttributes } = field;
+            return {
+                "text": labels[lang],
+                "value": name,
+                "type": type,
+                "table": table,
+                ...otherAttributes
+            };
+        }
+        return null;
+    };
+
+    const fields = [];
+    for (const table in this.tables) {
+        if (tablesArray === 'all' || tablesArray.includes(table)) {
+            this.tables[table].fields.forEach(field => {
+                const filteredField = filterFields(field, table);
+                if (filteredField) fields.push(filteredField);
+            });
+        }
     }
+    return fields;
+}
+
+
 }

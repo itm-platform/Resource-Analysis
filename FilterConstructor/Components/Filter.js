@@ -1,4 +1,3 @@
-// Filter/Filter.js
 import { FilterLine } from './FilterLine.js';
 import filterLineModel from '../Models/filterLineModel.js';
 import DataServiceModel from '../Models/DataServiceModel.js';
@@ -6,8 +5,7 @@ import { setLang } from './globalState.js';
 import { css } from '../Modules/helperFunctions.js';
 
 export class Filter {
-    constructor(queryFilter, dataServiceModelJSON, 
-        parentDivId, tablesAllowed = [], lang = "es") {
+    constructor(queryFilter, dataServiceModelJSON, parentDivId, tablesAllowed = [], lang = "es") {
         this.queryFilter = queryFilter || {};
         this.dataServiceModel = new DataServiceModel(dataServiceModelJSON);
         this.parentDivId = parentDivId;
@@ -15,17 +13,18 @@ export class Filter {
         this.lang = lang;
         this.filterLines = [];
         this.elements = {};
+
+        this.#init();
         this.element = this.#createElement();
         this.#applyStyles();
         this.#setupEventListeners();
-        this.#init();
+        this.render();
     }
 
     #init() {
         setLang(this.lang);
         this.dataServiceModel.keepOnlyTables(this.tablesAllowed);
         this.filterLines = filterLineModel.breakFilterInLines(this.queryFilter);
-        this.render();
     }
 
     #createElement() {
@@ -64,7 +63,7 @@ export class Filter {
         });
     }
 
-     render() {
+    render() {
         this.elements.filterLinesDiv.innerHTML = '';
         this.filterLines.forEach((filterLine, index) => {
             this.renderFilterLine(filterLine, index);

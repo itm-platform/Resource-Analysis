@@ -1,65 +1,53 @@
-// Filter/FilterLine.js
-import {FilterLineTable} from './FilterLineTable.js';
-import {FilterLineField} from './FilterLineField.js';
-import {css} from '../Modules/helperFunctions.js';
+import { FilterLineTable } from './FilterLineTable.js';
+import { FilterLineField } from './FilterLineField.js';
+import { css } from '../Modules/helperFunctions.js';
 import { getLang } from './globalState.js'; 
+
 export class FilterLine {
-    constructor(
-        filterLine, 
-        indexInFilterLines,
-        dataServiceModel,
-        ) 
-        {
+    constructor(filterLine, indexInFilterLines, dataServiceModel) {
         this.filterLine = filterLine;
         this.index = indexInFilterLines;
         this.dataServiceModel = dataServiceModel;
         this.tables = [];
-        
         this.elements = {};
+
         this.#init();
         this.element = this.#createElement();
         this.#applyStyles();
         this.#setupEventListeners();
+        this.render();
     }
 
     #init() {
-        this.tables =this.dataServiceModel.tableListLanguage(getLang());
-        console.log(this.tables);
+        this.tables = this.dataServiceModel.tableListLanguage(getLang());
     }
+
     #createElement() {
         const filterLine = document.createElement('div');
         filterLine.id = 'filter-line-' + this.index;
         filterLine.className = 'filter-line';
         this.elements.filterLine = filterLine;
 
-        const tables = [
-            {value: "projects", text: "Projects"},
-            {value: "services", text: "Services"}
-        ];
-        const tableSelected = "projects";
-
-        const fields=[
-            {
-                "text": "Status Name",
-                "value": "Status",
-                "location": "Status.Name",
-                "type": "String",
-                "table": "projects"
-            }, 
-            {
-                "text": "Id",
-                "value": "Id",
-                "type": "Number",
-                "table": "projects"
-                
-            }];
-            const fieldSelected = "Id";
-
-        const filterLineTable = new FilterLineTable(this.tables, tableSelected);
+        const filterLineTable = new FilterLineTable(this.tables, "projects");
         this.elements.filterLineTable = filterLineTable.element;
         filterLine.appendChild(this.elements.filterLineTable);
 
-        const filterLineField = new FilterLineField(fields, fieldSelected);
+        const fields = [
+            {
+                text: "Status Name",
+                value: "Status",
+                location: "Status.Name",
+                type: "String",
+                table: "projects"
+            }, 
+            {
+                text: "Id",
+                value: "Id",
+                type: "Number",
+                table: "projects"
+            }
+        ];
+        const filterLineField = new FilterLineField(fields, "Id");
         this.elements.filterLineField = filterLineField.element;
         filterLine.appendChild(this.elements.filterLineField);
 
@@ -72,7 +60,6 @@ export class FilterLine {
         this.element.appendChild(style);
     }
 
-
     #setupEventListeners() {
         this.elements.filterLineTable.addEventListener('filterTableUpdated', (event) => {
             this.#updateFilterTable(event.detail);
@@ -81,12 +68,10 @@ export class FilterLine {
         this.elements.filterLineField.addEventListener('filterFieldUpdated', (event) => {
             this.#updateFilterField(event.detail);
         });
+    }
 
-        this.elements.filterLine.addEventListener('click', (event) => {
-            console.log(`FilterLine ${this.index} clicked`);
-        });
-
-        // Add any additional event listeners here
+    render() {
+        // If there is any additional render logic required, it can be added here.
     }
 
     #updateFilterTable(tableName) {
@@ -96,7 +81,7 @@ export class FilterLine {
     #updateFilterField(fieldName) {
         console.log(`${this.index} fieldName: ${fieldName}`);
     }
-    
+
     #getStyles() {
         return css`
             .filter-line {

@@ -34,10 +34,10 @@ test('getForeignKeys', () => {
 
 });
 
-test('DataServiceModel fieldNamesByType filtered', () => {
+test('DataServiceModel reshapeAndTranslateFieldsByTableAndType filtered', () => {
     let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
     let options = { tables: 'projects', types: ['Date'], lang: 'es' };
-    expect(dataServiceModel.fieldNamesByType(options))
+    expect(dataServiceModel.reshapeAndTranslateFieldsByTableAndType(options))
         .toEqual([{
             table: "projects", text: "Fecha Reporte Progreso",
             type: "Date", value: "ProgressDate"

@@ -1,4 +1,3 @@
-// Component/ComponentGenericTemplate.js
 import { ChildComponent } from './ChildComponent.js';
 import { css } from '../Modules/helperFunctions.js';
 
@@ -8,29 +7,22 @@ export class ComponentGenericTemplate {
         this.index = index;
         this.serviceModel = serviceModel;
         this.elements = {};
+
+        this.#init();
         this.element = this.#createElement();
         this.#applyStyles();
         this.#setupEventListeners();
+        this.render();
     }
+
+    /** Perform any initialization logic that doesn't depend on DOM elements. */
     #init() {
-        /**Purpose: To perform any setup or initialization tasks that need to happen after the DOM elements are created.
-
-        What to include:
-
-        State Initialization: Initialize any state variables that depend on the DOM being present.
-        Data Binding: Bind data to the DOM elements if needed.
-        Calling Methods: Call other methods to perform tasks like fetching data or setting up the initial state. */
+        
     }
 
+    /**Create and setup DOM elements*/
     #createElement() {
-        /**Purpose: To create and assemble the DOM structure of the component.
-
-        What to include:
-
-        Element Creation: Create the main container and any child elements.
-        Setting Attributes and Classes: Set IDs, classes, and other attributes on the elements.
-        Appending Children: Append child elements to their respective parent elements.
-        Initial Content: Set initial content or placeholder text. */
+        
         const component = document.createElement('div');
         component.id = 'component-' + this.index;
         component.className = 'component-class';
@@ -60,6 +52,15 @@ export class ComponentGenericTemplate {
             console.log(`Component ${this.index} clicked`);
         });
 
+        // Add any additional event listeners here
+    }
+
+    /**    Purpose: To render the initial state of the component or re-render it if needed.
+        What to include:
+        - Rendering child components
+        - Updating DOM elements with data */
+    render() {
+    
     }
 
     #updatePart1(data) {
