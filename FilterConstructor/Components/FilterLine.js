@@ -25,7 +25,6 @@ export class FilterLine {
         this.#init();
         this.element = this.#createElement();
         this.#applyStyles();
-        this.#setupEventListeners();
         this.#render();
     }
 
@@ -53,7 +52,7 @@ export class FilterLine {
         this.#render('filterLineOperator');
         filterLine.appendChild(this.elements.filterLineOperator);
 
-       this.#render('filterLineValue');
+        this.#render('filterLineValue');
         filterLine.appendChild(this.elements.filterLineValue);
 
         return filterLine;
@@ -65,37 +64,30 @@ export class FilterLine {
         this.element.appendChild(style);
     }
 
-    #setupEventListeners() {
-        this.elements.filterLineTable.addEventListener('filterTableUpdated', (event) => {
-            this.#updateFilterTable(event.detail);
-        });
-
-        this.elements.filterLineField.addEventListener('filterFieldUpdated', (event) => {
-            this.#updateFilterField(event.detail);
-        });
-
-        this.elements.filterLineOperator.addEventListener('filterOperatorUpdated', (event) => {
-            this.#updateFilterOperator(event.detail);
-        });
-
-        this.elements.filterLineValue.addEventListener('filterValueUpdated', (event) => {
-            this.#updateFilterValue(event.detail);
-        });
-    }
 
     #render(functionToRender) {
         const renderFunctions = {
             filterLineTable: () => {
                 const filterLineTable = new FilterLineTable(this.tables, this.filterLine.tableName);
+                filterLineTable.element.addEventListener('filterTableUpdated', (event) => {
+                    this.#updateFilterTable(event.detail);
+                });
+
                 this.elements.filterLineTable = filterLineTable.element;
             },
             filterLineField: () => {
                 const filterLineField = new FilterLineField(this.tableFields, this.filterLine.fieldName);
+                filterLineField.element.addEventListener('filterFieldUpdated', (event) => {
+                    this.#updateFilterField(event.detail);
+                });
                 this.elements.filterLineField = filterLineField.element;
             },
             filterLineOperator: () => {
                 const filterLineOperator = new FilterLineOperator(this.fieldOperators,
                     this.filterLine.operator ? this.filterLine.operator : 'equality');
+                filterLineOperator.element.addEventListener('filterOperatorUpdated', (event) => {
+                    this.#updateFilterOperator(event.detail);
+                });
                 this.elements.filterLineOperator = filterLineOperator.element;
             },
             filterLineValue: () => {
@@ -108,6 +100,13 @@ export class FilterLine {
                 else if (this.fieldType === 'Date') {
                     filterLineValue = new FilterLineValueDate(this.filterLine.value);
                 }
+                else {
+                    console.error(`Field type ${this.fieldType} not supported`);
+                    return;
+                }
+                filterLineValue.element.addEventListener('filterValueUpdated', (event) => {
+                    this.#updateFilterValue(event.detail);
+                });
                 this.elements.filterLineValue = filterLineValue.element;
             }
         };
@@ -143,45 +142,60 @@ export class FilterLine {
             this.#render('filterLineField');
             this.elements.filterLine.insertBefore(this.elements.filterLineField, this.elements.filterLineOperator);
         }
-        this.#validateAndEmit();
+        this.#validateAndEmit('table');
     }
 
     #updateFilterField(fieldName) {
         console.log(`updating filter field to ${fieldName}`);
         const hasFieldChanged = this.filterLine.fieldName !== fieldName;
-        if (hasFieldChanged) {
-            this.filterLine.fieldName = fieldName;
-            this.#feedFieldOperators(); // Update the operators based on the new field
+        if (!hasFieldChanged) { return; };
 
-            this.elements.filterLineOperator.remove(); // Remove the old filterLineOperator element
+        this.filterLine.fieldName = fieldName;
+        this.#feedFieldOperators(); // Update the operators based on the new field
 
-            this.#render('filterLineOperator');
-            this.#updateFilterOperator(this.elements.filterLineOperator.operatorSelected);
+        this.elements.filterLineOperator.remove(); // Remove the old filterLineOperator element
 
-            this.elements.filterLine.insertBefore(this.elements.filterLineOperator, this.elements.filterLineValue); // Insert the new filterLineOperator element before the filterLineValue element 
-        }
-        this.#validateAndEmit();
+        this.#render('filterLineOperator');
+        this.#updateFilterOperator(this.elements.filterLineOperator.operatorSelected);
+
+        this.elements.filterLine.insertBefore(this.elements.filterLineOperator, this.elements.filterLineValue); // Insert the new filterLineOperator element before the filterLineValue element 
+        this.#validateAndEmit('field');
     }
 
     #updateFilterOperator(operator) {
         console.log(`updating filter operator to ${operator}`);
+        const hasOperatorChanged = this.filterLine.operator !== operator;
+        if (!hasOperatorChanged) { return; };
+
         this.filterLine.operator = operator;
-        this.#validateAndEmit();
+        this.elements.filterLineValue.remove();
+        this.#render('filterLineValue');
+        this.#updateFilterValue(this.elements.filterLineValue.value);
+        this.elements.filterLine.appendChild(this.elements.filterLineValue);
+
+        this.#validateAndEmit('operator');
     }
 
     #updateFilterValue(value) {
+        console.log(`updating filter value to ${value}`);
+        const hasValueChanged = this.filterLine.value !== value;
+        if (!hasValueChanged) { return; };
+
         this.filterLine.value = value;
-        this.#validateAndEmit();
+        this.#validateAndEmit('value');
     }
 
-    #validateAndEmit(){
-        console.log(`validating filterLine: ${JSON.stringify(this.filterLine, null, 2)}`);
+    #validateAndEmit(solicitor) {
+        console.log(`${solicitor} asked validate: ${JSON.stringify(this.filterLine, null, 2)}`);
         if (filterLineModel.isValidLine(this.filterLine)) {
             console.log('filterLine is valid');
             this.elements.filterLine.dispatchEvent(new CustomEvent('filterLineUpdated', {
                 detail: this.filterLine,
                 bubbles: true
             }));
+        }
+        else {
+            console.log('filterLine is invalid');
         }
     }
 

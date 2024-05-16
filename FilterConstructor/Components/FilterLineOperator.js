@@ -26,7 +26,6 @@ export class FilterLineOperator {
     }
 
     #createElement() {
-        console.log(`operatorSelected at creation: ${this.operatorSelected}`);
         const container = document.createElement('div');
         container.className = 'filter-line-operator';
         this.elements.container = container;
