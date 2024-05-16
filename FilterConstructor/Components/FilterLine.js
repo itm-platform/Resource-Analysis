@@ -6,6 +6,7 @@ import { FilterLineValueSingleBoolean } from './FilterLineValueSingleBoolean.js'
 import { FilterLineValueDate } from './FilterLineValueDate.js';
 
 import OperatorModel from '../Models/OperatorModel.js';
+import filterLineModel from '../Models/filterLineModel.js';
 import { css } from '../Modules/helperFunctions.js';
 import { getLang } from './globalState.js';
 
@@ -142,7 +143,7 @@ export class FilterLine {
             this.#render('filterLineField');
             this.elements.filterLine.insertBefore(this.elements.filterLineField, this.elements.filterLineOperator);
         }
-        console.log(`${this.index} tableName changed to: ${this.filterLine.tableName}`);
+        this.#validateAndEmit();
     }
 
     #updateFilterField(fieldName) {
@@ -157,16 +158,26 @@ export class FilterLine {
 
             this.elements.filterLine.insertBefore(this.elements.filterLineOperator, this.elements.filterLineValue); // Insert the new filterLineOperator element before the filterLineValue element 
         }
-        console.log(`${this.index} fieldName: ${fieldName}`);
+        this.#validateAndEmit();
     }
 
     #updateFilterOperator(operator) {
-        console.log(`${this.index} operator: ${operator}`);
+        this.filterLine.operator = operator;
+        this.#validateAndEmit();
     }
 
     #updateFilterValue(value) {
         this.filterLine.value = value;
-        console.log(`${this.index} value: ${value}`);
+        this.#validateAndEmit();
+    }
+
+    #validateAndEmit(){
+        if (filterLineModel.isValidLine(this.filterLine)) {
+            this.elements.filterLine.dispatchEvent(new CustomEvent('filterLineUpdated', {
+                detail: this.filterLine,
+                bubbles: true
+            }));
+        }
     }
 
     #getStyles() {

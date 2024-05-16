@@ -67,13 +67,17 @@ export class Filter {
         this.elements.filterLinesDiv.innerHTML = '';
         this.filterLines.forEach((filterLine, index) => {
             this.renderFilterLine(filterLine, index);
+
         });
+        console.log(`render with filterLines: ${JSON.stringify(this.filterLines, null, 2)}`);
     }
 
     renderFilterLine(line, index) {
-        const filterLine = new FilterLine(line, index, this.dataServiceModel);
-        this.filterLines.push(filterLine);
-        this.elements.filterLinesDiv.appendChild(filterLine.element);
+        const filterLineElement = new FilterLine(line, index, this.dataServiceModel);
+        filterLineElement.element.addEventListener('filterLineUpdated', (event) => {
+            this.updateFilterWithLine(index, event);
+        });
+        this.elements.filterLinesDiv.appendChild(filterLineElement.element);
     }
 
     addFilterLine() {
@@ -83,7 +87,10 @@ export class Filter {
     }
 
     updateFilterWithLine(index, event) {
+        console.log(`filterLines before: ${JSON.stringify(this.filterLines, null, 2)}`);
         this.filterLines[index] = event.detail;
+        console.log(`Filter line ${index} updated with ${JSON.stringify(event.detail, null, 2)}`);
+        console.log(`filterLines after: ${JSON.stringify(this.filterLines, null, 2)}`);
         this.recomposeFilterFromLines();
         this.dispatchFilterUpdated();
     }
@@ -94,6 +101,7 @@ export class Filter {
 
     dispatchFilterUpdated() {
         const event = new CustomEvent('filterUpdated', { detail: this.queryFilter });
+        //console.log(`New filter: ${JSON.stringify(this.queryFilter, null, 2)}`);
         document.dispatchEvent(event);
     }
 
