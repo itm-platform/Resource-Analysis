@@ -147,6 +147,7 @@ export class FilterLine {
     }
 
     #updateFilterField(fieldName) {
+        console.log(`updating filter field to ${fieldName}`);
         const hasFieldChanged = this.filterLine.fieldName !== fieldName;
         if (hasFieldChanged) {
             this.filterLine.fieldName = fieldName;
@@ -155,6 +156,7 @@ export class FilterLine {
             this.elements.filterLineOperator.remove(); // Remove the old filterLineOperator element
 
             this.#render('filterLineOperator');
+            this.#updateFilterOperator(this.elements.filterLineOperator.operatorSelected);
 
             this.elements.filterLine.insertBefore(this.elements.filterLineOperator, this.elements.filterLineValue); // Insert the new filterLineOperator element before the filterLineValue element 
         }
@@ -162,6 +164,7 @@ export class FilterLine {
     }
 
     #updateFilterOperator(operator) {
+        console.log(`updating filter operator to ${operator}`);
         this.filterLine.operator = operator;
         this.#validateAndEmit();
     }
@@ -172,7 +175,9 @@ export class FilterLine {
     }
 
     #validateAndEmit(){
+        console.log(`validating filterLine: ${JSON.stringify(this.filterLine, null, 2)}`);
         if (filterLineModel.isValidLine(this.filterLine)) {
+            console.log('filterLine is valid');
             this.elements.filterLine.dispatchEvent(new CustomEvent('filterLineUpdated', {
                 detail: this.filterLine,
                 bubbles: true

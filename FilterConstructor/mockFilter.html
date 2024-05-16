@@ -15,17 +15,17 @@
         /* To avoid CORS issues, use a proxy. In VS Code, settings.json     "
         liveServer.settings.proxy": {
         "enable": true,
-        "baseUri": "/api",
+        "baseUri": "/proxy",
         "proxyUri": "http://localhost/ITM.API"
         }*/
         async function fetchToken() {
-            const response = await fetch('/api/itmrozas/login/fc55f846-d7f7-4abb-afc8-d25338a71ef6');
+            const response = await fetch('/proxy/itmrozas/login/fc55f846-d7f7-4abb-afc8-d25338a71ef6');
             const data = await response.json();
             return data.Token;
         }
 
         async function fetchDataServiceModel(token) {
-            const response = await fetch('/api/v2/itmrozas/dataServiceModel', {
+            const response = await fetch('/proxy/v2/itmrozas/dataServiceModel', {
                 headers: {
                     'Token': token
                 }

@@ -1,7 +1,11 @@
+/* TODO - B - Convert this into a class passing the line object as a parameter to the constructor.
+And separate breakFilterInLines and recomposeFilterFromLines into a separate class.
+*/
+
 export default {
     /**
      * Adds getters and setters to the filterLine object: tableName, fieldName, operator, value. 
-     * This way, the programmer doesn't have to worry about th structure of a filterLine, such as `{"projects":{"Program":{"$eq":233}}}`
+     * This way, the programmer doesn't have to worry about the structure of a filterLine, such as `{"projects":{"Program":{"$eq":233}}}`
      * In this example, filterLine.tableName = "projects", filterLine.fieldName = "Program", filterLine.operator = "$eq", filterLine.value = 233
      * @returns 
      */
@@ -49,7 +53,7 @@ export default {
                 let tableName = this.tableName;
                 let fieldName = this.fieldName;
                 if (!tableName || !fieldName) return null;
-                if (typeof this[tableName][fieldName] === "object") {
+                if (typeof this[tableName][fieldName] === "object" && Object.keys(this[tableName][fieldName]).length > 0) {
                     return Object.keys(this[tableName][fieldName])[0];
                 } else {
                     return null;
@@ -58,17 +62,27 @@ export default {
             set: function (operator) {
                 let tableName = this.tableName;
                 let fieldName = this.fieldName;
-                if (tableName && fieldName && typeof operator === 'string') {
-                    if (this.operator) {
+                if (tableName && fieldName) {
+                    if (typeof operator === 'string') {
+                        if (this.operator) {
+                            let oldOperator = this.operator;
+                            this[tableName][fieldName][operator] = this[tableName][fieldName][oldOperator];
+                            delete this[tableName][fieldName][oldOperator];
+                        } else {
+                            this[tableName][fieldName] = { [operator]: this.value };
+                        }
+                    } else if (operator == null) {
+                        // Handle undefined or null operator
                         let oldOperator = this.operator;
-                        this[tableName][fieldName][operator] = this[tableName][fieldName][oldOperator];
-                        delete this[tableName][fieldName][oldOperator];
-                    } else {
-                        this[tableName][fieldName] = { [operator]: this.value };
+                        if (oldOperator) {
+                            delete this[tableName][fieldName][oldOperator];
+                        }
                     }
                 }
             },
         });
+        
+        
         
         Object.defineProperty(filterLine, "value", {
             get: function () {
@@ -124,7 +138,8 @@ export default {
                 (line.operator && typeof line[line.tableName][line.fieldName] === 'object') ||
                 line.value === line[line.tableName][line.fieldName] // Checks for direct value assignment
             );
-    
+                // TODO - A - If date field, expect a date value. Same for other types
+
             return tableFieldValue && operatorFieldIsValid;
         } catch (error) {
             return false;

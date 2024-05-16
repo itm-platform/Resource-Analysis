@@ -69,7 +69,7 @@ In this example, we are requesting five weeks starting on 2024-01-01. The respon
 
 #### `Filter` 
     filter:{project, service, user}
-Optional. Determines which entities and users are requested. Filters can apply to entities (`project`, `service`) and users (`user`). 
+Optional. Determines which entities and users are requested. Filters can apply to entities (`projects`, `services`) and users (`users`). 
 
 1. The general form is:
     ```js

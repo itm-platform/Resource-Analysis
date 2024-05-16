@@ -69,7 +69,7 @@ export class Filter {
             this.renderFilterLine(filterLine, index);
 
         });
-        console.log(`render with filterLines: ${JSON.stringify(this.filterLines, null, 2)}`);
+        //console.log(`render with filterLines: ${JSON.stringify(this.filterLines, null, 2)}`);
     }
 
     renderFilterLine(line, index) {
@@ -85,12 +85,12 @@ export class Filter {
         this.filterLines.push(newFilterLine);
         this.renderFilterLine(newFilterLine, this.filterLines.length - 1);
     }
-
+    // LEFT OFF: It does not update correctly.
     updateFilterWithLine(index, event) {
-        console.log(`filterLines before: ${JSON.stringify(this.filterLines, null, 2)}`);
+        //console.log(`filterLines before: ${JSON.stringify(this.filterLines, null, 2)}`);
         this.filterLines[index] = event.detail;
-        console.log(`Filter line ${index} updated with ${JSON.stringify(event.detail, null, 2)}`);
-        console.log(`filterLines after: ${JSON.stringify(this.filterLines, null, 2)}`);
+        //console.log(`Filter line ${index} updated with ${JSON.stringify(event.detail, null, 2)}`);
+        //console.log(`filterLines after: ${JSON.stringify(this.filterLines, null, 2)}`);
         this.recomposeFilterFromLines();
         this.dispatchFilterUpdated();
     }

@@ -26,6 +26,7 @@ export class FilterLineOperator {
     }
 
     #createElement() {
+        console.log(`operatorSelected at creation: ${this.operatorSelected}`);
         const container = document.createElement('div');
         container.className = 'filter-line-operator';
         this.elements.container = container;
@@ -33,13 +34,6 @@ export class FilterLineOperator {
         const selectElement = document.createElement('select');
         this.elements.selectElement = selectElement;
 
-        if (!this.operatorSelected) {
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.text = '<--Select Operator-->';
-            defaultOption.selected = true;
-            selectElement.appendChild(defaultOption);
-        }
         this.operators.forEach(operator => {
             const option = document.createElement('option');
             option.value = operator.value;
@@ -61,12 +55,17 @@ export class FilterLineOperator {
     #setupEventListeners() {
         this.elements.selectElement.addEventListener('change', (event) => {
             this.operatorSelected = event.target.value;
-            this.elements.container.dispatchEvent(new CustomEvent('filterOperatorUpdated', {
-                detail: this.operatorSelected,
-                bubbles: true
-            }));
+            this.#dispatchEvent();
         });
 
+    }
+
+    #dispatchEvent() {
+        console.log(`dispatching event with operatorSelected: ${this.operatorSelected}`);
+        this.elements.container.dispatchEvent(new CustomEvent('filterOperatorUpdated', {
+            detail: this.operatorSelected,
+            bubbles: true
+        }));
     }
 
     render() {

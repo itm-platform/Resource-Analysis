@@ -2,76 +2,115 @@ import { describe, expect, test } from 'vitest';
 import filterLineModel from '../../Models/filterLineModel';  // Adjust the import path as necessary
 
 describe("Getters and Setters", () => {
-  test("addGettersSetters should correctly initialize an empty filterLine object", () => {
-    const filterLine = {};
-    filterLineModel.addGettersSetters(filterLine);
-    expect(filterLine.tableName).toBeUndefined();
-    expect(filterLine.fieldName).toBeUndefined();
-    expect(filterLine.operator).toBeNull();
-    expect(filterLine.value).toBeUndefined();
+    // Existing test cases
+    test("addGettersSetters should correctly initialize an empty filterLine object", () => {
+      const filterLine = {};
+      filterLineModel.addGettersSetters(filterLine);
+      expect(filterLine.tableName).toBeUndefined();
+      expect(filterLine.fieldName).toBeUndefined();
+      expect(filterLine.operator).toBeNull();
+      expect(filterLine.value).toBeUndefined();
+    });
+  
+    test("set tableName should add a new table when none exists", () => {
+      const filterLine = {};
+      filterLineModel.addGettersSetters(filterLine);
+      filterLine.tableName = "projects";
+      expect(filterLine.tableName).toBe("projects");
+    });
+  
+    test("change tableName should rename the table property", () => {
+      const filterLine = { projects: {} };
+      filterLineModel.addGettersSetters(filterLine);
+      filterLine.tableName = "tasks";
+      expect(filterLine.tableName).toBe("tasks");
+      expect(filterLine.projects).toBeUndefined();
+      expect(filterLine.tasks).toBeDefined();
+    });
+  
+    test("set fieldName should add a new field when none exists in the defined table", () => {
+      const filterLine = {};
+      filterLineModel.addGettersSetters(filterLine);
+      filterLine.tableName = "projects";
+      filterLine.fieldName = "Program";
+      expect(filterLine.fieldName).toBe("Program");
+    });
+  
+    test("change fieldName should rename the field property within the table", () => {
+      const filterLine = { projects: { Program: {} } };
+      filterLineModel.addGettersSetters(filterLine);
+      filterLine.fieldName = "Task";
+      expect(filterLine.fieldName).toBe("Task");
+      expect(filterLine.projects.Program).toBeUndefined();
+      expect(filterLine.projects.Task).toBeDefined();
+    });
+  
+    test("operator and value properties set and get correctly", () => {
+      const filterLine = { projects: { Program: { $eq: 233 } } };
+      filterLineModel.addGettersSetters(filterLine);
+      expect(filterLine.operator).toBe("$eq");
+      expect(filterLine.value).toBe(233);
+      filterLine.operator = "$gt";
+      filterLine.value = 300;
+      expect(filterLine.projects.Program.$eq).toBeUndefined();
+      expect(filterLine.projects.Program.$gt).toBe(300);
+    });
+  
+    test("value properties handle direct and operator-based assignments correctly", () => {
+      const filterLine = {};
+      filterLineModel.addGettersSetters(filterLine);
+      filterLine.tableName = "projects";
+      filterLine.fieldName = "Program";
+      // Direct assignment without an operator
+      filterLine.value = 100;
+      expect(filterLine.value).toBe(100);
+  
+      // Setting an operator and changing the value
+      filterLine.operator = "$eq";
+      filterLine.value = 233;
+      expect(filterLine.value).toBe(233);
+      expect(filterLine.projects.Program.$eq).toBe(233);
+    });
+  
+    // New test cases
+    test("setting operator to undefined should remove the existing operator", () => {
+      const filterLine = { projects: { Program: { $gt: 300 } } };
+      filterLineModel.addGettersSetters(filterLine);
+      expect(filterLine.operator).toBe("$gt");
+      filterLine.operator = undefined;
+      expect(filterLine.operator).toBeNull();
+      expect(filterLine.projects.Program).toEqual({});
+    });
+  
+    test("setting operator to null should remove the existing operator", () => {
+      const filterLine = { projects: { Program: { $lt: 200 } } };
+      filterLineModel.addGettersSetters(filterLine);
+      expect(filterLine.operator).toBe("$lt");
+      filterLine.operator = null;
+      expect(filterLine.operator).toBeNull();
+      expect(filterLine.projects.Program).toEqual({});
+    });
+  
+    test("operator should not change if set to a non-string value", () => {
+      const filterLine = { projects: { Program: { $eq: 100 } } };
+      filterLineModel.addGettersSetters(filterLine);
+      expect(filterLine.operator).toBe("$eq");
+      filterLine.operator = 123; // non-string value
+      expect(filterLine.operator).toBe("$eq");
+      expect(filterLine.projects.Program.$eq).toBe(100);
+    });
+  
+    test("operator should change to a valid string and set the new operator correctly", () => {
+      const filterLine = { projects: { Program: { $neq: 50 } } };
+      filterLineModel.addGettersSetters(filterLine);
+      expect(filterLine.operator).toBe("$neq");
+      filterLine.operator = "$lte";
+      expect(filterLine.operator).toBe("$lte");
+      expect(filterLine.projects.Program.$neq).toBeUndefined();
+      expect(filterLine.projects.Program.$lte).toBe(50);
+    });
   });
-
-  test("set tableName should add a new table when none exists", () => {
-    const filterLine = {};
-    filterLineModel.addGettersSetters(filterLine);
-    filterLine.tableName = "projects";
-    expect(filterLine.tableName).toBe("projects");
-  });
-
-  test("change tableName should rename the table property", () => {
-    const filterLine = { projects: {} };
-    filterLineModel.addGettersSetters(filterLine);
-    filterLine.tableName = "tasks";
-    expect(filterLine.tableName).toBe("tasks");
-    expect(filterLine.projects).toBeUndefined();
-    expect(filterLine.tasks).toBeDefined();
-  });
-
-  test("set fieldName should add a new field when none exists in the defined table", () => {
-    const filterLine = {};
-    filterLineModel.addGettersSetters(filterLine);
-    filterLine.tableName = "projects";
-    filterLine.fieldName = "Program";
-    expect(filterLine.fieldName).toBe("Program");
-  });
-
-  test("change fieldName should rename the field property within the table", () => {
-    const filterLine = { projects: { Program: {} } };
-    filterLineModel.addGettersSetters(filterLine);
-    filterLine.fieldName = "Task";
-    expect(filterLine.fieldName).toBe("Task");
-    expect(filterLine.projects.Program).toBeUndefined();
-    expect(filterLine.projects.Task).toBeDefined();
-  });
-
-  test("operator and value properties set and get correctly", () => {
-    const filterLine = { projects: { Program: { $eq: 233 } } };
-    filterLineModel.addGettersSetters(filterLine);
-    expect(filterLine.operator).toBe("$eq");
-    expect(filterLine.value).toBe(233);
-    filterLine.operator = "$gt";
-    filterLine.value = 300;
-    expect(filterLine.projects.Program.$eq).toBeUndefined();
-    expect(filterLine.projects.Program.$gt).toBe(300);
-  });
-
-  test("value properties handle direct and operator-based assignments correctly", () => {
-    const filterLine = {};
-    filterLineModel.addGettersSetters(filterLine);
-    filterLine.tableName = "projects";
-    filterLine.fieldName = "Program";
-    // Direct assignment without an operator
-    filterLine.value = 100;
-    expect(filterLine.value).toBe(100);
-
-    // Setting an operator and changing the value
-    filterLine.operator = "$eq";
-    filterLine.value = 233;
-    expect(filterLine.value).toBe(233);
-    expect(filterLine.projects.Program.$eq).toBe(233);
-});
-
-});
+  
 
 describe("IsValid Line", () => {
 
