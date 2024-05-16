@@ -1,9 +1,9 @@
 import { FilterLineTable } from './FilterLineTable.js';
 import { FilterLineField } from './FilterLineField.js';
 import { FilterLineOperator } from './FilterLineOperator.js';
-import {FilterLineValueSingle} from './FilterLineValueSingle.js';
-import {FilterLineValueSingleBoolean} from './FilterLineValueSingleBoolean.js';
-import {FilterLineValueDate} from './FilterLineValueDate.js';
+import { FilterLineValueSingle } from './FilterLineValueSingle.js';
+import { FilterLineValueSingleBoolean } from './FilterLineValueSingleBoolean.js';
+import { FilterLineValueDate } from './FilterLineValueDate.js';
 
 import OperatorModel from '../Models/OperatorModel.js';
 import { css } from '../Modules/helperFunctions.js';
@@ -25,7 +25,7 @@ export class FilterLine {
         this.element = this.#createElement();
         this.#applyStyles();
         this.#setupEventListeners();
-        this.render();
+        this.#render();
     }
 
     /** Perform any initialization logic that doesn't depend on DOM elements. */
@@ -43,29 +43,16 @@ export class FilterLine {
 
         // TODO - A - If only one table, don't show the table dropdown, but also remove the line that has 
         // unwanted tables. Useful for single project, for example
-        const filterLineTable = new FilterLineTable(this.tables, this.filterLine.tableName);
-        this.elements.filterLineTable = filterLineTable.element;
+        this.#render('filterLineTable');
         filterLine.appendChild(this.elements.filterLineTable);
 
-        const filterLineField = new FilterLineField(this.tableFields, this.filterLine.fieldName);
-        this.elements.filterLineField = filterLineField.element;
+        this.#render('filterLineField');
         filterLine.appendChild(this.elements.filterLineField);
 
-        const filterLineOperator = new FilterLineOperator(this.fieldOperators,
-            this.filterLine.operator ? this.filterLine.operator : 'equality');
-        this.elements.filterLineOperator = filterLineOperator.element;
+        this.#render('filterLineOperator');
         filterLine.appendChild(this.elements.filterLineOperator);
 
-        let filterLineValue;
-        if (['String', 'Number'].includes(this.fieldType)) {
-            filterLineValue = new FilterLineValueSingle(this.filterLine.value, this.fieldType);
-        } else if (this.fieldType === 'Boolean') {
-            filterLineValue = new FilterLineValueSingleBoolean(this.filterLine.value);
-        }
-        else if (this.fieldType === 'Date') {
-            filterLineValue = new FilterLineValueDate(this.filterLine.value);
-        }
-        this.elements.filterLineValue = filterLineValue.element;
+       this.#render('filterLineValue');
         filterLine.appendChild(this.elements.filterLineValue);
 
         return filterLine;
@@ -95,8 +82,37 @@ export class FilterLine {
         });
     }
 
-    render() {
-
+    #render(functionToRender) {
+        const renderFunctions = {
+            filterLineTable: () => {
+                const filterLineTable = new FilterLineTable(this.tables, this.filterLine.tableName);
+                this.elements.filterLineTable = filterLineTable.element;
+            },
+            filterLineField: () => {
+                const filterLineField = new FilterLineField(this.tableFields, this.filterLine.fieldName);
+                this.elements.filterLineField = filterLineField.element;
+            },
+            filterLineOperator: () => {
+                const filterLineOperator = new FilterLineOperator(this.fieldOperators,
+                    this.filterLine.operator ? this.filterLine.operator : 'equality');
+                this.elements.filterLineOperator = filterLineOperator.element;
+            },
+            filterLineValue: () => {
+                let filterLineValue;
+                if (['String', 'Number'].includes(this.fieldType)) {
+                    filterLineValue = new FilterLineValueSingle(this.filterLine.value, this.fieldType);
+                } else if (this.fieldType === 'Boolean') {
+                    filterLineValue = new FilterLineValueSingleBoolean(this.filterLine.value);
+                }
+                else if (this.fieldType === 'Date') {
+                    filterLineValue = new FilterLineValueDate(this.filterLine.value);
+                }
+                this.elements.filterLineValue = filterLineValue.element;
+            }
+        };
+        if (functionToRender && renderFunctions[functionToRender]) {
+            renderFunctions[functionToRender]();
+        }
     }
 
     #feedTableFields() {
@@ -116,27 +132,18 @@ export class FilterLine {
         this.fieldOperators = validOperators;
     }
 
-
     #updateFilterTable(tableName) {
         const hasTableChanged = this.filterLine.tableName !== tableName;
         if (hasTableChanged) {
             this.filterLine.tableName = tableName;
-            this.#feedTableFields(); // Update the fields based on the new table
+            this.#feedTableFields();
 
-            // Remove the old filterLineField element
             this.elements.filterLineField.remove();
-
-            // Create a new filterLineField element with updated fields
-            const filterLineField = new FilterLineField(this.tableFields, this.filterLine.fieldName);
-            this.elements.filterLineField = filterLineField.element;
-
-            // Insert the new filterLineField element before the filterLineOperator element
+            this.#render('filterLineField');
             this.elements.filterLine.insertBefore(this.elements.filterLineField, this.elements.filterLineOperator);
         }
         console.log(`${this.index} tableName changed to: ${this.filterLine.tableName}`);
     }
-
-
 
     #updateFilterField(fieldName) {
         const hasFieldChanged = this.filterLine.fieldName !== fieldName;
@@ -145,10 +152,9 @@ export class FilterLine {
             this.#feedFieldOperators(); // Update the operators based on the new field
 
             this.elements.filterLineOperator.remove(); // Remove the old filterLineOperator element
-            
-            const filterLineOperator = new FilterLineOperator(this.fieldOperators, this.filterLine.operator);
-            this.elements.filterLineOperator = filterLineOperator.element;
-            
+
+            this.#render('filterLineOperator');
+
             this.elements.filterLine.insertBefore(this.elements.filterLineOperator, this.elements.filterLineValue); // Insert the new filterLineOperator element before the filterLineValue element 
         }
         console.log(`${this.index} fieldName: ${fieldName}`);
