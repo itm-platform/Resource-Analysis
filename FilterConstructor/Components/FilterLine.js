@@ -184,7 +184,7 @@ export class FilterLine {
         this.#validateAndEmit('value');
     }
 
-    #orchestrateUpdates(componentToUpdate, newValue, requestedByParent=false) {
+    #orchestrateUpdates(componentToUpdate, newValue) {
     /* orchestrateUpdates will update a value (table, field, operator, value) in the filterLine object,
         and request the next component in the hierarchy to update itself.
     
@@ -194,50 +194,50 @@ export class FilterLine {
         Value updates must be done to this.filterLine.
 
         ## Update chain
-        Updates can come from the 'Updated' event (a user action), in which case parentRequester will be undefined, 
-        or requested by the preceding element in the chain (requestedByParent==true).
+        Updates can come from the 'Updated' event (a user action), in which case there will be a `newValue`, 
+        or requested by the preceding element in which case there will be no newValue.
 
         ### Table
-        1. When the component requested the update (filterTableUpdated) (There's no parent to Table): 
+        1. When the component requested the update (called with orchestrateUpdates('table', newValue)) 
             a) update filterLine.tableName 
             b) repopulate this.tableFields with this.#feedTableFields() 
-            c) Request Field component update. 
+            c) Request Field update (orchestrateUpdates('field'))
         ### Field
-        1. If the parent requested update:
+        1. If the parent requested update (no newValue, called with orchestrateUpdates('field')):
             a. If the existing filterLine.fieldName is not in the this.tableFields:
                 1. Set filterLine.fieldName undefined.
-                2. Rerender Field component.
-        2. When the component requested the update (filterFieldUpdated)
+                2. Rerender Field component (this.#render('filterLineField')).
+        2. When the component requested the update (called with orchestrateUpdates('field', newValue)
             a) update filterLine.field 
         3. Always:
             b) repopulate this.fieldOperators with this.#feedFieldOperators()
-            c) Request Operator update.
+            c) Request Operator update (call orchestrateUpdates('operator'))
             
         ### Operator
-        1. If the parent requested update:
+        1. If the parent requested update (no newValue, called with orchestrateUpdates('operator'):
             a. If the existing filterLine.operator is not in this.fieldOperators:
                 1. Set filterLine.operator to undefined.
-                2. Rerender Operator component.
+                2. Rerender Operator component (this.#render('filterLineOperator')
         2. When the component requested the update (filterOperatorUpdated)
             a) update filterLine.operator
         3. Always:
-            b) Request Value update.
+            b) Request Value update (call orchestrateUpdates('value'))
 
         ### Value
-        1. If the parent requested update:
+        1. If the parent requested update (no newValue, called with orchestrateUpdates('value')
             a. If the existing filterLine.value is not of the this.fieldType: (how?)
                 1. Set filterLine.value to undefined.
                 2. Rerender Value component.
-        2. When the component requested the update (filterValueUpdated)
+        2. When the component requested the update (called with orchestrateUpdates('value', newValue)
             a) update filterLine.value
         3. Always:
-            b) Validate and emit the filterLine.
+            b) Validate and emit the filterLine with this.#validateAndEmit()
 
         */
     }
 
-    #validateAndEmit(solicitor) {
-        console.log(`${solicitor} asked validate: ${JSON.stringify(this.filterLine, null, 2)}`);
+    #validateAndEmit() {
+        console.log(`validating ${JSON.stringify(this.filterLine, null, 2)}`);
         if (filterLineModel.isValidLine(this.filterLine)) {
             console.log('filterLine is valid');
             this.elements.filterLine.dispatchEvent(new CustomEvent('filterLineUpdated', {
