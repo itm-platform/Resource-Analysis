@@ -112,6 +112,7 @@ export class FilterLine {
         if (functionToRender && renderFunctions[functionToRender]) {
             renderFunctions[functionToRender]();
         }
+
     }
 
     #feedTableFields() {
@@ -134,110 +135,102 @@ export class FilterLine {
     #updateFilterTable(tableName) {
         const hasTableChanged = this.filterLine.tableName !== tableName;
         if (hasTableChanged) {
-            this.filterLine.tableName = tableName;
-            this.#feedTableFields();
-
-            this.elements.filterLineField.remove();
-            this.#render('filterLineField');
-            this.elements.filterLine.insertBefore(this.elements.filterLineField, this.elements.filterLineOperator);
+            this.#orchestrateUpdates('table', tableName);
         }
-        this.#validateAndEmit('table');
     }
 
     #updateFilterField(fieldName) {
-        console.log(`updating filter field to ${fieldName}`);
         const hasFieldChanged = this.filterLine.fieldName !== fieldName;
-        if (!hasFieldChanged) { return; };
-
-        this.filterLine.fieldName = fieldName;
-        this.#feedFieldOperators(); 
-
-        this.elements.filterLineOperator.remove(); // Remove the old filterLineOperator element
-
-        this.#render('filterLineOperator');
-        this.#updateFilterOperator(this.filterLine.operator);
-
-        this.elements.filterLine.insertBefore(this.elements.filterLineOperator, this.elements.filterLineValue); // Insert the new filterLineOperator element before the filterLineValue element 
-        this.#validateAndEmit('field');
+        if (hasFieldChanged) {
+            this.#orchestrateUpdates('field', fieldName);
+        }
     }
 
     #updateFilterOperator(operator) {
-        console.log(`updating filter operator to ${operator}`);
         const hasOperatorChanged = this.filterLine.operator !== operator;
-        if (!hasOperatorChanged) { return; };
-
-        this.filterLine.operator = operator;
-        this.elements.filterLineValue.remove();
-        this.#render('filterLineValue');
-        this.#updateFilterValue(this.filterLine.value);
-        this.elements.filterLine.appendChild(this.elements.filterLineValue);
-
-        this.#validateAndEmit('operator');
+        if (hasOperatorChanged) {
+            this.#orchestrateUpdates('operator', operator);
+        }
     }
 
     #updateFilterValue(value) {
-        console.log(`updating filter value to ${value}`);
         const hasValueChanged = this.filterLine.value !== value;
-        if (!hasValueChanged) { return; };
-
-        this.filterLine.value = value;
-        this.#validateAndEmit('value');
+        if (hasValueChanged) {
+            this.#orchestrateUpdates('value', value);
+        }
     }
 
+    /** Update a value in the filterLine object, and request the next component in the hierarchy to update itself.
+     * @param {String} componentToUpdate (table, field, operator, value)
+     * @param {*} [newValue] Optional. When not provided, the function was called recursively indicating a chain of updates. 
+     */
     #orchestrateUpdates(componentToUpdate, newValue) {
-    /* orchestrateUpdates will update a value (table, field, operator, value) in the filterLine object,
-        and request the next component in the hierarchy to update itself.
-    
-        The component hierarchy of updates is as follows: Table -> Field -> Operator -> Value
-        The existing values are always in this.filterLine (.tableName, .fieldName, .operator, .value ).
-        The value requested is in the `newValue` parameter. The component is in the `componentName` parameter.
-        Value updates must be done to this.filterLine.
+        const rerenderField = () => {
+            this.elements.filterLineField.remove();
+            this.#render('filterLineField');
+            this.elements.filterLine.insertBefore(this.elements.filterLineField, this.elements.filterLineOperator);
+        };
+        const rerenderOperator = () => {
+            this.elements.filterLineOperator.remove();
+            this.#render('filterLineOperator');
+            this.elements.filterLine.insertBefore(this.elements.filterLineOperator, this.elements.filterLineValue);
+        };
+        const rerenderValue = () => {
+            this.elements.filterLineValue.remove();
+            this.#render('filterLineValue');
+            this.elements.filterLine.appendChild(this.elements.filterLineValue);
+        };
+        switch (componentToUpdate) {
+            case 'table':
+                this.filterLine.tableName = newValue;
+                this.#feedTableFields();
+                this.#orchestrateUpdates('field');
+                break;
 
-        ## Update chain
-        Updates can come from the 'Updated' event (a user action), in which case there will be a `newValue`, 
-        or requested by the preceding element in which case there will be no newValue.
+            case 'field':
+                if (newValue !== undefined) {
+                    this.filterLine.fieldName = newValue;
+                } else {
+                    const isCurrentFieldNotPresentInTableFields = !this.tableFields.some(field => field.value === this.filterLine.fieldName);
+                    if (isCurrentFieldNotPresentInTableFields) {
+                        this.filterLine.fieldName = undefined;
+                    }
+                    rerenderField();
+                }
+                this.#feedFieldOperators();
+                this.#orchestrateUpdates('operator');
+                break;
 
-        ### Table
-        1. When the component requested the update (called with orchestrateUpdates('table', newValue)) 
-            a) update filterLine.tableName 
-            b) repopulate this.tableFields with this.#feedTableFields() 
-            c) Request Field update (orchestrateUpdates('field'))
-        ### Field
-        1. If the parent requested update (no newValue, called with orchestrateUpdates('field')):
-            a. If the existing filterLine.fieldName is not in the this.tableFields:
-                1. Set filterLine.fieldName undefined.
-                2. Rerender Field component (this.#render('filterLineField')).
-        2. When the component requested the update (called with orchestrateUpdates('field', newValue)
-            a) update filterLine.field 
-        3. Always:
-            b) repopulate this.fieldOperators with this.#feedFieldOperators()
-            c) Request Operator update (call orchestrateUpdates('operator'))
-            
-        ### Operator
-        1. If the parent requested update (no newValue, called with orchestrateUpdates('operator'):
-            a. If the existing filterLine.operator is not in this.fieldOperators:
-                1. Set filterLine.operator to undefined.
-                2. Rerender Operator component (this.#render('filterLineOperator')
-        2. When the component requested the update (filterOperatorUpdated)
-            a) update filterLine.operator
-        3. Always:
-            b) Request Value update (call orchestrateUpdates('value'))
+            case 'operator':
+                if (newValue !== undefined) {
+                    this.filterLine.operator = newValue;
+                } else {
+                    const isCurrentOperatorNotPresentInFieldOperators = !this.fieldOperators.some(operator => operator.value === this.filterLine.operator);
+                    if (isCurrentOperatorNotPresentInFieldOperators) {
+                        this.filterLine.operator = undefined;
+                    }
+                    rerenderOperator();
+                }
+                this.#orchestrateUpdates('value');
+                break;
+            case 'value':
+                if (newValue !== undefined) {
+                    this.filterLine.value = newValue;
+                } else {
+                    if (!this.filterLine.operator) { this.filterLine.value = ''; }
+                    rerenderValue();
+                }
+                this.#validateAndEmit();
+                break;
+            default:
+                console.error(`Unknown component to update: ${componentToUpdate}`);
+        }
 
-        ### Value
-        1. If the parent requested update (no newValue, called with orchestrateUpdates('value')
-            a. If the existing filterLine.value is not of the this.fieldType: (how?)
-                1. Set filterLine.value to undefined.
-                2. Rerender Value component.
-        2. When the component requested the update (called with orchestrateUpdates('value', newValue)
-            a) update filterLine.value
-        3. Always:
-            b) Validate and emit the filterLine with this.#validateAndEmit()
 
-        */
     }
 
     #validateAndEmit() {
-        console.log(`validating ${JSON.stringify(this.filterLine, null, 2)}`);
+        console.log(`validating ${JSON.stringify(this.filterLine)}`);
         if (filterLineModel.isValidLine(this.filterLine)) {
             console.log('filterLine is valid');
             this.elements.filterLine.dispatchEvent(new CustomEvent('filterLineUpdated', {

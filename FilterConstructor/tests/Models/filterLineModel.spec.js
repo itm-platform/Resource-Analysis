@@ -175,7 +175,23 @@ describe("IsValid Line", () => {
         const filterLine = null;  // Invalid input that should cause the method to throw
         expect(filterLineModel.isValidLine(filterLine)).toBeFalsy();
     });
+    
+    test ("returns false when the value is null", () => {
+        const filterLine = { projects: { Program: { $eq: null } } };
+        filterLineModel.addGettersSetters(filterLine);
+        expect(filterLineModel.isValidLine(filterLine)).toBeFalsy();
+    });
 
+    test ("returns false when the value is undefined", () => {
+        const filterLine = { projects: { Program: { $eq: undefined } } };
+        filterLineModel.addGettersSetters(filterLine);
+        expect(filterLineModel.isValidLine(filterLine)).toBeFalsy();
+    });
+    test ("returns false when the value is an empty string", () => {
+        const filterLine = { projects: { Program: { $eq: "" } } };
+        filterLineModel.addGettersSetters(filterLine);
+        expect(filterLineModel.isValidLine(filterLine)).toBeFalsy();
+    });
 });
 
 describe("Break Filter In Lines", () => {

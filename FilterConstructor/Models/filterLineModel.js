@@ -140,7 +140,10 @@ export default {
             );
                 // TODO - A - If date field, expect a date value. Same for other types
 
-            return tableFieldValue && operatorFieldIsValid;
+            // value should not be empty
+            const valueIsValid = line.value !== undefined && line.value !== null && line.value !== '';
+
+            return tableFieldValue && operatorFieldIsValid && valueIsValid;
         } catch (error) {
             return false;
         }

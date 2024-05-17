@@ -16,7 +16,6 @@ export class FilterLineValueSingle {
 
     /** Perform any initialization logic that doesn't depend on DOM elements. */
     #init() {
-        console.log(`FilterLineValueSingle - value: ${JSON.stringify(this.value)}, fieldType: ${this.valueType}`);
     }
 
     /**Create and setup DOM elements*/
