@@ -64,7 +64,6 @@ export class FilterLine {
         this.element.appendChild(style);
     }
 
-
     #render(functionToRender) {
         const renderFunctions = {
             filterLineTable: () => {
@@ -151,12 +150,12 @@ export class FilterLine {
         if (!hasFieldChanged) { return; };
 
         this.filterLine.fieldName = fieldName;
-        this.#feedFieldOperators(); // Update the operators based on the new field
+        this.#feedFieldOperators(); 
 
         this.elements.filterLineOperator.remove(); // Remove the old filterLineOperator element
 
         this.#render('filterLineOperator');
-        this.#updateFilterOperator(this.elements.filterLineOperator.operatorSelected);
+        this.#updateFilterOperator(this.filterLine.operator);
 
         this.elements.filterLine.insertBefore(this.elements.filterLineOperator, this.elements.filterLineValue); // Insert the new filterLineOperator element before the filterLineValue element 
         this.#validateAndEmit('field');
@@ -170,7 +169,7 @@ export class FilterLine {
         this.filterLine.operator = operator;
         this.elements.filterLineValue.remove();
         this.#render('filterLineValue');
-        this.#updateFilterValue(this.elements.filterLineValue.value);
+        this.#updateFilterValue(this.filterLine.value);
         this.elements.filterLine.appendChild(this.elements.filterLineValue);
 
         this.#validateAndEmit('operator');
@@ -183,6 +182,58 @@ export class FilterLine {
 
         this.filterLine.value = value;
         this.#validateAndEmit('value');
+    }
+
+    #orchestrateUpdates(componentToUpdate, newValue, requestedByParent=false) {
+    /* orchestrateUpdates will update a value (table, field, operator, value) in the filterLine object,
+        and request the next component in the hierarchy to update itself.
+    
+        The component hierarchy of updates is as follows: Table -> Field -> Operator -> Value
+        The existing values are always in this.filterLine (.tableName, .fieldName, .operator, .value ).
+        The value requested is in the `newValue` parameter. The component is in the `componentName` parameter.
+        Value updates must be done to this.filterLine.
+
+        ## Update chain
+        Updates can come from the 'Updated' event (a user action), in which case parentRequester will be undefined, 
+        or requested by the preceding element in the chain (requestedByParent==true).
+
+        ### Table
+        1. When the component requested the update (filterTableUpdated) (There's no parent to Table): 
+            a) update filterLine.tableName 
+            b) repopulate this.tableFields with this.#feedTableFields() 
+            c) Request Field component update. 
+        ### Field
+        1. If the parent requested update:
+            a. If the existing filterLine.fieldName is not in the this.tableFields:
+                1. Set filterLine.fieldName undefined.
+                2. Rerender Field component.
+        2. When the component requested the update (filterFieldUpdated)
+            a) update filterLine.field 
+        3. Always:
+            b) repopulate this.fieldOperators with this.#feedFieldOperators()
+            c) Request Operator update.
+            
+        ### Operator
+        1. If the parent requested update:
+            a. If the existing filterLine.operator is not in this.fieldOperators:
+                1. Set filterLine.operator to undefined.
+                2. Rerender Operator component.
+        2. When the component requested the update (filterOperatorUpdated)
+            a) update filterLine.operator
+        3. Always:
+            b) Request Value update.
+
+        ### Value
+        1. If the parent requested update:
+            a. If the existing filterLine.value is not of the this.fieldType: (how?)
+                1. Set filterLine.value to undefined.
+                2. Rerender Value component.
+        2. When the component requested the update (filterValueUpdated)
+            a) update filterLine.value
+        3. Always:
+            b) Validate and emit the filterLine.
+
+        */
     }
 
     #validateAndEmit(solicitor) {
