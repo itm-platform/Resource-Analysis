@@ -109,8 +109,17 @@ export class FilterLine {
                     //return;
                 }
                 filterLineValue.element.addEventListener('filterValueUpdated', (event) => {
-                    this.#updateFilterValue(event.detail);
+                    const value = event.detail;
+                    if (value === false) {
+                        console.log('value updated: boolean false');
+                    } else if (value === 'false') {
+                        console.log('value updated: string "false"');
+                    } else {
+                        console.log(`value updated: ${value}`);
+                    }
+                    this.#updateFilterValue(value);
                 });
+                
                 this.elements.filterLineValue = filterLineValue.element;
             }
         };

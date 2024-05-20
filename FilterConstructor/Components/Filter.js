@@ -25,6 +25,7 @@ export class Filter {
         setLang(this.lang);
         this.dataServiceModel.keepOnlyTables(this.tablesAllowed);
         this.filterLines = filterLineModel.breakFilterInLines(this.queryFilter);
+        console.log(`init with filterLines: ${JSON.stringify(this.filterLines)}`);
     }
 
     #createElement() {
@@ -92,12 +93,18 @@ export class Filter {
     }
 
     recomposeFilterFromLines() {
+        console.log(`current queryFilter: ${JSON.stringify(this.queryFilter)}`);
+        console.log(`recomposeFilterFromLines with filterLines: ${JSON.stringify(this.filterLines)}`);
         this.queryFilter = filterLineModel.recomposeFilterFromLines(this.filterLines);
+        console.log(`recomposed queryFilter: ${JSON.stringify(this.queryFilter)}`);
     }
 
     dispatchFilterUpdated() {
-        const event = new CustomEvent('filterUpdated', { detail: this.queryFilter });
-        document.dispatchEvent(event);
+        const event = new CustomEvent('filterUpdated', { 
+            detail: this.queryFilter,
+            bubbles: true});
+        this.element.dispatchEvent(event);
+        //console.log(`dispatched filterUpdated event with filter: ${JSON.stringify(this.queryFilter, null, 2)}`);
     }
 
     #getStyles() {

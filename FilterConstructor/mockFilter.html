@@ -51,6 +51,10 @@
                 const filterConstructor = new Filter(initialFilter,
                     dataServiceModel, "parentDivId", tablesAllowed, language
                 );
+                document.getElementById("parentDivId").addEventListener("filterUpdated", (event) => {
+                    document.getElementById("currentFilter").innerText = JSON.stringify(event.detail, null, 2);
+                });
+               
                 window.filterConstructor = filterConstructor;
             } catch (error) {
                 console.error('Error initializing filter:', error);

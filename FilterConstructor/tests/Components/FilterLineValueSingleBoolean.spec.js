@@ -52,7 +52,7 @@ describe('FilterLineValueSingleBoolean', () => {
         component.elements.inputElement.value = 'false';
         component.elements.inputElement.dispatchEvent(event);
 
-        expect(component.value).toBe('false');
+        expect(component.value).toBe(false);
     });
 
     it('should dispatch custom event on value change', () => {
@@ -67,6 +67,6 @@ describe('FilterLineValueSingleBoolean', () => {
         component.elements.inputElement.dispatchEvent(event);
 
         expect(eventListener).toHaveBeenCalledTimes(1);
-        expect(eventListener.mock.calls[0][0].detail).toBe('false');
+        expect(eventListener.mock.calls[0][0].detail).toBe(false);
     });
 });

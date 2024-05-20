@@ -54,13 +54,14 @@ export class FilterLineValueSingleBoolean {
 
     #setupEventListeners() {
         this.elements.inputElement.addEventListener('change', (event) => {
-            this.value = event.target.value;
+            this.value = event.target.value === 'true'; 
             this.elements.component.dispatchEvent(new CustomEvent('filterValueUpdated', {
                 detail: this.value,
                 bubbles: true
             }));
         });
     }
+    
 
     render() {
 
