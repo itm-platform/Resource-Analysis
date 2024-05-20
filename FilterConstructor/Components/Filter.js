@@ -102,7 +102,6 @@ export class Filter {
             detail: this.queryFilter,
             bubbles: true});
         this.element.dispatchEvent(event);
-        //console.log(`dispatched filterUpdated event with filter: ${JSON.stringify(this.queryFilter, null, 2)}`);
     }
 
     #getStyles() {
