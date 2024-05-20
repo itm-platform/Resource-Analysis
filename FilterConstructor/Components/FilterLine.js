@@ -30,6 +30,12 @@ export class FilterLine {
 
     /** Perform any initialization logic that doesn't depend on DOM elements. */
     #init() {
+        const filterLineIsNewAndEmpty = Object.keys(this.filterLine).length === 0;
+        if (filterLineIsNewAndEmpty) {
+            this.filterLine= filterLineModel.addGettersSetters(this.filterLine);
+            const firstAvailableTable = Object.keys(this.dataServiceModel.tables)[0];
+            this.filterLine.tableName = firstAvailableTable;
+        }
         this.tables = this.dataServiceModel.tableListLanguage(getLang());
         this.#feedTableFields();
         this.#feedFieldOperators();
@@ -45,7 +51,6 @@ export class FilterLine {
         // unwanted tables. Useful for single project, for example
         this.#render('filterLineTable');
         filterLine.appendChild(this.elements.filterLineTable);
-
         this.#render('filterLineField');
         filterLine.appendChild(this.elements.filterLineField);
 
@@ -54,7 +59,6 @@ export class FilterLine {
 
         this.#render('filterLineValue');
         filterLine.appendChild(this.elements.filterLineValue);
-
         return filterLine;
     }
 
@@ -91,17 +95,18 @@ export class FilterLine {
             },
             filterLineValue: () => {
                 let filterLineValue;
-                if (['String', 'Number'].includes(this.fieldType)) {
+                //if (['String', 'Number'].includes(this.fieldType)) {
                     filterLineValue = new FilterLineValueSingle(this.filterLine.value, this.fieldType);
-                } else if (this.fieldType === 'Boolean') {
+                //} else 
+                if (this.fieldType === 'Boolean') {
                     filterLineValue = new FilterLineValueSingleBoolean(this.filterLine.value);
                 }
                 else if (this.fieldType === 'Date') {
                     filterLineValue = new FilterLineValueDate(this.filterLine.value);
                 }
                 else {
-                    console.error(`Field type ${this.fieldType} not supported`);
-                    return;
+                    filterLineValue = new FilterLineValueSingle(this.filterLine.value, this.fieldType);
+                    //return;
                 }
                 filterLineValue.element.addEventListener('filterValueUpdated', (event) => {
                     this.#updateFilterValue(event.detail);

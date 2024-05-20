@@ -40,14 +40,15 @@
                 const dataServiceModel = await fetchDataServiceModel(token);
                 const tablesAllowed = ['projects', 'tasks'];
                 const language = 'es';
-                const filterConstructor = new Filter(
-                    {
-                        "projects": {
-                            "Duration": { "$gt": 10 }, "EndDate": { "$lte": "2023-11-30" },
-                            "Status.IsCompleted": true
-                        },
-                        "tasks": { "ProjectId": 21, }
+                let initialFilter = {
+                    "projects": {
+                        "Duration": { "$gt": 10 }, "EndDate": { "$lte": "2023-11-30" },
+                        "Status.IsCompleted": true
                     },
+                    "tasks": { "ProjectId": 21, }
+                };
+                // initialFilter = null;
+                const filterConstructor = new Filter(initialFilter,
                     dataServiceModel, "parentDivId", tablesAllowed, language
                 );
                 window.filterConstructor = filterConstructor;
