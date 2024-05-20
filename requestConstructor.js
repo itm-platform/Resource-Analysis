@@ -251,35 +251,35 @@ export class RequestConstructor {
 
 
     #updateFilterStateForTotals() {
-        // TODO - A - We are only adding filter to 'project' object. 
-        // Filters can apply to entities (`project`, `service`) and users (`user`). 
+        // TODO - A - We are only adding filter to 'projects' object. 
+        // Filters can apply to entities (`projects`, `services`) and users (`user`s). 
         // TODO - A - These filters are private and should not be saved in the request object (viewTemplate).
         const totalsDateRangeMode = document.getElementById('req-constructor-totalsDateRangeMode').value;
         const startDate = document.getElementById('req-constructor-totals-startDate').value;
         const endDate = document.getElementById('req-constructor-totals-endDate').value;
         const filter = { ...this.state.requestFilter };
-        filter.project = {};
+        filter.projects = {};
         if (totalsDateRangeMode === 'Live between') {
-            filter.project.StartDate = { $lte: endDate };
-            filter.project.EndDate = { $gte: startDate };
+            filter.projects.StartDate = { $lte: endDate };
+            filter.projects.EndDate = { $gte: startDate };
         } else {
-            filter.project.StartDate = { $bt: [startDate, endDate] };
-            filter.project.EndDate = { $bt: [startDate, endDate] };
+            filter.projects.StartDate = { $bt: [startDate, endDate] };
+            filter.projects.EndDate = { $bt: [startDate, endDate] };
         }
         this.state.requestFilter = filter;
     }
 
     #getTotalsDateRangeMode() {
-        // TODO - A - We are only adding filter to 'project' object. 
-        // Filters can apply to entities (`project`, `service`) and users (`user`). 
+        // TODO - A - We are only adding filter to 'projects' object. 
+        // Filters can apply to entities (`projects`, `service`) and users (`user`). 
         // TODO - A - These filters are private and should not be saved in the request object (viewTemplate).
         const filter = this.state.requestFilter;
-        // const totalsDateRangeMode should be 'Live between' if filter.project.StartDate has the form { $lte:...}, and 
-        // filter.project.StartDate has the form { $gte:...}. It should be 'Strictly between' if filter.project.StartDate has the form { $bt:...}
-        // and filter.project.StartDate has the form { $bt:...}. Otherwise, it should be 'Live between'.
-        const totalsDateRangeMode = (filter.project?.StartDate && filter.project?.StartDate.$bt) ? 'Strictly between' : 'Live between';
-        const startDate = filter.project?.StartDate || new Date().toISOString().split('T')[0];
-        const endDate = filter.project?.EndDate || new Date().toISOString().split('T')[0];
+        // const totalsDateRangeMode should be 'Live between' if filter.projects.StartDate has the form { $lte:...}, and 
+        // filter.projects.StartDate has the form { $gte:...}. It should be 'Strictly between' if filter.projects.StartDate has the form { $bt:...}
+        // and filter.projects.StartDate has the form { $bt:...}. Otherwise, it should be 'Live between'.
+        const totalsDateRangeMode = (filter.projects?.StartDate && filter.projects?.StartDate.$bt) ? 'Strictly between' : 'Live between';
+        const startDate = filter.projects?.StartDate || new Date().toISOString().split('T')[0];
+        const endDate = filter.projects?.EndDate || new Date().toISOString().split('T')[0];
         return { totalsDateRangeMode, startDate, endDate };
     }
 

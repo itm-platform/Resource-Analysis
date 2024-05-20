@@ -1,67 +1,6 @@
 import { describe, test, expect, beforeEach, beforeAll, vi } from 'vitest';
 import { RequestConstructor } from '../requestConstructor';
-async function mockGeneralJS() {
-    const diContainer = (function () {
-        const _services = {};
-
-        function register(name, service) {
-            _services[name] = service;
-        }
-
-        function get(name) {
-            const service = _services[name];
-            if (!service) {
-                throw new Error(`Service not found: ${name}`);
-            }
-            return service;
-        }
-
-        function getServices() {
-            return _services;
-        }
-
-        return { register, get, getServices };
-    })();
-
-    global.window.diContainer = diContainer;
-
-    const errorHandler = { logFrontEndError: vi.fn() };
-    const languageLoader = {
-        getTranslations: vi.fn().mockResolvedValue({
-            t: vi.fn((key) => `Translated: ${key}`)  // Mocks translation function t
-        })
-    };
-    // Mock FilterConstructor
-    const filterConstructorMock = vi.fn((initialFilter, dataServiceModel, parentDivId, tablesAllowed, language) => {
-        return {
-            getFilter: () => initialFilter,  // Example method
-            // Add any other necessary methods or properties
-        };
-    });
-    diContainer.register('logFrontEndError', errorHandler.logFrontEndError);
-    diContainer.register('getTranslations', async () => await languageLoader.getTranslations());
-    diContainer.register('FilterConstructor', filterConstructorMock);
-
-    global.window.diContainerReady = true;
-    global.window.dispatchEvent(new CustomEvent('diContainerReady'));
-
-    global.window.itmGlobal = {
-        ensureDiContainerReady: function () {
-            return new Promise((resolve) => {
-                if (window.diContainerReady) {
-                    resolve();
-                } else {
-                    window.addEventListener('diContainerReady', resolve);
-                }
-            });
-        }
-    };
-
-    global.window.getJSVersion = function () {
-        const today = new Date();
-        return today.toISOString().substring(0, 10); // Formats the date as YYYY-MM-DD
-    };
-}
+import mockGeneralJS from './mockGeneralJS';
 
 
 describe('RequestConstructor Initialization', () => {
@@ -234,6 +173,7 @@ describe('RequestConstructor public methods', () => {
             endDatePicker.dispatchEvent(new Event('change'));
 
             expect(requestConstructor.state.requestAnalysisMode).toBe('totals');
+            console.log(`requestConstructor.state = ${JSON.stringify(requestConstructor.state)}   `);
             expect(requestConstructor.state.requestFilter.projects.StartDate.$bt).toEqual(['2022-01-01', '2022-12-31']);
             expect(requestConstructor.state.requestFilter.projects.EndDate.$bt).toEqual(['2022-01-01', '2022-12-31']);
         });

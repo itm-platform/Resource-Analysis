@@ -1,5 +1,6 @@
-import { describe, test, expect, beforeEach, beforeAll, vi } from 'vitest';
+import { describe, test, expect, beforeEach, beforeAll } from 'vitest';
 import { ResourceAnalysis } from '../resourceAnalysis.js';
+import mockGeneralJS from './mockGeneralJS';
 // Simulate local storage
 global.localStorage = {
     storage: {},
@@ -16,62 +17,6 @@ global.localStorage = {
         this.storage = {};
     }
 };
-
-async function mockGeneralJS() {
-    const diContainer = (function () {
-        const _services = {};
-    
-        function register(name, service) {
-            _services[name] = service;
-        }
-    
-        function get(name) {
-            const service = _services[name];
-            if (!service) {
-                throw new Error(`Service not found: ${name}`);
-            }
-            return service;
-        }
-    
-        function getServices() {
-            return _services;
-        }
-    
-        return { register, get, getServices };
-    })();
-
-    global.window.diContainer = diContainer;
-
-    const errorHandler = { logFrontEndError: vi.fn() };
-    const languageLoader = {
-        getTranslations: vi.fn().mockResolvedValue({
-            t: vi.fn((key) => `Translated: ${key}`)  // Mocks translation function t
-        })
-    };
-
-    diContainer.register('logFrontEndError', errorHandler.logFrontEndError);
-    diContainer.register('getTranslations', async () => await languageLoader.getTranslations());
-
-    global.window.diContainerReady = true;
-    global.window.dispatchEvent(new CustomEvent('diContainerReady'));
-
-    global.window.itmGlobal = {
-        ensureDiContainerReady: function () {
-            return new Promise((resolve) => {
-                if (window.diContainerReady) {
-                    resolve();
-                } else {
-                    window.addEventListener('diContainerReady', resolve);
-                }
-            });
-        }
-    };
-
-    global.window.getJSVersion = function () {
-        const today = new Date();
-        return today.toISOString().substring(0, 10); // Formats the date as YYYY-MM-DD
-    };
-}
 
 
 describe('ResourceAnalysis Initialization', () => {
