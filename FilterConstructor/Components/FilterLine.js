@@ -110,13 +110,6 @@ export class FilterLine {
                 }
                 filterLineValue.element.addEventListener('filterValueUpdated', (event) => {
                     const value = event.detail;
-                    if (value === false) {
-                        console.log('value updated: boolean false');
-                    } else if (value === 'false') {
-                        console.log('value updated: string "false"');
-                    } else {
-                        console.log(`value updated: ${value}`);
-                    }
                     this.#updateFilterValue(value);
                 });
                 

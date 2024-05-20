@@ -236,6 +236,19 @@ describe("recomposeFilterFromLines", () => {
         expect(queryFilter.tasks.Task.$gt).toBe(100);
     });
 
+    test("recomposeFilterFromLines should return a valid queryFilter object 2", () => {
+        const filterLines = [
+            {"projects":{"Duration":{"$gt":10}}},
+            {"projects":{"EndDate":{"$lte":"2023-11-30"}}},
+            {"projects":{"Status.IsCompleted":false}},
+            {"tasks":{"ProjectId":21}}]
+        const queryFilter = filterLineModel.recomposeFilterFromLines(filterLines);
+        expect(queryFilter.projects.Duration.$gt).toBe(10);
+        expect(queryFilter.projects.EndDate.$lte).toBe("2023-11-30");
+        expect(queryFilter.projects["Status.IsCompleted"]).toBe(false);
+        expect(queryFilter.tasks.ProjectId).toBe(21);
+    });
+
     test("recomposeFilterFromLines should return an empty object when filterLines is empty", () => {
         const filterLines = [];
         const queryFilter = filterLineModel.recomposeFilterFromLines(filterLines);

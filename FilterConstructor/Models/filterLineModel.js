@@ -176,17 +176,15 @@ export default {
                     queryFilter[table] = {};
                 }
                 Object.keys(line[table]).forEach(field => {  // Get field name from object key
-                    if (!queryFilter[table][field]) {
-                        queryFilter[table][field] = {};
-                    }
                     const operator = Object.keys(line[table][field])[0];  // Get operator from nested field object
-                    queryFilter[table][field][operator] = line[table][field][operator];  // Set value for operator
+                    queryFilter[table][field] = line[table][field];  // Set value for operator directly
                 });
             });
         });
     
         return queryFilter;
     }
+    
     
     
        

@@ -25,7 +25,6 @@ export class Filter {
         setLang(this.lang);
         this.dataServiceModel.keepOnlyTables(this.tablesAllowed);
         this.filterLines = filterLineModel.breakFilterInLines(this.queryFilter);
-        console.log(`init with filterLines: ${JSON.stringify(this.filterLines)}`);
     }
 
     #createElement() {
@@ -70,7 +69,6 @@ export class Filter {
             this.renderFilterLine(filterLine, index);
 
         });
-        //console.log(`render with filterLines: ${JSON.stringify(this.filterLines, null, 2)}`);
     }
 
     renderFilterLine(line, index) {
