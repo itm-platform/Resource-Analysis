@@ -2,7 +2,7 @@ import resourceAnalysisValidator from './resourceAnalysisValidator.js';
 const VALID_ANALYSIS_MODES = { intervals: 'intervals', totals: 'totals' };
 export class RequestConstructor {
     /** requestConstructor.js
-* @param {Object} requestObject - The request object. Example {analysisMode: "intervals", filter: {ProjectId: 1},  "intervals": {"startDate": "2024-01-01", "intervalType": "week", noOfIntervals": 5}.    
+* @param {Object} requestObject - The request object. Example {analysisMode: "intervals", filter: {projects: {Duration: 10}},  "intervals": {"startDate": "2024-01-01", "intervalType": "week", noOfIntervals": 5}.    
 * @param {Array} dataServiceModel - The filter values. Example {tables:{tableName:{labels:{},fields:[{name:"Id",labels:{en:"Id",es:"Id",pt:"Id"},type:"Number | String | Date",primaryKey:!0}]}},relationships:{tableName1:{tableName2:{foreignKey:"ProjectId"},risks:{foreignKey:"ProjectId"}}}};
 * @param {string} parentDivId - The parent div ID to attach the filter UI to
 */
@@ -62,6 +62,7 @@ export class RequestConstructor {
         parentDiv.appendChild(requestConstructorWrapper);
 
         const updateButton = document.createElement('button');
+        updateButton.id = 'req-constructor-updateButton';
         updateButton.textContent = "Change Request";
         updateButton.addEventListener('click', (event) => {
             event.preventDefault();

@@ -49,7 +49,7 @@ export class ResourceAnalysis {
     async #initComponents() {
         const dataServiceModel = []; //Dummy for now
         const viewTemplate = await this.#getViewTemplate(this.viewTemplateId);
-        const requestObject = this.#extractRequestObject(viewTemplate);
+        const requestObject = this.#extractRequestObjectFromViewTemplate(viewTemplate);
         this.#setState({ request: requestObject });
 
         this.requestConstructor = new RequestConstructor(
@@ -121,7 +121,7 @@ export class ResourceAnalysis {
             }
         };
     }
-    #extractRequestObject(viewTemplate) {
+    #extractRequestObjectFromViewTemplate(viewTemplate) {
         // return an object with viewTemplate.template analysisMode, intervals, and filter properties
         return {
             analysisMode: viewTemplate.template.analysisMode,
