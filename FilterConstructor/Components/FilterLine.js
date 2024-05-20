@@ -235,16 +235,14 @@ export class FilterLine {
     }
 
     #validateAndEmit() {
-        console.log(`validating ${JSON.stringify(this.filterLine)}`);
         if (filterLineModel.isValidLine(this.filterLine)) {
-            console.log('filterLine is valid');
             this.elements.filterLine.dispatchEvent(new CustomEvent('filterLineUpdated', {
                 detail: this.filterLine,
                 bubbles: true
             }));
         }
         else {
-            console.log('filterLine is invalid');
+            //console.log(`filterLine is invalid: ${JSON.stringify(this.filterLine)}`);
         }
     }
 
