@@ -173,7 +173,6 @@ describe('RequestConstructor public methods', () => {
             endDatePicker.dispatchEvent(new Event('change'));
 
             expect(requestConstructor.state.requestAnalysisMode).toBe('totals');
-            console.log(`requestConstructor.state = ${JSON.stringify(requestConstructor.state)}   `);
             expect(requestConstructor.state.requestFilter.projects.StartDate.$bt).toEqual(['2022-01-01', '2022-12-31']);
             expect(requestConstructor.state.requestFilter.projects.EndDate.$bt).toEqual(['2022-01-01', '2022-12-31']);
         });

@@ -26,7 +26,7 @@ describe('ResourceAnalysis Initialization', () => {
 
     beforeEach(async () => {
         // Set item in local storage as required
-        localStorage.setItem('testingWithLocalFiles', 'true');
+        localStorage.setItem('testingResourceAnalysisWithLocalFiles', 'true');
 
         // Simulate the necessary DOM structure
         document.body.innerHTML = `

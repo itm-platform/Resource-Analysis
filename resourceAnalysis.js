@@ -49,7 +49,7 @@ export class ResourceAnalysis {
     }
 
     async #initComponents() {
-        const dataServiceModel = []; //Dummy for now
+        const dataServiceModel = await this.#fetchDataServiceModel(window.userLoginToken);  
         const viewTemplate = await this.#getViewTemplate(this.viewTemplateId);
         const requestObject = this.#extractRequestObjectFromViewTemplate(viewTemplate);
         this.#setState({ request: requestObject });
@@ -58,7 +58,8 @@ export class ResourceAnalysis {
             this.state.request,
             dataServiceModel, this.requestConstructorDivId);
 
-        window.requestConstructor = this.requestConstructor; // For testing purposes
+        //TODO - C - Remove this line making the requestConstructor global
+            window.requestConstructor = this.requestConstructor; // For testing purposes
 
         // TODO - B - Add selected: true to the default pivotConfig, and apply the data transformation
         this.pivotSelector = new PivotSelector([
@@ -72,6 +73,29 @@ export class ResourceAnalysis {
         }).catch(error => console.error('Error initializing components:', error));
     }
 
+    async #fetchDataServiceModel(token) {
+        if (!token) {
+            throw new Error('No token provided to fetch data service model.');
+        }
+        let url =`/v2/${window.companyId}/dataServiceModel`;
+        const testingResourceAnalysisWithProxy = localStorage.getItem('testingResourceAnalysisWithProxy') === 'true';
+        if (testingResourceAnalysisWithProxy) {
+            url = `/proxy${url}`;
+        }
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'Token': token
+                }
+            });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            throw new Error('Error fetching data service model: ' + error.message);
+            
+        }
+        
+    }
     async #getViewTemplate(viewTemplateId) {
 
         const viewTemplate = await this.#fetchViewTemplate(viewTemplateId);
@@ -133,14 +157,14 @@ export class ResourceAnalysis {
     }
 
     async #fetchEffortData() {
-        const testingWithLocalFiles = localStorage.getItem('testingWithLocalFiles') === 'true';
+        const testingResourceAnalysisWithLocalFiles = localStorage.getItem('testingResourceAnalysisWithLocalFiles') === 'true';
 
         const { request } = this.state;
         const { analysisMode } = request;
 
         let responseData;
 
-        if (testingWithLocalFiles) {
+        if (testingResourceAnalysisWithLocalFiles) {
             let fileURL;
             if (analysisMode === VALID_ANALYSIS_MODES.intervals) {
                 fileURL = './tests/dataSamples/responseResourceAnalysisIntervals.js';

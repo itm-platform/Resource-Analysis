@@ -1,4 +1,13 @@
 (async () => {
+    window.companyId = 'itmrozas'; // Set the company ID here
+    const token = 'fc55f846-d7f7-4abb-afc8-d25338a71ef6'
+    async function fetchToken() {
+        const response = await fetch(`/proxy/${window.companyId}/login/${token}`);
+        const data = await response.json();
+        return data.Token;
+    }
+    window.userLoginToken = await fetchToken();
+
     const diContainerModule = await import('./diContainer.js');
     window.diContainer = diContainerModule.default;
 

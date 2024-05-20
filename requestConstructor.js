@@ -45,7 +45,7 @@ export class RequestConstructor {
 
     initUI() {
         const parentDiv = document.getElementById(this.parentDivId);
-    
+
         // Helper function to create a wrapper div
         function createWrapper(id, className) {
             const wrapper = document.createElement('div');
@@ -53,7 +53,7 @@ export class RequestConstructor {
             wrapper.className = className;
             return wrapper;
         }
-    
+
         // Helper function to create and append a button
         function createButton(id, text, onClick) {
             const button = document.createElement('button');
@@ -62,58 +62,60 @@ export class RequestConstructor {
             button.addEventListener('click', onClick);
             return button;
         }
-    
+
         // Create and configure the main wrapper div
         const requestConstructorWrapper = createWrapper('req-constructor-wrapper', 'req-constructor-wrapper');
-    
+
         // Create and configure the modes wrapper div
         const requestConstructorModesWrapper = createWrapper('req-constructor-modesWrapper', 'req-constructor-modesWrapper');
-    
+
         // Append sections to modes wrapper
         const intervalsSection = this.#createIntervalsSection();
         const totalsSection = this.#createTotalsSection();
         requestConstructorModesWrapper.appendChild(intervalsSection);
         requestConstructorModesWrapper.appendChild(totalsSection);
-    
+
         // Append modes wrapper to the main wrapper
         requestConstructorWrapper.appendChild(requestConstructorModesWrapper);
-    
+
         // Create and configure the filter wrapper div
         const requestConstructorFilterWrapper = createWrapper('req-constructor-filterWrapper', 'req-constructor-filterWrapper');
         requestConstructorWrapper.appendChild(requestConstructorFilterWrapper);
-    
+
         // Append the main wrapper to the parent div
         parentDiv.appendChild(requestConstructorWrapper);
-    
+
         // Conditionally create and append the filter section
         if (this.shouldFilterBeVisible) {
             const filterSection = this.#createFilterSection(requestConstructorFilterWrapper.id);
             requestConstructorFilterWrapper.appendChild(filterSection);
         }
-    
+
         // Create and configure the update button
         const updateButton = createButton('req-constructor-updateButton', 'Change Request', (event) => {
             event.preventDefault();
             this.#updateRequest();
         });
-    
+
         // Append the update button to the parent div
         parentDiv.appendChild(updateButton);
     }
-    
+
     #createFilterSection(filterWrapperDivId) {
-        const tablesAllowed = []; // TODO - B - Include in the options object
+        const tablesAllowed = ['projects', 'services', 'users']; // TODO - B - Include in the options object
         const filterConstructor = new this.FilterConstructor(
-            this.state.requestFilter, this.dataServiceModel, 
+            this.state.requestFilter, this.dataServiceModel,
             filterWrapperDivId, tablesAllowed, this._lang);
-    
+
+        // TODO - C - Remove the following line making the filterConstructor a private variable
+        window.filterConstructor = filterConstructor; // For testing purposes
         filterConstructor.element.addEventListener('filterUpdated', (event) => {
             this.state.requestFilter = event.detail;
         });
-    
+
         return filterConstructor.element; // Assuming this returns the constructed filter section
     }
-    
+
     #createIntervalsSection() {
         const intervalsSection = document.createElement('div');
         intervalsSection.id = 'req-constructor-intervalsSection';
