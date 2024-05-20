@@ -9,6 +9,9 @@
     const languageLoaderModule = await import('./languageLoader.js');
     window.diContainer.register('getTranslations', languageLoaderModule.getTranslations);
 
+    const filterConstructorModule = await import('../FilterConstructor/Components/Filter.js');
+    window.diContainer.register('FilterConstructor', filterConstructorModule.Filter);
+
     window.diContainerReady = true;
     window.dispatchEvent(new CustomEvent('diContainerReady'));
 })();

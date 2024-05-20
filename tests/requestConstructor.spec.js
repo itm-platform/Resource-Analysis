@@ -31,9 +31,16 @@ async function mockGeneralJS() {
             t: vi.fn((key) => `Translated: ${key}`)  // Mocks translation function t
         })
     };
-
+    // Mock FilterConstructor
+    const filterConstructorMock = vi.fn((initialFilter, dataServiceModel, parentDivId, tablesAllowed, language) => {
+        return {
+            getFilter: () => initialFilter,  // Example method
+            // Add any other necessary methods or properties
+        };
+    });
     diContainer.register('logFrontEndError', errorHandler.logFrontEndError);
     diContainer.register('getTranslations', async () => await languageLoader.getTranslations());
+    diContainer.register('FilterConstructor', filterConstructorMock);
 
     global.window.diContainerReady = true;
     global.window.dispatchEvent(new CustomEvent('diContainerReady'));
@@ -79,8 +86,8 @@ describe('RequestConstructor Initialization', () => {
             // Setting up initial states
             requestObject.analysisMode = 'intervals';
             requestObject.filter = {
-                project: { "Program.Id": { $in: [12, 23] } },
-                service: { "Program.Id": { $in: [12, 23] } }
+                projects: { "Program.Id": { $in: [12, 23] } },
+                services: { "Program.Id": { $in: [12, 23] } }
             };
             requestObject.intervals = {
                 startDate: '2021-01-01',
@@ -149,8 +156,8 @@ describe('RequestConstructor public methods', () => {
 
             requestObject.analysisMode = 'intervals';
             requestObject.filter = {
-                project: { "Program.Id": { $in: [12, 23] } },
-                service: { "Program.Id": { $in: [12, 23] } }
+                projects: { "Program.Id": { $in: [12, 23] } },
+                services: { "Program.Id": { $in: [12, 23] } }
             };
             requestObject.intervals = {
                 startDate: '2021-01-01',
@@ -183,7 +190,9 @@ describe('RequestConstructor public methods', () => {
             await new Promise(r => setTimeout(r, 100));
         });
 
-        test('should initialize with correct state', () => {
+        test('should initialize with correct state', async () => {
+            await new Promise(r => setTimeout(r, 100));
+
             expect(requestConstructor.state.requestAnalysisMode).toBe(requestObject.analysisMode);
             expect(requestConstructor.state.requestFilter).toEqual(requestObject.filter);
             expect(requestConstructor.state.requestIntervals).toEqual(requestObject.intervals);
@@ -225,8 +234,8 @@ describe('RequestConstructor public methods', () => {
             endDatePicker.dispatchEvent(new Event('change'));
 
             expect(requestConstructor.state.requestAnalysisMode).toBe('totals');
-            expect(requestConstructor.state.requestFilter.project.StartDate.$bt).toEqual(['2022-01-01', '2022-12-31']);
-            expect(requestConstructor.state.requestFilter.project.EndDate.$bt).toEqual(['2022-01-01', '2022-12-31']);
+            expect(requestConstructor.state.requestFilter.projects.StartDate.$bt).toEqual(['2022-01-01', '2022-12-31']);
+            expect(requestConstructor.state.requestFilter.projects.EndDate.$bt).toEqual(['2022-01-01', '2022-12-31']);
         });
 
         test('should dispatch "requestUpdated" event with totals details when the button is clicked', async () => {
@@ -255,11 +264,11 @@ describe('RequestConstructor public methods', () => {
             const expectedRequestObject = {
                 analysisMode: 'totals',
                 filter: {
-                    project: {
+                    projects: {
                         StartDate: { $bt: ['2022-01-01', '2022-12-31'] },
                         EndDate: { $bt: ['2022-01-01', '2022-12-31'] }
                     },
-                    service: { "Program.Id": { $in: [12, 23] } }
+                    services: { "Program.Id": { $in: [12, 23] } }
                 }
             };
 

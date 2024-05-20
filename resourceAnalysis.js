@@ -13,10 +13,11 @@ const VALID_PIVOT_CONFIGS = { entityWorkItem: 'entity-workItem', entityUser: 'en
 export class ResourceAnalysis {
     /**
      * Creates an instance of ResourceAnalysis.
-     * @param {string[]} parentDivIds - The IDs of the parent div elements.
+     * @param {String[]} parentDivIds - The IDs of the parent div elements.
      * @param {Object} [options={}] - Configuration options for the instance.
-     * @param {Object} [options.prefilter] - prefilter to add to the filterConstructor.
-     * @param {string} [options.viewTemplateId] - The view template ID if initializing with a view ID.
+     * @param {Object} [options.prefilter] - prefilter to add to the filterConstructor result.
+     * @param {Object} [options.shouldFilterBeVisible] 
+     * @param {String} [options.viewTemplateId] - The view template ID if initializing with a view ID.
      */
     constructor(parentDivIds, options = {}) {
         this.requestConstructorDivId = parentDivIds.requestConstructorContainer;
@@ -24,6 +25,7 @@ export class ResourceAnalysis {
         this.tableContainerDivId = parentDivIds.tableContainer;
 
         this.viewTemplateId = options.viewTemplateId || null;
+        this.prefilter = options.prefilter || null;
 
         this.requestConstructor = null;
         this.pivotSelector = null;

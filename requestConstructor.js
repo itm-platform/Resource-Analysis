@@ -5,21 +5,27 @@ export class RequestConstructor {
 * @param {Object} requestObject - The request object. Example {analysisMode: "intervals", filter: {projects: {Duration: 10}},  "intervals": {"startDate": "2024-01-01", "intervalType": "week", noOfIntervals": 5}.    
 * @param {Array} dataServiceModel - The filter values. Example {tables:{tableName:{labels:{},fields:[{name:"Id",labels:{en:"Id",es:"Id",pt:"Id"},type:"Number | String | Date",primaryKey:!0}]}},relationships:{tableName1:{tableName2:{foreignKey:"ProjectId"},risks:{foreignKey:"ProjectId"}}}};
 * @param {string} parentDivId - The parent div ID to attach the filter UI to
+* @param {Object} [options={}] - The options object. 
+* @param {boolean} [options.shouldFilterBeVisible=true]
 */
     state = {
         requestAnalysisMode: '',
         requestFilter: {},
         requestIntervals: {}
     };
-    constructor(requestObject = {}, dataServiceModel, parentDivId) {
+    constructor(requestObject = {}, dataServiceModel, parentDivId, options = {}) {
         if (requestObject == {}) { resourceAnalysisValidator.validateRequest(requestObject); }
         this.state.requestAnalysisMode = requestObject.analysisMode || VALID_ANALYSIS_MODES.intervals;
         this.state.requestFilter = requestObject.filter || {};
         this.state.requestIntervals = requestObject.intervals || {};
         this.dataServiceModel = dataServiceModel;
         this.parentDivId = parentDivId;
+
         this._langTranslations = {};
         this._lang = typeof strLanguage !== 'undefined' ? strLanguage : 'es';
+
+        this.shouldFilterBeVisible = options.shouldFilterBeVisible || true;
+
         this._initPromise = this.#initDependencies().then(() => {
             this.initUI();
         });
@@ -29,6 +35,8 @@ export class RequestConstructor {
         await itmGlobal.ensureDiContainerReady();
         this.getTranslations = window.diContainer.get('getTranslations');
         await this.#loadTranslations();
+
+        this.FilterConstructor = window.diContainer.get('FilterConstructor');
     }
 
     async #loadTranslations() {
@@ -54,11 +62,14 @@ export class RequestConstructor {
 
         requestConstructorWrapper.appendChild(requestConstructorModesWrapper);
 
-        const requestConstructorFilterWrapper = document.createElement('div');
-        requestConstructorFilterWrapper.id = 'req-constructor-filterWrapper';
-        requestConstructorFilterWrapper.className = 'req-constructor-filterWrapper';
-        
+        if (this.shouldFilterBeVisible) {
+            const requestConstructorFilterWrapper = document.createElement('div');
+            requestConstructorFilterWrapper.id = 'req-constructor-filterWrapper';
+            requestConstructorFilterWrapper.className = 'req-constructor-filterWrapper';
 
+            const filterSection = this.#createFilterSection();
+            requestConstructorFilterWrapper.appendChild(filterSection);
+        }
         parentDiv.appendChild(requestConstructorWrapper);
 
         const updateButton = document.createElement('button');
@@ -69,6 +80,18 @@ export class RequestConstructor {
             this.#updateRequest();
         });
         parentDiv.appendChild(updateButton);
+    }
+    #createFilterSection() {
+        const filterSection = document.createElement('div');
+        filterSection.id = 'req-constructor-filterSection';
+        const tablesAllowed = []; // TODO - B - Include in the options object
+        const filterConstructor = new this.FilterConstructor(this.state.requestFilter, this.dataServiceModel, filterSection.id, tablesAllowed, this._lang);
+
+        filterConstructor.element.addEventListener('filterUpdated', (event) => {
+            this.state.requestFilter = event.detail;
+        });
+        return filterSection;
+
     }
     #createIntervalsSection() {
         const intervalsSection = document.createElement('div');
@@ -204,9 +227,12 @@ export class RequestConstructor {
         return totalsSection;
     }
 
+
+
     #updateFilterStateForTotals() {
         // TODO - A - We are only adding filter to 'project' object. 
         // Filters can apply to entities (`project`, `service`) and users (`user`). 
+        // TODO - A - These filters are private and should not be saved in the request object (viewTemplate).
         const totalsDateRangeMode = document.getElementById('req-constructor-totalsDateRangeMode').value;
         const startDate = document.getElementById('req-constructor-totals-startDate').value;
         const endDate = document.getElementById('req-constructor-totals-endDate').value;
@@ -223,6 +249,9 @@ export class RequestConstructor {
     }
 
     #getTotalsDateRangeMode() {
+        // TODO - A - We are only adding filter to 'project' object. 
+        // Filters can apply to entities (`project`, `service`) and users (`user`). 
+        // TODO - A - These filters are private and should not be saved in the request object (viewTemplate).
         const filter = this.state.requestFilter;
         // const totalsDateRangeMode should be 'Live between' if filter.project.StartDate has the form { $lte:...}, and 
         // filter.project.StartDate has the form { $gte:...}. It should be 'Strictly between' if filter.project.StartDate has the form { $bt:...}
