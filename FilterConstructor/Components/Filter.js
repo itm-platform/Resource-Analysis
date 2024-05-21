@@ -5,7 +5,15 @@ import { setLang } from './globalState.js';
 import { css } from '../Modules/helperFunctions.js';
 
 export class Filter {
-    constructor(queryFilter, dataServiceModelJSON, parentDivId, tablesAllowed = [], lang = "es") {
+    /**
+     * 
+     * @param {*} queryFilter 
+     * @param {*} dataServiceModelJSON 
+     * @param {*} parentDivId 
+     * @param {Array} [tablesAllowed] If not provided, all tables are allowed
+     * @param {*} lang 
+     */
+    constructor(queryFilter, dataServiceModelJSON, parentDivId, tablesAllowed, lang = "es") {
         this.queryFilter = queryFilter || {};
         this.dataServiceModel = new DataServiceModel(dataServiceModelJSON);
         this.parentDivId = parentDivId;

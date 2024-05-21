@@ -199,7 +199,8 @@ describe('keepOnlyTables', () => {
 
     test('should not change the model if no tables are specified', () => {
         let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
-        dataServiceModel.keepOnlyTables();
+        let tables;
+        dataServiceModel.keepOnlyTables(tables);
         expect(dataServiceModel.tableNames())
             .toEqual(['projects', 'tasks', 'risks']);
     });
