@@ -79,7 +79,37 @@ Optional. Determines which entities and users are requested. Filters can apply t
     > ⚠️ Confirm the format `"$in":[*]` works. This is the way to include properties in the response without filtering.
 3. If no filters are present, it will return all **active** entities (inactive must not be present).
 
+#### Filters allowed
+Because we need to map the filters to the database, we will limit the filters to the following properties:
 
+`projects` and `services` filters:
+
+:point_right: @Fawad, All properties with `Id` should also have `Name` allowed. See point #2 above
+:point_right: Add `Program` (Id, Name)
+:point_right: You can remove JiraId
+
+```
+- Name
+- PerformingUnit.Id ()
+- ApprovalStatus.Id
+- Status.Id
+- Priority.Id
+- Type.Id
+- StartDate
+- EndDate
+- Id
+- No
+- Code
+- BusinessGoal.Id
+- Category.Id
+- Sponsor.Id
+- InternalClient.Id
+- ExternalClient.Id
+- ProcessAffected.Id
+- Asset.Id
+- JiraId
+- IsActive (edited)
+```
 **Filter examples**
 
 All projects and services of the program Ids 12 and 23
