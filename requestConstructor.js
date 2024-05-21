@@ -10,18 +10,18 @@ export class RequestConstructor {
 * @param {boolean} [options.shouldFilterBeVisible=true]
 */
     state = {
-        requestAnalysisMode: '',
-        requestFilter: {},
-        requestIntervals: {},
-        requestTotals: {}
+        analysisMode: '',
+        filter: {},
+        intervals: {},
+        totals: {}
     };
     constructor(requestObject = {}, dataServiceModel, parentDivId, options = {}) {
         if (requestObject == {}) { resourceAnalysisValidator.validateRequest(requestObject); }
          
-        this.state.requestAnalysisMode = requestObject.analysisMode || VALID_ANALYSIS_MODES.intervals;
-        this.state.requestFilter = requestObject.filter || {};
-        this.state.requestIntervals = requestObject.intervals || {};
-        this.state.requestTotals = requestObject.totals || {};
+        this.state.analysisMode = requestObject.analysisMode || VALID_ANALYSIS_MODES.intervals;
+        this.state.filter = requestObject.filter || {};
+        this.state.intervals = requestObject.intervals || {};
+        this.state.totals = requestObject.totals || {};
 
         this.dataServiceModel = dataServiceModel;
         this.parentDivId = parentDivId;
@@ -109,13 +109,13 @@ export class RequestConstructor {
     #createFilterSection(filterWrapperDivId) {
         const tablesAllowed = ['projects', 'services', 'users']; // TODO - B - Include in the options object
         const filterConstructor = new this.FilterConstructor(
-            this.state.requestFilter, this.dataServiceModel,
+            this.state.filter, this.dataServiceModel,
             filterWrapperDivId, tablesAllowed, this._lang);
 
         // TODO - C - Remove the following line making the filterConstructor a private variable
         window.filterConstructor = filterConstructor; // For testing purposes
         filterConstructor.element.addEventListener('filterUpdated', (event) => {
-            this.state.requestFilter = event.detail;
+            this.state.filter = event.detail;
         });
 
         return filterConstructor.element; // Assuming this returns the constructed filter section
@@ -131,11 +131,11 @@ export class RequestConstructor {
         intervalsRadio.id = 'req-constructor-intervals';
         intervalsRadio.name = 'analysisMode';
         intervalsRadio.value = 'intervals';
-        if (this.state.requestAnalysisMode === 'intervals') {
+        if (this.state.analysisMode === 'intervals') {
             intervalsRadio.checked = true;
         }
         intervalsRadio.addEventListener('change', () => {
-            this.state.requestAnalysisMode = 'intervals';
+            this.state.analysisMode = 'intervals';
         });
 
         const intervalsLabel = document.createElement('label');
@@ -156,9 +156,9 @@ export class RequestConstructor {
             option.text = interval;
             intervalDropdown.appendChild(option);
         });
-        intervalDropdown.value = this.state.requestIntervals.intervalType || 'day';
+        intervalDropdown.value = this.state.intervals.intervalType || 'day';
         intervalDropdown.addEventListener('change', (event) => {
-            this.state.requestIntervals.intervalType = event.target.value;
+            this.state.intervals.intervalType = event.target.value;
         });
         intervalOptionsWrapper.appendChild(intervalDropdown);
 
@@ -168,18 +168,18 @@ export class RequestConstructor {
         numberInput.min = '1';
         numberInput.max = '7';
         numberInput.placeholder = 'Number';
-        numberInput.value = this.state.requestIntervals.noOfIntervals || 1;
+        numberInput.value = this.state.intervals.noOfIntervals || 1;
         numberInput.addEventListener('change', (event) => {
-            this.state.requestIntervals.noOfIntervals = event.target.value;
+            this.state.intervals.noOfIntervals = event.target.value;
         });
         intervalOptionsWrapper.appendChild(numberInput);
 
         const dateInput = document.createElement('input');
         dateInput.id = 'req-constructor-interval-startDate';
         dateInput.type = 'date';
-        dateInput.value = this.state.requestIntervals.startDate || new Date().toISOString().split('T')[0];
+        dateInput.value = this.state.intervals.startDate || new Date().toISOString().split('T')[0];
         dateInput.addEventListener('change', (event) => {
-            this.state.requestIntervals.startDate = event.target.value;
+            this.state.intervals.startDate = event.target.value;
         });
         intervalOptionsWrapper.appendChild(dateInput);
         intervalsSection.appendChild(intervalOptionsWrapper);
@@ -197,11 +197,11 @@ export class RequestConstructor {
         totalsRadio.id = 'req-constructor-totals';
         totalsRadio.name = 'analysisMode';
         totalsRadio.value = 'totals';
-        if (this.state.requestAnalysisMode === 'totals') {
+        if (this.state.analysisMode === 'totals') {
             totalsRadio.checked = true;
         }
         totalsRadio.addEventListener('change', () => {
-            this.state.requestAnalysisMode = 'totals';
+            this.state.analysisMode = 'totals';
             this.#updateFilterStateForTotals();
         });
 
@@ -261,17 +261,17 @@ export class RequestConstructor {
         const totalsDateRangeMode = document.getElementById('req-constructor-totalsDateRangeMode').value;
         const startDate = document.getElementById('req-constructor-totals-startDate').value;
         const endDate = document.getElementById('req-constructor-totals-endDate').value;
-        this.state.requestTotals = { dateRangeMode: totalsDateRangeMode, startDate, endDate };
+        this.state.totals = { dateRangeMode: totalsDateRangeMode, startDate, endDate };
     }
 
     #getTotalsDateRangeMode() {
-        const totalsDateRangeMode = this.state.requestTotals.dateRangeMode || VALID_TOTALS_DATE_RANGE_MODES.liveBetween;
-        const startDate = this.state.requestTotals.startDate || new Date().toISOString().split('T')[0];
-        const endDate = this.state.requestTotals.endDate || new Date().toISOString().split('T')[0];
+        const totalsDateRangeMode = this.state.totals.dateRangeMode || VALID_TOTALS_DATE_RANGE_MODES.liveBetween;
+        const startDate = this.state.totals.startDate || new Date().toISOString().split('T')[0];
+        const endDate = this.state.totals.endDate || new Date().toISOString().split('T')[0];
         return { totalsDateRangeMode, startDate, endDate };
     }
     /* LEFT OFF: 
-    - Totals dates are already coming from the params, in state.requestTotals. Add test cases (empty, filled)
+    - Totals dates are already coming from the params, in state.totals. Add test cases (empty, filled)
     - Possibly improve the validator to check for the totals object, dates make sense, etc.
     - User selected totals must return in the event, so it saves in the template and retrieves data based on it
     - Mix preFilter, filter and totals in the request object (resourceAnalysis)
@@ -279,10 +279,10 @@ export class RequestConstructor {
 
     #updateRequest() {
         const newRequestObject = {
-            analysisMode: this.state.requestAnalysisMode,
-            filter: this.state.requestFilter,
-            intervals: this.state.requestIntervals,
-            totals: this.state.requestTotals
+            analysisMode: this.state.analysisMode,
+            filter: this.state.filter,
+            intervals: this.state.intervals,
+            totals: this.state.totals
         }
         const event = new CustomEvent('requestUpdated', {
             detail: newRequestObject,

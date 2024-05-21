@@ -67,11 +67,11 @@ describe('RequestConstructor Initialization', () => {
             await new Promise(r => setTimeout(r, 100)); // Wait 100ms for the DOM to update
         });
 
-        test('should reflect in state.requestTotals what came in requestObject.totals', async () => {
-            expect(requestConstructor.state.requestAnalysisMode).toBe(requestObject.analysisMode);
-            expect(requestConstructor.state.requestFilter).toEqual(requestObject.filter);
-            expect(requestConstructor.state.requestIntervals).toEqual(requestObject.intervals);
-            expect(requestConstructor.state.requestTotals).toEqual(requestObject.totals);
+        test('should reflect in state.totals what came in requestObject.totals', async () => {
+            expect(requestConstructor.state.analysisMode).toBe(requestObject.analysisMode);
+            expect(requestConstructor.state.filter).toEqual(requestObject.filter);
+            expect(requestConstructor.state.intervals).toEqual(requestObject.intervals);
+            expect(requestConstructor.state.totals).toEqual(requestObject.totals);
 
 
         });
@@ -149,9 +149,9 @@ describe('RequestConstructor public methods', () => {
         test('should initialize with correct state', async () => {
             await new Promise(r => setTimeout(r, 100));
 
-            expect(requestConstructor.state.requestAnalysisMode).toBe(requestObject.analysisMode);
-            expect(requestConstructor.state.requestFilter).toEqual(requestObject.filter);
-            expect(requestConstructor.state.requestIntervals).toEqual(requestObject.intervals);
+            expect(requestConstructor.state.analysisMode).toBe(requestObject.analysisMode);
+            expect(requestConstructor.state.filter).toEqual(requestObject.filter);
+            expect(requestConstructor.state.intervals).toEqual(requestObject.intervals);
         });
 
         test('should update state on intervals change', () => {
@@ -167,9 +167,9 @@ describe('RequestConstructor public methods', () => {
             numberInput.dispatchEvent(new Event('change'));
             dateInput.dispatchEvent(new Event('change'));
 
-            expect(requestConstructor.state.requestIntervals.intervalType).toBe('month');
-            expect(requestConstructor.state.requestIntervals.noOfIntervals).toBe('6');
-            expect(requestConstructor.state.requestIntervals.startDate).toBe('2022-01-01');
+            expect(requestConstructor.state.intervals.intervalType).toBe('month');
+            expect(requestConstructor.state.intervals.noOfIntervals).toBe('6');
+            expect(requestConstructor.state.intervals.startDate).toBe('2022-01-01');
         });
 
         test('should update state on totals change', () => {
@@ -189,10 +189,10 @@ describe('RequestConstructor public methods', () => {
             startDatePicker.dispatchEvent(new Event('change'));
             endDatePicker.dispatchEvent(new Event('change'));
 
-            expect(requestConstructor.state.requestAnalysisMode).toBe('totals');
-            expect(requestConstructor.state.requestTotals.dateRangeMode).toBe('strictlyBetween');
-            expect(requestConstructor.state.requestTotals.startDate).toBe('2022-01-01');
-            expect(requestConstructor.state.requestTotals.endDate).toBe('2022-12-31');
+            expect(requestConstructor.state.analysisMode).toBe('totals');
+            expect(requestConstructor.state.totals.dateRangeMode).toBe('strictlyBetween');
+            expect(requestConstructor.state.totals.startDate).toBe('2022-01-01');
+            expect(requestConstructor.state.totals.endDate).toBe('2022-12-31');
         });
 
         test('should dispatch "requestUpdated" event with totals details when the button is clicked', async () => {
