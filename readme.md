@@ -37,7 +37,7 @@ Interval example:
 ```	
 Totals example:
 
-This is an example of "live between" filter. We're requesting that the StartDate is before the range end date and the EndDate is after the range start date.
+This is an example of "liveBetween" filter. We're requesting that the StartDate is before the range end date and the EndDate is after the range start date.
 ```json
 {
     "analysisMode": "totals",

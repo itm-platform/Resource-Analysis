@@ -164,7 +164,7 @@ describe('RequestConstructor public methods', () => {
             totalsRadio.checked = true;
             totalsRadio.dispatchEvent(new Event('change'));
 
-            totalsDateRangeModeDropdown.value = 'Strictly between';
+            totalsDateRangeModeDropdown.value = 'strictlyBetween';
             startDatePicker.value = '2022-01-01';
             endDatePicker.value = '2022-12-31';
 
@@ -186,7 +186,7 @@ describe('RequestConstructor public methods', () => {
             const startDatePicker = document.getElementById('req-constructor-totals-startDate');
             const endDatePicker = document.getElementById('req-constructor-totals-endDate');
 
-            totalsDateRangeModeDropdown.value = 'Strictly between';
+            totalsDateRangeModeDropdown.value = 'strictlyBetween';
             startDatePicker.value = '2022-01-01';
             endDatePicker.value = '2022-12-31';
 

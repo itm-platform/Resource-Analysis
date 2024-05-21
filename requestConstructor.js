@@ -1,5 +1,6 @@
 import resourceAnalysisValidator from './resourceAnalysisValidator.js';
 const VALID_ANALYSIS_MODES = { intervals: 'intervals', totals: 'totals' };
+const VALID_TOTALS_DATE_RANGE_MODES = { liveBetween: 'liveBetween', strictlyBetween: 'strictlyBetween' };  
 export class RequestConstructor {
     /** requestConstructor.js
 * @param {Object} requestObject - The request object. Example {analysisMode: "intervals", filter: {projects: {Duration: 10}},  "intervals": {"startDate": "2024-01-01", "intervalType": "week", noOfIntervals": 5}.    
@@ -11,13 +12,17 @@ export class RequestConstructor {
     state = {
         requestAnalysisMode: '',
         requestFilter: {},
-        requestIntervals: {}
+        requestIntervals: {},
+        requestTotals: {}
     };
     constructor(requestObject = {}, dataServiceModel, parentDivId, options = {}) {
         if (requestObject == {}) { resourceAnalysisValidator.validateRequest(requestObject); }
+        
         this.state.requestAnalysisMode = requestObject.analysisMode || VALID_ANALYSIS_MODES.intervals;
         this.state.requestFilter = requestObject.filter || {};
         this.state.requestIntervals = requestObject.intervals || {};
+        this.state.requestTotals = requestObject.totals || {};
+
         this.dataServiceModel = dataServiceModel;
         this.parentDivId = parentDivId;
 
@@ -213,10 +218,10 @@ export class RequestConstructor {
 
         const totalsDateRangeModeDropdown = document.createElement('select');
         totalsDateRangeModeDropdown.id = 'req-constructor-totalsDateRangeMode';
-        ['Live between', 'Strictly between'].forEach(mode => {
+        Object.keys(VALID_TOTALS_DATE_RANGE_MODES).forEach(mode => {
             const option = document.createElement('option');
             option.value = mode;
-            option.text = mode;
+            option.text = `${mode} i18n`;
             totalsDateRangeModeDropdown.appendChild(option);
         });
 
@@ -261,7 +266,7 @@ export class RequestConstructor {
         const endDate = document.getElementById('req-constructor-totals-endDate').value;
         const filter = { ...this.state.requestFilter };
         filter.projects = {};
-        if (totalsDateRangeMode === 'Live between') {
+        if (totalsDateRangeMode === 'liveBetween') {
             filter.projects.StartDate = { $lte: endDate };
             filter.projects.EndDate = { $gte: startDate };
         } else {
@@ -272,18 +277,17 @@ export class RequestConstructor {
     }
 
     #getTotalsDateRangeMode() {
-        // TODO - A - We are only adding filter to 'projects' object. 
-        // Filters can apply to entities (`projects`, `service`) and users (`user`). 
-        // TODO - A - These filters are private and should not be saved in the request object (viewTemplate).
-        const filter = this.state.requestFilter;
-        // const totalsDateRangeMode should be 'Live between' if filter.projects.StartDate has the form { $lte:...}, and 
-        // filter.projects.StartDate has the form { $gte:...}. It should be 'Strictly between' if filter.projects.StartDate has the form { $bt:...}
-        // and filter.projects.StartDate has the form { $bt:...}. Otherwise, it should be 'Live between'.
-        const totalsDateRangeMode = (filter.projects?.StartDate && filter.projects?.StartDate.$bt) ? 'Strictly between' : 'Live between';
-        const startDate = filter.projects?.StartDate || new Date().toISOString().split('T')[0];
-        const endDate = filter.projects?.EndDate || new Date().toISOString().split('T')[0];
+        const totalsDateRangeMode = this.state.requestTotals.dateRangeMode || VALID_TOTALS_DATE_RANGE_MODES.liveBetween;
+        const startDate = this.state.requestTotals.startDate || new Date().toISOString().split('T')[0];
+        const endDate = this.state.requestTotals.endDate || new Date().toISOString().split('T')[0];
         return { totalsDateRangeMode, startDate, endDate };
     }
+    /* LEFT OFF: 
+    - Totals dates are already coming from the params, in state.requestTotals. Add test cases (empty, filled)
+    - Possibly improve the validator to check for the totals object, dates make sense, etc.
+    - User selected totals must return in the event, so it saves in the template and retrieves data based on it
+    - Mix preFilter, filter and totals in the request object (resourceAnalysis)
+    */
 
     #updateRequest() {
         const newRequestObject = {

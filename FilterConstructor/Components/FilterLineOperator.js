@@ -60,7 +60,6 @@ export class FilterLineOperator {
     }
 
     #dispatchEvent() {
-        console.log(`dispatching event with operatorSelected: ${this.operatorSelected}`);
         this.elements.container.dispatchEvent(new CustomEvent('filterOperatorUpdated', {
             detail: this.operatorSelected,
             bubbles: true

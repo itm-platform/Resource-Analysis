@@ -9,13 +9,14 @@ import { mergeDeep } from './utils.js';
 // TODO - B - retrieve pivotConfig from the view template
 
 const VALID_ANALYSIS_MODES = { intervals: 'intervals', totals: 'totals' };
+const VALID_TOTALS_DATE_RANGE_MODES = { liveBetween: 'liveBetween', strictlyBetween: 'strictlyBetween' };  
 const VALID_PIVOT_CONFIGS = { entityWorkItem: 'entity-workItem', entityUser: 'entity-user', user: 'user' };
 export class ResourceAnalysis {
     /**
      * Creates an instance of ResourceAnalysis.
      * @param {String[]} parentDivIds - The IDs of the parent div elements.
      * @param {Object} [options={}] - Configuration options for the instance.
-     * @param {Object} [options.prefilter] - prefilter to add to the filterConstructor result.
+     * @param {Object} [options.preFilter] - preFilter to add to the filterConstructor result.
      * @param {Object} [options.shouldFilterBeVisible] 
      * @param {String} [options.viewTemplateId] - The view template ID if initializing with a view ID.
      */
@@ -25,7 +26,8 @@ export class ResourceAnalysis {
         this.tableContainerDivId = parentDivIds.tableContainer;
 
         this.viewTemplateId = options.viewTemplateId || null;
-        this.prefilter = options.prefilter || null;
+
+        this.preFilter = options.preFilter || null;
 
         this.requestConstructor = null;
         this.pivotSelector = null;
@@ -39,7 +41,8 @@ export class ResourceAnalysis {
             request: {
                 filter: {},
                 analysisMode: null, // Default analysis mode
-                intervals: null
+                intervals: null,
+                totals: null
             },
             pivotConfig: VALID_PIVOT_CONFIGS.entityWorkItem, // Default view configuration
             responseData: null, // Data received from the server
@@ -63,7 +66,8 @@ export class ResourceAnalysis {
 
         this.requestConstructor = new RequestConstructor(
             this.state.request,
-            dataServiceModel, this.requestConstructorDivId);
+            dataServiceModel, 
+            this.requestConstructorDivId);
 
         //TODO - C - Remove this line making the requestConstructor global
         window.requestConstructor = this.requestConstructor; // For testing purposes
@@ -77,7 +81,7 @@ export class ResourceAnalysis {
 
         this.#fetchEffortData().then(() => {
             this.#renderFlexiTable();
-        }).catch(error => console.error('Error initializing components:', error));
+        })
     }
 
     async #fetchDataServiceModel() {
@@ -143,12 +147,17 @@ export class ResourceAnalysis {
             lastUpdatedDate: new Date(),
             lastUpdatedBy: null,
             template: {
-                analysisMode: VALID_ANALYSIS_MODES.intervals,
+                analysisMode: VALID_ANALYSIS_MODES.totals,
                 intervals: {
                     startDate: getDateAdjustedInDays(-5), // 5 days ago
                     intervalType: 'day',
                     noOfIntervals: 5
                 },
+                totals:{
+                    dateRangeMode: VALID_TOTALS_DATE_RANGE_MODES.liveBetween,
+                    startDate: getDateAdjustedInDays(-30), 
+                    endDate: getDateAdjustedInDays(-1) 
+                } ,
                 filter: {},
                 pivotConfig: VALID_PIVOT_CONFIGS.entityWorkItem
             }
@@ -159,6 +168,7 @@ export class ResourceAnalysis {
         return {
             analysisMode: viewTemplate.template.analysisMode,
             intervals: viewTemplate.template.intervals,
+            totals: viewTemplate.template.totals,
             filter: viewTemplate.template.filter,
         };
     }
@@ -209,10 +219,9 @@ export class ResourceAnalysis {
             }
         }
 
-        // Common operations for handling response data
         try {
-            this.#setState({ responseData });
             resourceAnalysisValidator.validateResponse(responseData);
+            this.#setState({ responseData });
             this.transformedData = this.#transformData(responseData, analysisMode, this.state.pivotConfig);
         } catch (err) {
             console.error('Error processing data:', err);
@@ -221,7 +230,6 @@ export class ResourceAnalysis {
     }
 
     #renderFlexiTable() {
-        // empty the div
         document.getElementById(this.tableContainerDivId).innerHTML = '';
         this.flexiRowSelector = new FlexiRowSelector(this.rowSelectorDivId, {
             user: true, project: true, workItem: true // inject from tha parent HTML getting for the saved preferences for the user
