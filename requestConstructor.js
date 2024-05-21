@@ -17,7 +17,7 @@ export class RequestConstructor {
     };
     constructor(requestObject = {}, dataServiceModel, parentDivId, options = {}) {
         if (requestObject == {}) { resourceAnalysisValidator.validateRequest(requestObject); }
-        
+         
         this.state.requestAnalysisMode = requestObject.analysisMode || VALID_ANALYSIS_MODES.intervals;
         this.state.requestFilter = requestObject.filter || {};
         this.state.requestIntervals = requestObject.intervals || {};
@@ -258,22 +258,10 @@ export class RequestConstructor {
 
 
     #updateFilterStateForTotals() {
-        // TODO - A - We are only adding filter to 'projects' object. 
-        // Filters can apply to entities (`projects`, `services`) and users (`user`s). 
-        // TODO - A - These filters are private and should not be saved in the request object (viewTemplate).
         const totalsDateRangeMode = document.getElementById('req-constructor-totalsDateRangeMode').value;
         const startDate = document.getElementById('req-constructor-totals-startDate').value;
         const endDate = document.getElementById('req-constructor-totals-endDate').value;
-        const filter = { ...this.state.requestFilter };
-        filter.projects = {};
-        if (totalsDateRangeMode === 'liveBetween') {
-            filter.projects.StartDate = { $lte: endDate };
-            filter.projects.EndDate = { $gte: startDate };
-        } else {
-            filter.projects.StartDate = { $bt: [startDate, endDate] };
-            filter.projects.EndDate = { $bt: [startDate, endDate] };
-        }
-        this.state.requestFilter = filter;
+        this.state.requestTotals = { dateRangeMode: totalsDateRangeMode, startDate, endDate };
     }
 
     #getTotalsDateRangeMode() {
@@ -292,12 +280,10 @@ export class RequestConstructor {
     #updateRequest() {
         const newRequestObject = {
             analysisMode: this.state.requestAnalysisMode,
-            filter: this.state.requestFilter
-        };
-        if (this.state.requestAnalysisMode === 'intervals') {
-            newRequestObject.intervals = this.state.requestIntervals;
+            filter: this.state.requestFilter,
+            intervals: this.state.requestIntervals,
+            totals: this.state.requestTotals
         }
-
         const event = new CustomEvent('requestUpdated', {
             detail: newRequestObject,
             bubbles: true

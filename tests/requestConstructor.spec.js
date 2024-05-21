@@ -33,6 +33,11 @@ describe('RequestConstructor Initialization', () => {
                 intervalType: 'quarter',
                 noOfIntervals: 4
             };
+            requestObject.totals = {
+                "dateRangeMode":"liveBetween",
+                "startDate":"2024-04-21",
+                "endDate":"2024-05-20"
+            };
             dataServiceModel = {
                 tables: {
                     tableName: {
@@ -54,9 +59,21 @@ describe('RequestConstructor Initialization', () => {
             };
 
             requestConstructor = new RequestConstructor(
-                { analysisMode: requestObject.analysisMode, filter: requestObject.filter, intervals: requestObject.intervals },
+                { analysisMode: requestObject.analysisMode, 
+                    filter: requestObject.filter, 
+                    intervals: requestObject.intervals,
+                    totals: requestObject.totals},
                 dataServiceModel, parentDivId);
             await new Promise(r => setTimeout(r, 100)); // Wait 100ms for the DOM to update
+        });
+
+        test('should reflect in state.requestTotals what came in requestObject.totals', async () => {
+            expect(requestConstructor.state.requestAnalysisMode).toBe(requestObject.analysisMode);
+            expect(requestConstructor.state.requestFilter).toEqual(requestObject.filter);
+            expect(requestConstructor.state.requestIntervals).toEqual(requestObject.intervals);
+            expect(requestConstructor.state.requestTotals).toEqual(requestObject.totals);
+
+
         });
 
         test('should dispatch "requestUpdated" event with filter details when the button is clicked', async () => {
@@ -173,8 +190,9 @@ describe('RequestConstructor public methods', () => {
             endDatePicker.dispatchEvent(new Event('change'));
 
             expect(requestConstructor.state.requestAnalysisMode).toBe('totals');
-            expect(requestConstructor.state.requestFilter.projects.StartDate.$bt).toEqual(['2022-01-01', '2022-12-31']);
-            expect(requestConstructor.state.requestFilter.projects.EndDate.$bt).toEqual(['2022-01-01', '2022-12-31']);
+            expect(requestConstructor.state.requestTotals.dateRangeMode).toBe('strictlyBetween');
+            expect(requestConstructor.state.requestTotals.startDate).toBe('2022-01-01');
+            expect(requestConstructor.state.requestTotals.endDate).toBe('2022-12-31');
         });
 
         test('should dispatch "requestUpdated" event with totals details when the button is clicked', async () => {
@@ -203,11 +221,18 @@ describe('RequestConstructor public methods', () => {
             const expectedRequestObject = {
                 analysisMode: 'totals',
                 filter: {
-                    projects: {
-                        StartDate: { $bt: ['2022-01-01', '2022-12-31'] },
-                        EndDate: { $bt: ['2022-01-01', '2022-12-31'] }
-                    },
+                    projects: { "Program.Id": { $in: [12, 23] } },
                     services: { "Program.Id": { $in: [12, 23] } }
+                },
+                intervals: {
+                    startDate: '2021-01-01',
+                    intervalType: 'quarter',
+                    noOfIntervals: 4
+                },
+                totals: {
+                    dateRangeMode: 'strictlyBetween',
+                    startDate: '2022-01-01',
+                    endDate: '2022-12-31'
                 }
             };
 
