@@ -191,17 +191,50 @@ export class ResourceAnalysis {
         return totalFilters;
     }
     
+    _mixFiltersForRequest(preFilter, totalsFilters, filter) {
+        const mergeObjects = (base, override) => {
+            for (let key in override) {
+                if (override.hasOwnProperty(key)) {
+                    if (typeof base[key] === 'object' && typeof override[key] === 'object') {
+                        base[key] = mergeObjects(base[key], override[key]);
+                    } else {
+                        base[key] = override[key];
+                    }
+                }
+            }
+            return base;
+        };
+
+        const result = {};
+
+        // Merge in reverse order of precedence
+        if (filter && typeof filter === 'object') {
+            mergeObjects(result, JSON.parse(JSON.stringify(filter)));
+        }
+        if (totalsFilters && typeof totalsFilters === 'object') {
+            mergeObjects(result, JSON.parse(JSON.stringify(totalsFilters)));
+        }
+        if (preFilter && typeof preFilter === 'object') {
+            mergeObjects(result, JSON.parse(JSON.stringify(preFilter)));
+        }
+
+        return result;
+    }
+
 
     async #fetchEffortData() {
-        console.log(`State before fetching data:, ${JSON.stringify(this.state.request, null, 2)}`);
+        //console.log(`State before fetching data:, ${JSON.stringify(this.state.request, null, 2)}`);
         const testingResourceAnalysisWithLocalFiles = localStorage.getItem('testingResourceAnalysisWithLocalFiles') === 'true';
 
         const { request } = this.state;
         const { analysisMode, filter, intervals, totals } = request;
 
+        let totalsFilters;
         if (analysisMode === VALID_ANALYSIS_MODES.totals) {
-            const totalFilters = this._convertTotalDatesToFilters(totals);
+            totalsFilters = this._convertTotalDatesToFilters(totals);
         }
+
+        const mixedFiltersForRequest = this._mixFiltersForRequest(this.preFilter, totalsFilters, filter);
 
         let responseData;
 
@@ -228,13 +261,20 @@ export class ResourceAnalysis {
                     url = `/proxy${url}`;
                 }
                 if (!this.APIToken) { throw new Error('No token provided to fetch data.'); }
+
+                const payload = {
+                    analysisMode,
+                    filter: mixedFiltersForRequest,
+                    ...(analysisMode === VALID_ANALYSIS_MODES.intervals && { intervals }),
+                };
+                
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Token': this.APIToken
                     },
-                    body: JSON.stringify(request)
+                    body: JSON.stringify(payload)
                 });
                 return await response.json();
             } catch (err) {
