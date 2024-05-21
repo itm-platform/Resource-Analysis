@@ -85,12 +85,12 @@ Because we need to map the filters to the database, we will limit the filters to
 `projects` and `services` filters:
 
 :point_right: @Fawad, All properties with `Id` should also have `Name` allowed. See point #2 above
-:point_right: Add `Program` (Id, Name)
+:point_right: Add `Program` (`.Id`, `.Name`)
 :point_right: You can remove JiraId
 
 ```
 - Name
-- PerformingUnit.Id ()
+- PerformingUnit.Id 
 - ApprovalStatus.Id
 - Status.Id
 - Priority.Id
@@ -114,7 +114,7 @@ Because we need to map the filters to the database, we will limit the filters to
 
 All projects and services of the program Ids 12 and 23
 ```json
-filter:{
+"filter":{
     "projects":{
 		"Program.Id":{"$in":[12, 23]}
 	    },
