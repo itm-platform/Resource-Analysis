@@ -6,19 +6,19 @@ import { FlexiRowSelector } from './flexiRowSelector.js';
 import { EffortTransformer } from './effortTransformer.js';
 import { mergeDeep } from './utils.js';
 // TODO - A - Translations
-// TODO - B - retrieve pivotConfig from the view template
+// TODO - B - retrieve pivotConfig from the viewTemplate
 
 const VALID_ANALYSIS_MODES = { intervals: 'intervals', totals: 'totals' };
-const VALID_TOTALS_DATE_RANGE_MODES = { liveBetween: 'liveBetween', strictlyBetween: 'strictlyBetween' };  
+const VALID_TOTALS_DATE_RANGE_MODES = { liveBetween: 'liveBetween', strictlyBetween: 'strictlyBetween' };
 const VALID_PIVOT_CONFIGS = { entityWorkItem: 'entity-workItem', entityUser: 'entity-user', user: 'user' };
 export class ResourceAnalysis {
     /**
      * Creates an instance of ResourceAnalysis.
      * @param {String[]} parentDivIds - The IDs of the parent div elements.
      * @param {Object} [options={}] - Configuration options for the instance.
-     * @param {Object} [options.preFilter] - preFilter to add to the filterConstructor result.
+     * @param {Object} [options.preFilter] - preFilter to add to the filterConstructor result. For example, limit to a single project
      * @param {Object} [options.shouldFilterBeVisible] 
-     * @param {String} [options.viewTemplateId] - The view template ID if initializing with a view ID.
+     * @param {String} [options.viewTemplateId] - The viewTemplate ID if initializing with a view ID.
      */
     constructor(parentDivIds, options = {}) {
         this.requestConstructorDivId = parentDivIds.requestConstructorContainer;
@@ -36,11 +36,10 @@ export class ResourceAnalysis {
 
         this.APIToken = null;
 
-        // Initialize state
         this.state = {
             request: {
+                analysisMode: null,
                 filter: {},
-                analysisMode: null, // Default analysis mode
                 intervals: null,
                 totals: null
             },
@@ -66,7 +65,7 @@ export class ResourceAnalysis {
 
         this.requestConstructor = new RequestConstructor(
             this.state.request,
-            dataServiceModel, 
+            dataServiceModel,
             this.requestConstructorDivId);
 
         //TODO - C - Remove this line making the requestConstructor global
@@ -81,7 +80,7 @@ export class ResourceAnalysis {
 
         this.#fetchEffortData().then(() => {
             this.#renderFlexiTable();
-        })
+        });
     }
 
     async #fetchDataServiceModel() {
@@ -118,16 +117,16 @@ export class ResourceAnalysis {
 
     #fetchViewTemplate(viewTemplateId) {
         // For now, return a promise that resolves to null. 
-        // The final version should call POST /retrieve Template with payload. If the viewTemplateId is null,
-        // it will return the active template for the user. If there is no active template, 
+        // The final version should call POST /retrieve view with payload. If the viewTemplateId is null,
+        // it will return the active view for the user. If there is no active view, 
         // it can either return null and we manage it in the frontend (as we do here now),
-        // or it can return a default template.
+        // or it can return a default view.
         return Promise.resolve(null);
 
     }
 
     #getDefaultViewTemplate() {
-        // We only need the `template` property from the view template, but we mock up the whole object
+        // We only need the `view` property from the viewTemplate, but we mock up the whole object
         // as definition for the templateManager we will build.
         const getDateAdjustedInDays = (days) => {
             const date = new Date(); // Current date and time
@@ -137,7 +136,7 @@ export class ResourceAnalysis {
         return {
             viewTemplateId: 73173,
             name: 'Default View',
-            description: 'Default view template',
+            description: 'Default viewTemplate',
             companyId: null,
             userId: null,
             isPrivateToUser: true,
@@ -146,57 +145,82 @@ export class ResourceAnalysis {
             createdBy: null,
             lastUpdatedDate: new Date(),
             lastUpdatedBy: null,
-            template: {
+            view: {
                 analysisMode: VALID_ANALYSIS_MODES.totals,
                 intervals: {
                     startDate: getDateAdjustedInDays(-5), // 5 days ago
                     intervalType: 'day',
                     noOfIntervals: 5
                 },
-                totals:{
+                totals: {
                     dateRangeMode: VALID_TOTALS_DATE_RANGE_MODES.liveBetween,
-                    startDate: getDateAdjustedInDays(-30), 
-                    endDate: getDateAdjustedInDays(-1) 
-                } ,
+                    startDate: getDateAdjustedInDays(-30),
+                    endDate: getDateAdjustedInDays(-1)
+                },
                 filter: {},
                 pivotConfig: VALID_PIVOT_CONFIGS.entityWorkItem
             }
         };
     }
     #extractRequestObjectFromViewTemplate(viewTemplate) {
-        // return an object with viewTemplate.template analysisMode, intervals, and filter properties
+        // return an object with viewTemplate.view analysisMode, intervals, and filter properties
         return {
-            analysisMode: viewTemplate.template.analysisMode,
-            intervals: viewTemplate.template.intervals,
-            totals: viewTemplate.template.totals,
-            filter: viewTemplate.template.filter,
+            analysisMode: viewTemplate.view.analysisMode,
+            intervals: viewTemplate.view.intervals,
+            totals: viewTemplate.view.totals,
+            filter: viewTemplate.view.filter,
         };
     }
 
+    _convertTotalDatesToFilters(totals) {
+        const { dateRangeMode, startDate, endDate } = totals;
+        // TODO - A - VAlidate the dates somewhere
+        const totalFilters = {};
+        // TODO - B - What if the preFilter is only for one project or service?
+        ['projects', 'services'].forEach((key) => {
+            totalFilters[key] = {};
+            if (dateRangeMode === VALID_TOTALS_DATE_RANGE_MODES.liveBetween) {
+                totalFilters[key].StartDate = { $lte: endDate };
+                totalFilters[key].EndDate = { $gte: startDate };
+            } else {
+                totalFilters[key].StartDate = { $bt: [startDate, endDate] };
+                totalFilters[key].EndDate = { $bt: [startDate, endDate] };
+            }
+        });
+    
+        return totalFilters;
+    }
+    
+
     async #fetchEffortData() {
+        console.log(`State before fetching data:, ${JSON.stringify(this.state.request, null, 2)}`);
         const testingResourceAnalysisWithLocalFiles = localStorage.getItem('testingResourceAnalysisWithLocalFiles') === 'true';
 
         const { request } = this.state;
-        const { analysisMode } = request;
+        const { analysisMode, filter, intervals, totals } = request;
+
+        if (analysisMode === VALID_ANALYSIS_MODES.totals) {
+            const totalFilters = this._convertTotalDatesToFilters(totals);
+        }
 
         let responseData;
 
         if (testingResourceAnalysisWithLocalFiles) {
-            let fileURL;
-            if (analysisMode === VALID_ANALYSIS_MODES.intervals) {
-                fileURL = './tests/dataSamples/responseResourceAnalysisIntervals.js';
-            } else if (analysisMode === VALID_ANALYSIS_MODES.totals) {
-                fileURL = './tests/dataSamples/responseResourceAnalysisTotals.js';
-            }
-
-            try {
-                const module = await import(fileURL);
-                responseData = module.default;
-            } catch (err) {
-                console.error('Error fetching data:', err);
-                throw err;
-            }
+            responseData = await getResponseDataFromLocalTestingFiles();
         } else {
+            responseData = await getResponseDataFromServer();
+        }
+
+        try {
+            resourceAnalysisValidator.validateResponse(responseData);
+            this.#setState({ responseData });
+            this.transformedData = this.#transformData(responseData, analysisMode, this.state.pivotConfig);
+        } catch (err) {
+            console.error('Error processing data:', err);
+            throw err;
+        }
+
+        async function getResponseDataFromServer() {
             try {
                 let url = `/v2/${window.companyId}/resourceAnalysis`;
                 const testingResourceAnalysisWithProxy = localStorage.getItem('testingResourceAnalysisWithProxy') === 'true';
@@ -212,20 +236,28 @@ export class ResourceAnalysis {
                     },
                     body: JSON.stringify(request)
                 });
-                responseData = await response.json();
+                return await response.json();
             } catch (err) {
                 console.error('Error fetching data from server:', err);
                 throw err;
             }
         }
 
-        try {
-            resourceAnalysisValidator.validateResponse(responseData);
-            this.#setState({ responseData });
-            this.transformedData = this.#transformData(responseData, analysisMode, this.state.pivotConfig);
-        } catch (err) {
-            console.error('Error processing data:', err);
-            throw err;
+        async function getResponseDataFromLocalTestingFiles() {
+            let fileURL;
+            if (analysisMode === VALID_ANALYSIS_MODES.intervals) {
+                fileURL = './tests/dataSamples/responseResourceAnalysisIntervals.js';
+            } else if (analysisMode === VALID_ANALYSIS_MODES.totals) {
+                fileURL = './tests/dataSamples/responseResourceAnalysisTotals.js';
+            }
+
+            try {
+                const module = await import(fileURL);
+                return module.default;
+            } catch (err) {
+                console.error('Error fetching data:', err);
+                throw err;
+            }
         }
     }
 
@@ -238,22 +270,24 @@ export class ResourceAnalysis {
         this.flexiTable = new FlexiTable(this.tableContainerDivId, this.transformedData, this.flexiRowSelector.getRows(), this.pivotSelector);
     }
 
+    #saveViewTemplate() {
+        // TODO - B - Save the viewTemplate with the current state
+        // Careful with different views. Must analyze.
+    }
+
     #addEventListeners() {
         document.addEventListener('requestUpdated', event => {
             console.log('Request updated:', event.detail);
-            this.#setState({
-                request: {
-                    filter: event.detail.filter,
-                    analysisMode: event.detail.analysisMode
-                }
-            });
+            this.#setState({ request: event.detail });
             this.#fetchEffortData().then(() => {
                 this.#renderFlexiTable();
+                this.#saveViewTemplate();
             }).catch(error => console.error('Error updating data:', error));
         });
 
         document.addEventListener('optionSelected', event => {
             this.#setState({ pivotConfig: event.detail });
+            this.#saveViewTemplate();
             this.#loadEffortTable();
         });
 
