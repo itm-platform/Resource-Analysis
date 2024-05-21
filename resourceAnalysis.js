@@ -43,13 +43,17 @@ export class ResourceAnalysis {
             responseData: null, // Data received from the server
             transformedData: null // Data transformed for the table
         };
-
-        this.#initComponents();
-        this.#addEventListeners();
+        this._initPromise = this.#initDependencies().then(() => {
+            this.#initComponents();
+            this.#addEventListeners();
+        });
     }
 
+    async #initDependencies() {
+        await itmGlobal.ensureDiContainerReady();
+    }
     async #initComponents() {
-        const dataServiceModel = await this.#fetchDataServiceModel(window.userLoginToken);  
+        const dataServiceModel = await this.#fetchDataServiceModel(window.userLoginToken);
         const viewTemplate = await this.#getViewTemplate(this.viewTemplateId);
         const requestObject = this.#extractRequestObjectFromViewTemplate(viewTemplate);
         this.#setState({ request: requestObject });
@@ -59,7 +63,7 @@ export class ResourceAnalysis {
             dataServiceModel, this.requestConstructorDivId);
 
         //TODO - C - Remove this line making the requestConstructor global
-            window.requestConstructor = this.requestConstructor; // For testing purposes
+        window.requestConstructor = this.requestConstructor; // For testing purposes
 
         // TODO - B - Add selected: true to the default pivotConfig, and apply the data transformation
         this.pivotSelector = new PivotSelector([
@@ -77,7 +81,7 @@ export class ResourceAnalysis {
         if (!token) {
             throw new Error('No token provided to fetch data service model.');
         }
-        let url =`/v2/${window.companyId}/dataServiceModel`;
+        let url = `/v2/${window.companyId}/dataServiceModel`;
         const testingResourceAnalysisWithProxy = localStorage.getItem('testingResourceAnalysisWithProxy') === 'true';
         if (testingResourceAnalysisWithProxy) {
             url = `/proxy${url}`;
@@ -92,9 +96,9 @@ export class ResourceAnalysis {
             return data;
         } catch (error) {
             throw new Error('Error fetching data service model: ' + error.message);
-            
+
         }
-        
+
     }
     async #getViewTemplate(viewTemplateId) {
 
