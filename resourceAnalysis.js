@@ -32,6 +32,8 @@ export class ResourceAnalysis {
         this.flexiRowSelector = null;
         this.flexiTable = null;
 
+        this.APIToken = null;
+
         // Initialize state
         this.state = {
             request: {
@@ -51,9 +53,10 @@ export class ResourceAnalysis {
 
     async #initDependencies() {
         await itmGlobal.ensureDiContainerReady();
+        this.APIToken = window.userLoginToken;
     }
     async #initComponents() {
-        const dataServiceModel = await this.#fetchDataServiceModel(window.userLoginToken);
+        const dataServiceModel = await this.#fetchDataServiceModel();
         const viewTemplate = await this.#getViewTemplate(this.viewTemplateId);
         const requestObject = this.#extractRequestObjectFromViewTemplate(viewTemplate);
         this.#setState({ request: requestObject });
@@ -77,8 +80,8 @@ export class ResourceAnalysis {
         }).catch(error => console.error('Error initializing components:', error));
     }
 
-    async #fetchDataServiceModel(token) {
-        if (!token) {
+    async #fetchDataServiceModel() {
+        if (!this.APIToken) {
             throw new Error('No token provided to fetch data service model.');
         }
         let url = `/v2/${window.companyId}/dataServiceModel`;
@@ -89,7 +92,7 @@ export class ResourceAnalysis {
         try {
             const response = await fetch(url, {
                 headers: {
-                    'Token': token
+                    'Token': this.APIToken
                 }
             });
             const data = await response.json();
@@ -185,10 +188,17 @@ export class ResourceAnalysis {
             }
         } else {
             try {
-                const response = await fetch('/resourceAnalysis/', {
+                let url = `/v2/${window.companyId}/resourceAnalysis`;
+                const testingResourceAnalysisWithProxy = localStorage.getItem('testingResourceAnalysisWithProxy') === 'true';
+                if (testingResourceAnalysisWithProxy) {
+                    url = `/proxy${url}`;
+                }
+                if (!this.APIToken) { throw new Error('No token provided to fetch data.'); }
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Token': this.APIToken
                     },
                     body: JSON.stringify(request)
                 });
