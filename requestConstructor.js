@@ -31,8 +31,8 @@ export class RequestConstructor {
         this._langTranslations = {};
         this._lang = typeof strLanguage !== 'undefined' ? strLanguage : 'es';
 
-        this.shouldFilterBeVisible = options.shouldFilterBeVisible || true;
-        this.tablesAllowed = options.tablesAllowed
+        this.shouldFilterBeVisible = options?.shouldFilterBeVisible;
+        this.tablesAllowed = options?.tablesAllowed
 
         this._initPromise = this.#initDependencies().then(() => {
             this.initUI();

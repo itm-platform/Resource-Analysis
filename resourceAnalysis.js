@@ -19,6 +19,7 @@ export class ResourceAnalysis {
      * @param {Object} [options.preFilter] - preFilter to add to the filterConstructor result. For example, limit to a single project
      * @param {Object} [options.shouldFilterBeVisible] 
      * @param {String} [options.viewTemplateId] - The viewTemplate ID if initializing with a view ID.
+     * @param {String[]} [options.tablesAllowed] - The tables allowed for the requestConstructor.
      */
     constructor(parentDivIds, options = {}) {
         this.requestConstructorDivId = parentDivIds.requestConstructorContainer;
@@ -26,8 +27,8 @@ export class ResourceAnalysis {
         this.tableContainerDivId = parentDivIds.tableContainer;
 
         this.viewTemplateId = options.viewTemplateId || null;
-
         this.preFilter = options.preFilter || null;
+        this.tablesAllowed = options.tablesAllowed || null;
 
         this.requestConstructor = null;
         this.pivotSelector = null;
@@ -62,14 +63,17 @@ export class ResourceAnalysis {
         const viewTemplate = await this.#getViewTemplate(this.viewTemplateId);
         const requestObject = this.#extractRequestObjectFromViewTemplate(viewTemplate);
         this.#setState({ request: requestObject });
+        const rcOptions = { 
+            tablesAllowed: this.tablesAllowed,
+            shouldFilterBeVisible: true            
+         };
 
         this.requestConstructor = new RequestConstructor(
             this.state.request,
             dataServiceModel,
-            this.requestConstructorDivId, 
-            {tablesAllowed: [
-                {'projects':['Id', 'Name', 'StartDate', 'EndDate']}]}
-                );
+            this.requestConstructorDivId,
+            rcOptions
+        );
 
         //TODO - C - Remove this line making the requestConstructor global
         window.requestConstructor = this.requestConstructor; // For testing purposes
@@ -193,10 +197,10 @@ export class ResourceAnalysis {
                 totalFilters[key].EndDate = { $bt: [startDate, endDate] };
             }
         });
-    
+
         return totalFilters;
     }
-    
+
     _mixFiltersForRequest(preFilter, totalsFilters, filter) {
         const mergeObjects = (base, override) => {
             for (let key in override) {
@@ -241,13 +245,13 @@ export class ResourceAnalysis {
         }
 
         const mixedFiltersForRequest = this._mixFiltersForRequest(this.preFilter, totalsFilters, filter);
-        
+
         //TODO - C - Remove this line: 
         const payloadMock = {
-                    analysisMode,
-                    filter: mixedFiltersForRequest,
-                    ...(analysisMode === VALID_ANALYSIS_MODES.intervals && { intervals }),
-                };
+            analysisMode,
+            filter: mixedFiltersForRequest,
+            ...(analysisMode === VALID_ANALYSIS_MODES.intervals && { intervals }),
+        };
         console.log(`Payload: ${JSON.stringify(payloadMock, null, 2)}`);
 
         let responseData;
@@ -282,7 +286,7 @@ export class ResourceAnalysis {
                     filter: mixedFiltersForRequest,
                     ...(analysisMode === VALID_ANALYSIS_MODES.intervals && { intervals }),
                 };
-                
+
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {

@@ -27,12 +27,18 @@
     <button id="loadAnalysisBtn">Load Analysis</button>
     <script type="module">
         import { ResourceAnalysis } from './resourceAnalysis.js';
-        const parentDivIds= {
+        const parentDivIds = {
             requestConstructorContainer: 'requestConstructorContainer',
             rowSelectorContainer: 'rowSelectorContainer',
             tableContainer: 'tableContainer'
         };
-        const resourceAnalysis = new ResourceAnalysis(parentDivIds);
+        let options = {
+            tablesAllowed: [
+                { 'projects': ['Id', 'Name', 'StartDate', 'EndDate'] }],
+            preFilter: null,
+            viewTemplateId: null
+        };
+        const resourceAnalysis = new ResourceAnalysis(parentDivIds, options);
     </script>
 
 </body>

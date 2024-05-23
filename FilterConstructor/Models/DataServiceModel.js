@@ -1,3 +1,6 @@
+// TODO - B - DataServiceModel.js should not be in filters, but be independent or
+// server with the main service /dataservicemodel that profides the JSON.
+
 import { findItemInArrayOfObjects } from "../Modules/helperFunctions.js";
 /**
  * @returns {Object} {tables:{}, relationships:{}}
