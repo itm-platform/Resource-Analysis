@@ -42,7 +42,13 @@ describe('Filter', () => {
     beforeEach(() => {
         // Set up the DOM element
         document.body.innerHTML = `<div id="${parentDivId}"></div>`;
-        dataServiceModelJSON = { /* mock data */ };
+        dataServiceModelJSON = {
+            "tables": {
+                "projects": {"fields": [{"name": "CreatedDate"}, {"name": "Id"}]},
+                "tasks": {"fields": [{"name": "Id"}, {"name": "Duration"}, {"name": "Status", "location": "Status.Name"}]},
+                "risks": {"fields": [{"name": "Id"}, {"name": "Probability"}]}
+            }
+        };
         filter = new Filter(initialFilter, dataServiceModelJSON, parentDivId, tablesAllowed, 'es');
     });
 

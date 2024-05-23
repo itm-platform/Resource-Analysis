@@ -79,26 +79,66 @@ export default class DataServiceModel {
 
     /** Removes all non explicity included tables from the model */
     keepOnlyTables(tables) {
-        if (!Array.isArray(tables)) {return;};
-        let newTables = {};
-        for (const table in this.tables) {
-            if (tables.includes(table)) {
-                newTables[table] = this.tables[table];
-            }
+        if (!Array.isArray(tables)) {
+            return;
         }
+        const validateTables = (tables) => {
+            if (!Array.isArray(tables)) {
+                throw new Error('The parameter should be an array');
+            }
+            tables.forEach(table => {
+                if (typeof table === 'object') {
+                    for (const [tableName, fields] of Object.entries(table)) {
+                        if (!Array.isArray(fields)) {
+                            throw new Error(`Fields for table ${tableName} should be an array`);
+                        }
+                    }
+                } else if (typeof table !== 'string') {
+                    throw new Error('Each item in the array should be either a string or an object');
+                }
+            });
+        };
+
+        // Validate the tables parameter
+        validateTables(tables);
+        let newTables = {};
+
+        tables.forEach((table) => {
+            if (typeof table === 'string') {
+                if (this.tables[table]) {
+                    newTables[table] = this.tables[table];
+                }
+            } else if (typeof table === 'object') {
+                for (const [tableName, fields] of Object.entries(table)) {
+                    if (this.tables[tableName] && Array.isArray(fields)) {
+                        newTables[tableName] = { fields: [] };
+                        const existingFields = this.tables[tableName].fields;
+                        fields.forEach((field) => {
+                            const fieldToKeep = existingFields.find(f => f.name === field || f.location === field);
+                            if (fieldToKeep) {
+                                newTables[tableName].fields.push(fieldToKeep);
+                            }
+                        });
+                    }
+                }
+            }
+        });
+
         this.tables = newTables;
     }
 
     tableListLanguage(lang = "en") {
         let tableList = [];
         for (const table in this.tables) {
+            let labelText = this.tables[table].labels?.[lang] ?? table;
             tableList.push({
-                "text": this.tables[table].labels[lang],
+                "text": labelText,
                 "value": table
             });
         }
         return tableList;
     }
+    
 
 /**
  * Retrieves fields filtering by table and type. 
@@ -119,7 +159,7 @@ reshapeAndTranslateFieldsByTableAndType(options = {}) {
         if (field.type === undefined || types === 'all' || typesArray.includes(field.type)) {
             const { labels, name, type, ...otherAttributes } = field;
             return {
-                "text": labels[lang],
+                "text": labels?.[lang] ?? name,
                 "value": name,
                 "type": type,
                 "table": table,
@@ -128,6 +168,7 @@ reshapeAndTranslateFieldsByTableAndType(options = {}) {
         }
         return null;
     };
+    
 
     const fields = [];
     for (const table in this.tables) {

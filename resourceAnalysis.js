@@ -124,41 +124,44 @@ export class ResourceAnalysis {
         return Promise.resolve(null);
 
     }
+    #saveViewTemplate() {
+        // TODO - B - Save the viewTemplate with the current state
+        // Careful with different views. Must analyze.
+    }
 
     #getDefaultViewTemplate() {
+        // TODO - B - Allow the caller to inject the view and bypass the template. 
+        // For example, to add it to one single project, we can directly call resourceAnalysis 
+        // with the filter injected.
+
         // We only need the `view` property from the viewTemplate, but we mock up the whole object
         // as definition for the templateManager we will build.
-        const getDateAdjustedInDays = (days) => {
-            const date = new Date(); // Current date and time
-            date.setDate(date.getDate() + days); // Adjust the date by 'days'
-            return date.toISOString().split('T')[0]; // Format to 'YYYY-MM-DD'
-        };
         return {
-            viewTemplateId: 73173,
-            name: 'Default View',
-            description: 'Default viewTemplate',
-            companyId: null,
-            userId: null,
-            isPrivateToUser: true,
-            isActive: true,
-            createdDate: new Date(),
-            createdBy: null,
-            lastUpdatedDate: new Date(),
-            lastUpdatedBy: null,
+            viewTemplateId: 'cbafa593-5ad9-4803-9d6e-e6490d9117d4',
+            companyId: 15,
+            contextView: 'resourceAnalysis',
+            name: 'Totals Q1 2024',
+            description: 'Projects live in Q1 2024',
+            isPrivateToCreator: false,
+            isDefaultViewInContext: true,
+            createdDate: '2023-09-01T00:00:00.000Z',
+            createdBy: { userId: 3890, displayName: 'Ben Li' },
+            lastUpdatedDate: '2023-12-01T00:00:00.000Z',
+            lastUpdatedBy: { userId: 3890, displayName: 'Ben Li' },
             view: {
-                analysisMode: VALID_ANALYSIS_MODES.totals,
+                analysisMode: 'totals',
                 intervals: {
-                    startDate: getDateAdjustedInDays(-5), // 5 days ago
+                    startDate: '2024-02-01',
                     intervalType: 'day',
                     noOfIntervals: 5
                 },
                 totals: {
-                    dateRangeMode: VALID_TOTALS_DATE_RANGE_MODES.liveBetween,
-                    startDate: getDateAdjustedInDays(-30),
-                    endDate: getDateAdjustedInDays(-1)
+                    dateRangeMode: 'liveBetween',
+                    startDate: '2024-01-01',
+                    endDate: '2024-03-31'
                 },
                 filter: {},
-                pivotConfig: VALID_PIVOT_CONFIGS.entityWorkItem
+                pivotConfig: 'user'
             }
         };
     }
@@ -235,10 +238,19 @@ export class ResourceAnalysis {
         }
 
         const mixedFiltersForRequest = this._mixFiltersForRequest(this.preFilter, totalsFilters, filter);
+        
+        //TODO - C - Remove this line: 
+        const payloadMock = {
+                    analysisMode,
+                    filter: mixedFiltersForRequest,
+                    ...(analysisMode === VALID_ANALYSIS_MODES.intervals && { intervals }),
+                };
+        console.log(`Payload: ${JSON.stringify(payloadMock, null, 2)}`);
 
         let responseData;
 
         if (testingResourceAnalysisWithLocalFiles) {
+            console.warn('TESTING: Fetching data from local files');
             responseData = await getResponseDataFromLocalTestingFiles();
         } else {
             responseData = await getResponseDataFromServer();
@@ -295,7 +307,7 @@ export class ResourceAnalysis {
                 const module = await import(fileURL);
                 return module.default;
             } catch (err) {
-                console.error('Error fetching data:', err);
+                console.error('Error fetching data from testing files:', err);
                 throw err;
             }
         }
@@ -308,11 +320,6 @@ export class ResourceAnalysis {
         }, this.transformedData.rows);
 
         this.flexiTable = new FlexiTable(this.tableContainerDivId, this.transformedData, this.flexiRowSelector.getRows(), this.pivotSelector);
-    }
-
-    #saveViewTemplate() {
-        // TODO - B - Save the viewTemplate with the current state
-        // Careful with different views. Must analyze.
     }
 
     #addEventListeners() {

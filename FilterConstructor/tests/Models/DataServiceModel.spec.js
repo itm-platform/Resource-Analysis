@@ -190,30 +190,112 @@ test('DataServiceModel tableListLanguage ', () => {
 
 describe('keepOnlyTables', () => {
     test('leave only the specified tables, removing all others from the model', () => {
+        let dataServiceModelJSON = {
+            "tables": {
+                "projects": {"fields": [{"name": "CreatedDate"}, {"name": "Id"}]},
+                "tasks": {"fields": [{"name": "Id"}, {"name": "Duration"}, {"name": "Status", "location": "Status.Name"}]},
+                "risks": {"fields": [{"name": "Id"}, {"name": "Probability"}]}
+            }
+        };
         let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
         let remainingTables = ['projects', 'tasks'];
         dataServiceModel.keepOnlyTables(remainingTables);
-        expect(dataServiceModel.tableNames())
-            .toEqual(['projects', 'tasks']);
+        expect(dataServiceModel.tableNames()).toEqual(['projects', 'tasks']);
     });
 
     test('should not change the model if no tables are specified', () => {
+        let dataServiceModelJSON = {
+            "tables": {
+                "projects": {"fields": [{"name": "CreatedDate"}, {"name": "Id"}]},
+                "tasks": {"fields": [{"name": "Id"}, {"name": "Duration"}, {"name": "Status", "location": "Status.Name"}]},
+                "risks": {"fields": [{"name": "Id"}, {"name": "Probability"}]}
+            }
+        };
         let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
         let tables;
         dataServiceModel.keepOnlyTables(tables);
-        expect(dataServiceModel.tableNames())
-            .toEqual(['projects', 'tasks', 'risks']);
+        expect(dataServiceModel.tableNames()).toEqual(['projects', 'tasks', 'risks']);
     });
 
-    test('should not break if a non-exisiting table is specified', () => {
+    test('should not break if a non-existing table is specified', () => {
+        let dataServiceModelJSON = {
+            "tables": {
+                "projects": {"fields": [{"name": "CreatedDate"}, {"name": "Id"}]},
+                "tasks": {"fields": [{"name": "Id"}, {"name": "Duration"}, {"name": "Status", "location": "Status.Name"}]},
+                "risks": {"fields": [{"name": "Id"}, {"name": "Probability"}]}
+            }
+        };
         let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
         let remainingTables = ['projects', 'tasks', 'non-existing'];
         dataServiceModel.keepOnlyTables(remainingTables);
-        expect(dataServiceModel.tableNames())
-            .toEqual(['projects', 'tasks']);
+        expect(dataServiceModel.tableNames()).toEqual(['projects', 'tasks']);
     });
 
+    test('should keep only specified fields for a given table', () => {
+        let dataServiceModelJSON = {
+            "tables": {
+                "projects": {"fields": [{"name": "CreatedDate"}, {"name": "Id"}]},
+                "tasks": {"fields": [{"name": "Id"}, {"name": "Duration"}, {"name": "Status", "location": "Status.Name"}]},
+                "risks": {"fields": [{"name": "Id"}, {"name": "Probability"}]}
+            }
+        };
+        let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
+        let tables = [{ projects: ['Id'] }];
+        dataServiceModel.keepOnlyTables(tables);
+        expect(dataServiceModel.tables.projects.fields).toEqual([{"name": "Id"}]);
+        expect(dataServiceModel.tableNames()).toEqual(['projects']);
+    });
+
+    test('should keep only specified fields with location for a given table', () => {
+        let dataServiceModelJSON = {
+            "tables": {
+                "projects": {"fields": [{"name": "CreatedDate"}, {"name": "Id"}]},
+                "tasks": {"fields": [{"name": "Id"}, {"name": "Duration"}, {"name": "Status", "location": "Status.Name"}]},
+                "risks": {"fields": [{"name": "Id"}, {"name": "Probability"}]}
+            }
+        };
+        let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
+        let tables = [{ tasks: ['Id', 'Status.Name'] }];
+        dataServiceModel.keepOnlyTables(tables);
+        expect(dataServiceModel.tables.tasks.fields).toEqual([{"name": "Id"}, {"name": "Status", "location": "Status.Name"}]);
+        expect(dataServiceModel.tableNames()).toEqual(['tasks']);
+    });
+
+    test('should not include fields that do not exist', () => {
+        let dataServiceModelJSON = {
+            "tables": {
+                "projects": {"fields": [{"name": "CreatedDate"}, {"name": "Id"}]},
+                "tasks": {"fields": [{"name": "Id"}, {"name": "Duration"}, {"name": "Status", "location": "Status.Name"}]},
+                "risks": {"fields": [{"name": "Id"}, {"name": "Probability"}]}
+            }
+        };
+        let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
+        let tables = [{ tasks: ['Id', 'NonExistentField'] }];
+        dataServiceModel.keepOnlyTables(tables);
+        expect(dataServiceModel.tables.tasks.fields).toEqual([{"name": "Id"}]);
+        expect(dataServiceModel.tableNames()).toEqual(['tasks']);
+    });
+
+    test('should validate the parameter is well-formed', () => {
+        let dataServiceModelJSON = {
+            "tables": {
+                "projects": {"fields": [{"name": "CreatedDate"}, {"name": "Id"}]},
+                "tasks": {"fields": [{"name": "Id"}, {"name": "Duration"}, {"name": "Status", "location": "Status.Name"}]},
+                "risks": {"fields": [{"name": "Id"}, {"name": "Probability"}]}
+            }
+        };
+        let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
+
+        // Invalid table format (fields not an array)
+        let tables1 = [{ projects: 'Id' }];
+        expect(() => dataServiceModel.keepOnlyTables(tables1)).toThrow();
+
+        // Invalid item in the array (not a string or object)
+        let tables3 = [123];
+        expect(() => dataServiceModel.keepOnlyTables(tables3)).toThrow();
+    });
 });
+
 
 describe('DataServiceModel getFieldType', () => {
     const dataServiceModelJSON = {
