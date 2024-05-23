@@ -115,4 +115,18 @@ describe('Filter', () => {
         expect(dispatchedEvent.detail).toBe(filter.queryFilter);
     });
 
+    it('should remove filter line', () => {
+        filter.removeFilterLine(0);
+        expect(filter.filterLines.length).toBe(2);
+        expect(filterLineModel.recomposeFilterFromLines).toHaveBeenCalledWith(filter.filterLines);
+    });
+
+    it('should remove filter line when a line dispatches event removeFilterLine', () => {
+        filter.addFilterLine();
+        const filterLineElement = filter.elements.filterLinesDiv.children[0];
+        filterLineElement.dispatchEvent(new CustomEvent('removeFilterLine'));
+        expect(filter.filterLines.length).toBe(2);
+        expect(filterLineModel.recomposeFilterFromLines).toHaveBeenCalledWith(filter.filterLines);
+    });
+
 });
