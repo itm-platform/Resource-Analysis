@@ -293,6 +293,11 @@ export class FilterLine {
             .filter-line {
                 display: flex;
             }
+            .filter-line-options-wrapper {
+                display: flex;
+                flex-wrap: wrap;
+                border: 1px solid blue;
+            }
             .filter-line-table {
                 display: flex;
                 align-items: center;
