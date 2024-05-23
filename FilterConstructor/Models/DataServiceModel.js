@@ -77,14 +77,20 @@ export default class DataServiceModel {
     }
     
 
-    /** Removes all non explicity included tables from the model */
+    /** Remove all non explicity included tables from the model
+     * @param {Array} remainingTables Array of tables to keep. 
+     * Each item can be a string or an object. 
+     * remainingTables: ['projects', 'tasks']
+     * remainingTables: [{ tasks: ['Id', 'Status.Name'] }]   
+     */
     keepOnlyTables(tables) {
         if (!Array.isArray(tables)) {
             return;
         }
+
         const validateTables = (tables) => {
             if (!Array.isArray(tables)) {
-                throw new Error('The parameter should be an array');
+                throw new Error('Invalid parameter format');
             }
             tables.forEach(table => {
                 if (typeof table === 'object') {
@@ -101,6 +107,7 @@ export default class DataServiceModel {
 
         // Validate the tables parameter
         validateTables(tables);
+
         let newTables = {};
 
         tables.forEach((table) => {
@@ -111,12 +118,12 @@ export default class DataServiceModel {
             } else if (typeof table === 'object') {
                 for (const [tableName, fields] of Object.entries(table)) {
                     if (this.tables[tableName] && Array.isArray(fields)) {
-                        newTables[tableName] = { fields: [] };
+                        newTables[tableName] = { ...this.tables[tableName], fields: [] };
                         const existingFields = this.tables[tableName].fields;
                         fields.forEach((field) => {
                             const fieldToKeep = existingFields.find(f => f.name === field || f.location === field);
                             if (fieldToKeep) {
-                                newTables[tableName].fields.push(fieldToKeep);
+                                newTables[tableName].fields.push({ ...fieldToKeep });
                             }
                         });
                     }

@@ -294,6 +294,24 @@ describe('keepOnlyTables', () => {
         let tables3 = [123];
         expect(() => dataServiceModel.keepOnlyTables(tables3)).toThrow();
     });
+
+    test('should preserve other properties of tables and fields', () => {
+        let dataServiceModelJSON = {
+            "tables": {
+                "projects": {"fields": [{"name": "CreatedDate", "type": "date"}, {"name": "Id", "type": "number"}]},
+                "tasks": {"fields": [{"name": "Id", "type": "number"}, {"name": "Duration", "type": "number"}, {"name": "Status", "location": "Status.Name", "type": "string"}]},
+                "risks": {"fields": [{"name": "Id", "type": "number"}, {"name": "Probability", "type": "percentage"}]}
+            }
+        };
+        let dataServiceModel = new DataServiceModel(dataServiceModelJSON);
+        let tables = [{ tasks: ['Id', 'Status.Name'] }];
+        dataServiceModel.keepOnlyTables(tables);
+        expect(dataServiceModel.tables.tasks.fields).toEqual([
+            {"name": "Id", "type": "number"},
+            {"name": "Status", "location": "Status.Name", "type": "string"}
+        ]);
+        expect(dataServiceModel.tableNames()).toEqual(['tasks']);
+    });
 });
 
 

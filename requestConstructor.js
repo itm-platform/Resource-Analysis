@@ -8,6 +8,7 @@ export class RequestConstructor {
 * @param {string} parentDivId - The parent div ID to attach the filter UI to
 * @param {Object} [options={}] - The options object. 
 * @param {boolean} [options.shouldFilterBeVisible=true]
+* @param {Array} [options.tablesAllowed] - The tables allowed in the filter [{ tasks: ['Id', 'Status.Name'] }]
 */
     state = {
         analysisMode: '',
@@ -22,6 +23,7 @@ export class RequestConstructor {
         this.state.filter = requestObject.filter || {};
         this.state.intervals = requestObject.intervals || {};
         this.state.totals = requestObject.totals || {};
+        
 
         this.dataServiceModel = dataServiceModel;
         this.parentDivId = parentDivId;
@@ -30,6 +32,7 @@ export class RequestConstructor {
         this._lang = typeof strLanguage !== 'undefined' ? strLanguage : 'es';
 
         this.shouldFilterBeVisible = options.shouldFilterBeVisible || true;
+        this.tablesAllowed = options.tablesAllowed
 
         this._initPromise = this.#initDependencies().then(() => {
             this.initUI();
@@ -107,10 +110,10 @@ export class RequestConstructor {
     }
 
     #createFilterSection(filterWrapperDivId) {
-        const tablesAllowed = ['projects', 'services', 'users']; // TODO - B - Include in the options object
+        //const tablesAllowed = ['projects', 'services', 'users']; // TODO - B - Include in the options object
         const filterConstructor = new this.FilterConstructor(
             this.state.filter, this.dataServiceModel,
-            filterWrapperDivId, tablesAllowed, this._lang);
+            filterWrapperDivId, this.tablesAllowed, this._lang);
 
         // TODO - C - Remove the following line making the filterConstructor a private variable
         window.filterConstructor = filterConstructor; // For testing purposes

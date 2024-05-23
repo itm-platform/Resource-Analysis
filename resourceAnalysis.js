@@ -66,7 +66,10 @@ export class ResourceAnalysis {
         this.requestConstructor = new RequestConstructor(
             this.state.request,
             dataServiceModel,
-            this.requestConstructorDivId);
+            this.requestConstructorDivId, 
+            {tablesAllowed: [
+                {'projects':['Id', 'Name', 'StartDate', 'EndDate']}]}
+                );
 
         //TODO - C - Remove this line making the requestConstructor global
         window.requestConstructor = this.requestConstructor; // For testing purposes
