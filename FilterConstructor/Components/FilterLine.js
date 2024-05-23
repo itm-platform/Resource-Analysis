@@ -48,22 +48,32 @@ export class FilterLine {
         filterLine.id = 'filter-line-' + this.index;
         filterLine.className = 'filter-line';
         this.elements.filterLine = filterLine;
-
+    
+        // Create the options wrapper
+        const lineOptionsWrapper = document.createElement('div');
+        lineOptionsWrapper.className = 'filter-line-options-wrapper';
+        this.elements.lineOptionsWrapper = lineOptionsWrapper; // Store reference to the wrapper
+    
         // TODO - 🔴 - If only one table, don't show the table dropdown, but also remove the line that has 
         // unwanted tables. Useful for single project, for example
         this.#render('filterLineTable');
-        filterLine.appendChild(this.elements.filterLineTable);
+        lineOptionsWrapper.appendChild(this.elements.filterLineTable);
         this.#render('filterLineField');
-        filterLine.appendChild(this.elements.filterLineField);
-
+        lineOptionsWrapper.appendChild(this.elements.filterLineField);
+    
         this.#render('filterLineOperator');
-        filterLine.appendChild(this.elements.filterLineOperator);
-
+        lineOptionsWrapper.appendChild(this.elements.filterLineOperator);
+    
         this.#render('filterLineValue');
-        filterLine.appendChild(this.elements.filterLineValue);
-
+        lineOptionsWrapper.appendChild(this.elements.filterLineValue);
+    
+        // Append the options wrapper to the filter line
+        filterLine.appendChild(lineOptionsWrapper);
+    
+        // Render and append the delete button
         this.#render('filterLineDelete');
         filterLine.appendChild(this.elements.filterLineDelete);
+    
         return filterLine;
     }
 
@@ -190,17 +200,17 @@ export class FilterLine {
         const rerenderField = () => {
             this.elements.filterLineField.remove();
             this.#render('filterLineField');
-            this.elements.filterLine.insertBefore(this.elements.filterLineField, this.elements.filterLineOperator);
+            this.elements.lineOptionsWrapper.insertBefore(this.elements.filterLineField, this.elements.filterLineOperator);
         };
         const rerenderOperator = () => {
             this.elements.filterLineOperator.remove();
             this.#render('filterLineOperator');
-            this.elements.filterLine.insertBefore(this.elements.filterLineOperator, this.elements.filterLineValue);
+            this.elements.lineOptionsWrapper.insertBefore(this.elements.filterLineOperator, this.elements.filterLineValue);
         };
         const rerenderValue = () => {
             this.elements.filterLineValue.remove();
             this.#render('filterLineValue');
-            this.elements.filterLine.appendChild(this.elements.filterLineValue);
+            this.elements.lineOptionsWrapper.appendChild(this.elements.filterLineValue);
         };
         switch (componentToUpdate) {
             case 'table':
@@ -208,7 +218,7 @@ export class FilterLine {
                 this.#feedTableFields();
                 this.#orchestrateUpdates('field');
                 break;
-
+    
             case 'field':
                 if (newValue !== undefined) {
                     this.filterLine.fieldName = newValue;
@@ -222,7 +232,7 @@ export class FilterLine {
                 this.#feedFieldOperators();
                 this.#orchestrateUpdates('operator');
                 break;
-
+    
             case 'operator':
                 if (newValue !== undefined) {
                     this.filterLine.operator = newValue;
@@ -247,9 +257,8 @@ export class FilterLine {
             default:
                 console.error(`Unknown component to update: ${componentToUpdate}`);
         }
-
-
     }
+    
 
     #validateAndEmit() {
         if (filterLineModel.isValidLine(this.filterLine, this.fieldType)) {
@@ -264,12 +273,11 @@ export class FilterLine {
     }
 
     #getCloseCross() {
-        /* <svg class="dsh-designer-svg-cross" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="times" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512" width="12" data-v-2a25f290=""><path fill="current" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z" data-v-2a25f290=""></path></svg> */
-        return `<svg class="dsh-designer-svg-cross" 
+        return `<svg class="filter-close-cross" 
         aria-hidden="true" focusable="false" 
         xmlns="http://www.w3.org/2000/svg" 
         viewBox="0 0 352 512" width="12">
-        <path fill="current" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z" data-v-2a25f290="">
+        <path d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z" data-v-2a25f290="">
         </path></svg>`;
 
     }
@@ -281,44 +289,50 @@ export class FilterLine {
                 --filter-select-border-color: #999;
                 --filter-input-border-radius: 4px;
                 --filter-standard-value-width: 15em;
-                --dsh-fill-cross: #6d7d8f
-                --dsh-fill-cross-hover: #3a4a5c
+                --filter-close-cross-fill: #6d7d8f;
+                --filter-close-cross-fill-hover: #3a4a5c;
             }
-            .dsh-designer-svg-cross{
-                fill: var(--dsh-fill-cross);
+            .filter-close-cross{
+                fill: var(--filter-close-cross-fill);
+                cursor: pointer;
             }
-            .dsh-designer-svg-cross:hover{
-                fill: var(--dsh-fill-cross-hover);
+            .filter-close-cross:hover{
+                fill: var(--filter-close-cross-fill-hover);
             }
             .filter-line {
                 display: flex;
+                /* border: 1px solid red; */
+                width: 45em;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 5px;
             }
             .filter-line-options-wrapper {
                 display: flex;
                 flex-wrap: wrap;
-                border: 1px solid blue;
+                /* border: 1px solid blue; */
             }
             .filter-line-table {
                 display: flex;
                 align-items: center;
-                margin: 5px 0;
+                
             }
             .filter-line-field {
                 display: flex;
                 align-items: center;
-                margin: 5px 0;
+                
             }
 
             .filter-line-field select {
                 margin-left: 10px;
-                padding: 5px;
+                padding: 3px;
                 border-color: var(--filter-select-border-color);
                 border-radius: var(--filter-select-border-radius);
                 width: 15em;
             }
             .filter-line-table select {
                 margin-left: 10px;
-                padding: 5px;
+                padding: 3px;
                 border-color: var(--filter-select-border-color);
                 border-radius: var(--filter-select-border-radius);
                 max-width: 15em;
@@ -328,12 +342,12 @@ export class FilterLine {
             .filter-line-operator {
                 display: flex;
                 align-items: center;
-                margin: 5px 0;
+                
             }
 
             .filter-line-operator select {
                 margin-left: 10px;
-                padding: 5px;
+                padding: 3px;
                 border-color: var(--filter-select-border-color);
                 border-radius: var(--filter-select-border-radius);
                 width: 10em;
@@ -341,11 +355,11 @@ export class FilterLine {
             .filter-line-value {
                 display: flex;
                 align-items: center;
-                margin: 5px 0;
+                
             }
             .filter-line-value input {
                 margin-left: 10px;
-                padding: 5px;
+                padding: 3px;
                 border: 1px solid var(--filter-select-border-color);
                 border-radius: var(--filter-input-border-radius);
                 width: var(--filter-standard-value-width);
@@ -356,7 +370,7 @@ export class FilterLine {
             }
             .filter-line-value select {
                 margin-left: 10px;
-                padding: 5px;
+                padding: 3px;
                 border: 1px solid var(--filter-select-border-color);
                 border-radius: var(--filter-select-border-radius);
                 width: var(--filter-standard-value-width);
