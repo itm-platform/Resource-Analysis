@@ -1,3 +1,5 @@
+// TODO - 🔴 - New line have empty operator al undefined value
+
 import { FilterLineTable } from './FilterLineTable.js';
 import { FilterLineField } from './FilterLineField.js';
 import { FilterLineOperator } from './FilterLineOperator.js';
@@ -59,6 +61,9 @@ export class FilterLine {
 
         this.#render('filterLineValue');
         filterLine.appendChild(this.elements.filterLineValue);
+
+        this.#render('filterLineDelete');
+        filterLine.appendChild(this.elements.filterLineDelete);
         return filterLine;
     }
 
@@ -114,7 +119,17 @@ export class FilterLine {
                 });
 
                 this.elements.filterLineValue = filterLineValue.element;
+            },
+            filterLineDelete: () => {
+                const cross = document.createElement('div');
+                cross.innerHTML = this.#getCloseCross();
+                cross.addEventListener('click', () => {
+                    this.element.dispatchEvent(new CustomEvent('removeFilterLine', 
+                    { bubbles: true }));
+                });
+                this.elements.filterLineDelete = cross;
             }
+
         };
         if (functionToRender && renderFunctions[functionToRender]) {
             renderFunctions[functionToRender]();
@@ -250,6 +265,17 @@ export class FilterLine {
         }
     }
 
+    #getCloseCross() {
+        /* <svg class="dsh-designer-svg-cross" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="times" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512" width="12" data-v-2a25f290=""><path fill="current" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z" data-v-2a25f290=""></path></svg> */
+        return `<svg class="dsh-designer-svg-cross" 
+        aria-hidden="true" focusable="false" 
+        xmlns="http://www.w3.org/2000/svg" 
+        viewBox="0 0 352 512" width="12">
+        <path fill="current" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z" data-v-2a25f290="">
+        </path></svg>`;
+
+    }
+
     #getStyles() {
         return css`
             :root {
@@ -257,6 +283,14 @@ export class FilterLine {
                 --filter-select-border-color: #999;
                 --filter-input-border-radius: 4px;
                 --filter-standard-value-width: 15em;
+                --dsh-fill-cross: #6d7d8f
+                --dsh-fill-cross-hover: #3a4a5c
+            }
+            .dsh-designer-svg-cross{
+                fill: var(--dsh-fill-cross);
+            }
+            .dsh-designer-svg-cross:hover{
+                fill: var(--dsh-fill-cross-hover);
             }
             .filter-line {
                 display: flex;

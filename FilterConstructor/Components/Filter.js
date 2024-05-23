@@ -75,7 +75,6 @@ export class Filter {
         this.elements.filterLinesDiv.innerHTML = '';
         this.filterLines.forEach((filterLine, index) => {
             this.renderFilterLine(filterLine, index);
-
         });
     }
 
@@ -84,6 +83,9 @@ export class Filter {
         filterLineElement.element.addEventListener('filterLineUpdated', (event) => {
             this.updateFilterWithLine(index, event);
         });
+        filterLineElement.element.addEventListener('removeFilterLine', () => {
+            this.removeFilterLine(index);
+        });
         this.elements.filterLinesDiv.appendChild(filterLineElement.element);
     }
 
@@ -91,6 +93,12 @@ export class Filter {
         const newFilterLine = {};
         this.filterLines.push(newFilterLine);
         this.renderFilterLine(newFilterLine, this.filterLines.length - 1);
+    }
+    removeFilterLine(index) {
+        this.filterLines.splice(index, 1);
+        this.render();
+        this.recomposeFilterFromLines();
+        this.dispatchFilterUpdated();
     }
     updateFilterWithLine(index, event) {
         this.filterLines[index] = event.detail;
