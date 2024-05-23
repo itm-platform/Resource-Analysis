@@ -1,5 +1,5 @@
 // \Scripts\languageLoader.js
-// TODO - C - This module retrieves one language, but loads them all to return one. Is that efficient?
+// TODO - 🟢 - This module retrieves one language, but loads them all to return one. Is that efficient?
 const translationsFolder = './translations/';
 async function getTranslations(langFileName, lang) {
     if (!lang) {

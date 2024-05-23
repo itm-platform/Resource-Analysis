@@ -1,4 +1,4 @@
-// TODO - B - DataServiceModel.js should not be in filters, but be independent or
+// TODO - 🟡 - DataServiceModel.js should not be in filters, but be independent or
 // server with the main service /dataservicemodel that profides the JSON.
 
 import { findItemInArrayOfObjects } from "../Modules/helperFunctions.js";
@@ -80,11 +80,12 @@ export default class DataServiceModel {
     }
     
 
-    /** Remove all non explicity included tables from the model
+    /** Remove all non explicity included tables from the model. You can also specify the fields to keep.
      * @param {Array} remainingTables Array of tables to keep. 
-     * Each item can be a string or an object. 
+     * Each item can be a string or an object. When object, the key is the table name and the value is an array of fields to keep. 
      * remainingTables: ['projects', 'tasks']
      * remainingTables: [{ tasks: ['Id', 'Status.Name'] }]   
+     * remainingTables: ['projects', { tasks: ['Id', 'Status.Name'] }]
      */
     keepOnlyTables(tables) {
         if (!Array.isArray(tables)) {

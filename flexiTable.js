@@ -1,9 +1,8 @@
 // flexiTable.js
 import { cacheIconPaths, resolveIconPath, cacheUserImagePaths, pathCache } from './pathResolver.js';
 import { renderUserName, renderEntityName, renderDuration } from './renderFunctions.js';
-// TODO - A - translations
-// TODO - A - Render hours with minutes
-// TODO - B- Export
+// TODO - 🔴 - translations
+// TODO - 🟡- Export
 export class FlexiTable {
     constructor(containerId, dataset, rowFilters = {}, pivotSelector) {
         cacheIconPaths().catch(error => {

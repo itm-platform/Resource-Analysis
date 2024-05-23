@@ -32,9 +32,13 @@
             rowSelectorContainer: 'rowSelectorContainer',
             tableContainer: 'tableContainer'
         };
+        // TODO - 🟡 - Add services and users to v2, add them to dataServiceModel, 
+        // and review dashboards since it depends on the dataServiceModel
         let options = {
             tablesAllowed: [
-                { 'projects': ['Id', 'Name', 'StartDate', 'EndDate'] }],
+                { 'projects': ['Id', 'Name', 'StartDate', 'EndDate', 'Status.Name'] },
+                { 'services': ['Id', 'Name'] },
+                { 'users': ['Id', 'Name'] },],
             preFilter: null,
             viewTemplateId: null
         };

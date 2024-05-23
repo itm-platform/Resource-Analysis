@@ -29,7 +29,7 @@ export class RequestConstructor {
         this.parentDivId = parentDivId;
 
         this._langTranslations = {};
-        this._lang = typeof strLanguage !== 'undefined' ? strLanguage : 'es';
+        this._lang = typeof strLanguage !== 'undefined' ? strLanguage : 'en';
 
         this.shouldFilterBeVisible = options?.shouldFilterBeVisible;
         this.tablesAllowed = options?.tablesAllowed
@@ -110,12 +110,12 @@ export class RequestConstructor {
     }
 
     #createFilterSection(filterWrapperDivId) {
-        //const tablesAllowed = ['projects', 'services', 'users']; // TODO - B - Include in the options object
+        //const tablesAllowed = ['projects', 'services', 'users']; // TODO - 🟡 - Include in the options object
         const filterConstructor = new this.FilterConstructor(
             this.state.filter, this.dataServiceModel,
             filterWrapperDivId, this.tablesAllowed, this._lang);
 
-        // TODO - C - Remove the following line making the filterConstructor a private variable
+        // TODO - 🟢 - Remove the following line making the filterConstructor a private variable
         window.filterConstructor = filterConstructor; // For testing purposes
         filterConstructor.element.addEventListener('filterUpdated', (event) => {
             this.state.filter = event.detail;

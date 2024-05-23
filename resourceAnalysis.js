@@ -5,8 +5,8 @@ import { FlexiTable } from './flexiTable.js';
 import { FlexiRowSelector } from './flexiRowSelector.js';
 import { EffortTransformer } from './effortTransformer.js';
 import { mergeDeep } from './utils.js';
-// TODO - A - Translations
-// TODO - B - retrieve pivotConfig from the viewTemplate
+// TODO - 🔴 - Translations
+// TODO - 🟡 - retrieve pivotConfig from the viewTemplate
 
 const VALID_ANALYSIS_MODES = { intervals: 'intervals', totals: 'totals' };
 const VALID_TOTALS_DATE_RANGE_MODES = { liveBetween: 'liveBetween', strictlyBetween: 'strictlyBetween' };
@@ -75,10 +75,10 @@ export class ResourceAnalysis {
             rcOptions
         );
 
-        //TODO - C - Remove this line making the requestConstructor global
+        //TODO - 🟢 - Remove this line making the requestConstructor global
         window.requestConstructor = this.requestConstructor; // For testing purposes
 
-        // TODO - B - Add selected: true to the default pivotConfig, and apply the data transformation
+        // TODO - 🟡 - Add selected: true to the default pivotConfig, and apply the data transformation
         this.pivotSelector = new PivotSelector([
             { name: VALID_PIVOT_CONFIGS.entityWorkItem, tooltip: 'Entity - Work Item', svg: this.getSVG(VALID_PIVOT_CONFIGS.entityWorkItem) },
             { name: VALID_PIVOT_CONFIGS.entityUser, tooltip: 'Entity - User', svg: this.getSVG(VALID_PIVOT_CONFIGS.entityUser) },
@@ -132,12 +132,12 @@ export class ResourceAnalysis {
 
     }
     #saveViewTemplate() {
-        // TODO - B - Save the viewTemplate with the current state
+        // TODO - 🟡 - Save the viewTemplate with the current state
         // Careful with different views. Must analyze.
     }
 
     #getDefaultViewTemplate() {
-        // TODO - B - Allow the caller to inject the view and bypass the template. 
+        // TODO - 🟡 - Allow the caller to inject the view and bypass the template. 
         // For example, to add it to one single project, we can directly call resourceAnalysis 
         // with the filter injected.
 
@@ -184,9 +184,9 @@ export class ResourceAnalysis {
 
     _convertTotalDatesToFilters(totals) {
         const { dateRangeMode, startDate, endDate } = totals;
-        // TODO - A - VAlidate the dates somewhere
+        // TODO - 🟡 - VAlidate the dates somewhere
         const totalFilters = {};
-        // TODO - B - What if the preFilter is only for one project or service?
+        // TODO - 🟡 - What if the preFilter is only for one project or service?
         ['projects', 'services'].forEach((key) => {
             totalFilters[key] = {};
             if (dateRangeMode === VALID_TOTALS_DATE_RANGE_MODES.liveBetween) {
@@ -246,7 +246,7 @@ export class ResourceAnalysis {
 
         const mixedFiltersForRequest = this._mixFiltersForRequest(this.preFilter, totalsFilters, filter);
 
-        //TODO - C - Remove this line: 
+        //TODO - 🟢 - Remove this line: 
         const payloadMock = {
             analysisMode,
             filter: mixedFiltersForRequest,

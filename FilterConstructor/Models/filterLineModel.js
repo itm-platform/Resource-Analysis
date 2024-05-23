@@ -1,4 +1,4 @@
-/* TODO - B - Convert this into a class passing the line object as a parameter to the constructor.
+/* TODO - 🟡 - Convert this into a class passing the line object as a parameter to the constructor.
 And separate breakFilterInLines and recomposeFilterFromLines into a separate class.
 */
 
@@ -138,7 +138,7 @@ export default {
                 (line.operator && typeof line[line.tableName][line.fieldName] === 'object') ||
                 line.value === line[line.tableName][line.fieldName] // Checks for direct value assignment
             );
-                // TODO - A - If date field, expect a date value. Same for other types
+                // TODO - 🔴 - If date field, expect a date value. Same for other types
 
             // value should not be empty
             const valueIsValid = line.value !== undefined && line.value !== null && line.value !== '';

@@ -71,15 +71,7 @@ export class FilterLineOperator {
 
     #getStyles() {
         return css`
-            .filter-line-operator {
-                display: flex;
-                align-items: center;
-            }
-
-            .filter-line-operator select {
-                margin-left: 10px;
-                padding: 5px;
-            }
+           
         `;
     }
 }

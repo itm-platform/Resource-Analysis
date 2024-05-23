@@ -74,15 +74,6 @@ export class FilterLineField {
 
     #getStyles() {
         return css`
-            .filter-line-field {
-                display: flex;
-                align-items: center;
-            }
-
-            .filter-line-field select {
-                margin-left: 10px;
-                padding: 5px;
-            }
         `;
     }
 }

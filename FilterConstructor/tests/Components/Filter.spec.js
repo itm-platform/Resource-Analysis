@@ -115,9 +115,4 @@ describe('Filter', () => {
         expect(dispatchedEvent.detail).toBe(filter.queryFilter);
     });
 
-    it('should apply styles correctly', () => {
-        const style = filter.element.querySelector('style');
-        expect(style).toBeTruthy();
-        expect(style.textContent).toContain('.filter-line-table');
-    });
 });

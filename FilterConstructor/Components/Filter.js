@@ -103,9 +103,10 @@ export class Filter {
     }
 
     dispatchFilterUpdated() {
-        const event = new CustomEvent('filterUpdated', { 
+        const event = new CustomEvent('filterUpdated', {
             detail: this.queryFilter,
-            bubbles: true});
+            bubbles: true
+        });
         this.element.dispatchEvent(event);
     }
 
@@ -114,7 +115,6 @@ export class Filter {
             .filter-class {
                 display: flex;
                 flex-direction: column;
-                // Additional styles
             }
             #filterLines {
                 margin-bottom: 10px;

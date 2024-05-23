@@ -1,5 +1,5 @@
 
-// TODO - C - Explore injecting the render functions so users can override them or use new ones
+// TODO - 🟢 - Explore injecting the render functions so users can override them or use new ones
 import { resolveIconPath, pathCache } from './pathResolver.js';
 
 function renderUserName(params) {

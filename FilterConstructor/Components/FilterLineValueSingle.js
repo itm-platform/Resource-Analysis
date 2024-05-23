@@ -72,10 +72,6 @@ export class FilterLineValueSingle {
 
     #getStyles() {
         return css`
-            .filter-line-value {
-                display: flex;
-                // Additional styles
-            }
         `;
     }
 }

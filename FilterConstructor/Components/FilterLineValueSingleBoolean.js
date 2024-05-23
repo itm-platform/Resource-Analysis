@@ -30,7 +30,8 @@ export class FilterLineValueSingleBoolean {
     #createElement() {
 
         const component = document.createElement('div');
-        component.className = 'filter-line-value';
+        component.classList.add('filter-line-value', 'filter-line-value-boolean');
+
         this.elements.component = component;
 
         const inputElement = document.createElement('select');
@@ -54,14 +55,14 @@ export class FilterLineValueSingleBoolean {
 
     #setupEventListeners() {
         this.elements.inputElement.addEventListener('change', (event) => {
-            this.value = event.target.value === 'true'; 
+            this.value = event.target.value === 'true';
             this.elements.component.dispatchEvent(new CustomEvent('filterValueUpdated', {
                 detail: this.value,
                 bubbles: true
             }));
         });
     }
-    
+
 
     render() {
 
@@ -71,10 +72,7 @@ export class FilterLineValueSingleBoolean {
 
     #getStyles() {
         return css`
-            .filter-line-value {
-                display: flex;
-                // Additional styles
-            }
+          
         `;
     }
 }

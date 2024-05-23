@@ -52,11 +52,6 @@ describe('FilterLine', () => {
         //expect(element.children).toHaveLength(4); // filterLineTable, filterLineField, filterLineOperator, filterLineValue
     });
 
-    it('should apply styles', () => {
-        const styleElement = filterLine.element.querySelector('style');
-        expect(styleElement).toBeInstanceOf(HTMLStyleElement);
-        expect(styleElement.textContent).toContain('.filter-line-table');
-    });
 
     it('should update filter line on table change', () => {
         const newTable = 'tasks';

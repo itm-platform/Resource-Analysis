@@ -1,7 +1,7 @@
 import { afterEach, describe, test, expect } from 'vitest';
 import OperatorModel from "../../Models/OperatorModel";
 
-// TODO 🟡 Skipping tests that fail with mutipe values bcs Kendo changed the way they work
+// TODO - 🟡 - Skipping tests that fail with mutipe values bcs Kendo changed the way they work
 
 test('operatorsAcceptingMultipleValues basic',()=>{
     let operatorModel= new OperatorModel();

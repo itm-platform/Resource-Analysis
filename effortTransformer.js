@@ -1,5 +1,5 @@
 // effortTransformer.js
-// TODO - C - Refactor to keep it DRY
+// TODO - 🟢 - Refactor to keep it DRY
 export class EffortTransformer {
     constructor(data) {
         this.data = JSON.parse(JSON.stringify(data));

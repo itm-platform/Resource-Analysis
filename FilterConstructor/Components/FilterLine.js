@@ -32,7 +32,7 @@ export class FilterLine {
     #init() {
         const filterLineIsNewAndEmpty = Object.keys(this.filterLine).length === 0;
         if (filterLineIsNewAndEmpty) {
-            this.filterLine= filterLineModel.addGettersSetters(this.filterLine);
+            this.filterLine = filterLineModel.addGettersSetters(this.filterLine);
             const firstAvailableTable = Object.keys(this.dataServiceModel.tables)[0];
             this.filterLine.tableName = firstAvailableTable;
         }
@@ -47,7 +47,7 @@ export class FilterLine {
         filterLine.className = 'filter-line';
         this.elements.filterLine = filterLine;
 
-        // TODO - A - If only one table, don't show the table dropdown, but also remove the line that has 
+        // TODO - 🔴 - If only one table, don't show the table dropdown, but also remove the line that has 
         // unwanted tables. Useful for single project, for example
         this.#render('filterLineTable');
         filterLine.appendChild(this.elements.filterLineTable);
@@ -96,7 +96,7 @@ export class FilterLine {
             filterLineValue: () => {
                 let filterLineValue;
                 //if (['String', 'Number'].includes(this.fieldType)) {
-                    filterLineValue = new FilterLineValueSingle(this.filterLine.value, this.fieldType);
+                filterLineValue = new FilterLineValueSingle(this.filterLine.value, this.fieldType);
                 //} else 
                 if (this.fieldType === 'Boolean') {
                     filterLineValue = new FilterLineValueSingleBoolean(this.filterLine.value);
@@ -112,7 +112,7 @@ export class FilterLine {
                     const value = event.detail;
                     this.#updateFilterValue(value);
                 });
-                
+
                 this.elements.filterLineValue = filterLineValue.element;
             }
         };
@@ -250,9 +250,87 @@ export class FilterLine {
 
     #getStyles() {
         return css`
+            :root {
+                --filter-select-border-radius: 4px;
+                --filter-select-border-color: #999;
+                --filter-input-border-radius: 4px;
+                --filter-standard-value-width: 15em;
+            }
             .filter-line {
                 display: flex;
             }
+            .filter-line-table {
+                display: flex;
+                align-items: center;
+                margin: 5px 0;
+            }
+            .filter-line-field {
+                display: flex;
+                align-items: center;
+                margin: 5px 0;
+            }
+
+            .filter-line-field select {
+                margin-left: 10px;
+                padding: 5px;
+                border-color: var(--filter-select-border-color);
+                border-radius: var(--filter-select-border-radius);
+                width: 15em;
+            }
+            .filter-line-table select {
+                margin-left: 10px;
+                padding: 5px;
+                border-color: var(--filter-select-border-color);
+                border-radius: var(--filter-select-border-radius);
+                max-width: 15em;
+                min-width: 5em;
+            }
+
+            .filter-line-operator {
+                display: flex;
+                align-items: center;
+                margin: 5px 0;
+            }
+
+            .filter-line-operator select {
+                margin-left: 10px;
+                padding: 5px;
+                border-color: var(--filter-select-border-color);
+                border-radius: var(--filter-select-border-radius);
+                width: 10em;
+            }
+            .filter-line-value {
+                display: flex;
+                align-items: center;
+                margin: 5px 0;
+            }
+            .filter-line-value input {
+                margin-left: 10px;
+                padding: 5px;
+                border: 1px solid var(--filter-select-border-color);
+                border-radius: var(--filter-input-border-radius);
+                width: var(--filter-standard-value-width);
+            }
+
+            .filter-line-value input[type="date"] {
+                width: 8em;
+            }
+            .filter-line-value select {
+                margin-left: 10px;
+                padding: 5px;
+                border: 1px solid var(--filter-select-border-color);
+                border-radius: var(--filter-select-border-radius);
+                width: var(--filter-standard-value-width);
+            }
+
+            /* hove on select mouse pointer */
+            .filter-line-value select:hover, .filter-line-field:hover, .filter-line-operator select:hover, .filter-line-table select:hover, .filter-line-value input[type="date"]:hover{
+                cursor: pointer;
+            }
+            .filter-line-value-boolean select {
+                width: 9em;
+            }
+
         `;
     }
 }

@@ -41,7 +41,7 @@ export default class OperatorModel {
         }
     }
     acceptsMultipleValues(operator) {
-        // TODO 🟢 Removed multiple value operators
+        // TODO - 🟢 - Removed multiple value operators
         return false;
         // return this[operator].acceptsMultipleValues
     }

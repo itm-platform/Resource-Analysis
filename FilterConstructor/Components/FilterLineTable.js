@@ -24,6 +24,7 @@ export class FilterLineTable {
         container.className = 'filter-line-table';
         this.elements.container = container;
 
+        // TODO - 🟢 - replace with itm-dropdown
         const selectElement = document.createElement('select');
         this.elements.selectElement = selectElement;
 
@@ -47,16 +48,6 @@ export class FilterLineTable {
 
     #getStyles() {
         return css`
-            .filter-line-table {
-                display: flex;
-                align-items: center;
-                margin: 5px 0;
-            }
-
-            .filter-line-table select {
-                margin-left: 10px;
-                padding: 5px;
-            }
         `;
     }
 
