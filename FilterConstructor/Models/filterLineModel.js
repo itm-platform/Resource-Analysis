@@ -118,7 +118,7 @@ export default {
         
         return filterLine
     },
-    isValidLine(line) {
+    isValidLine(line, fieldType) {
         try {
             // Apply getters and setters if they aren't already applied
             if (!line.tableName && !line.fieldName && line.value === undefined) {
@@ -138,16 +138,22 @@ export default {
                 (line.operator && typeof line[line.tableName][line.fieldName] === 'object') ||
                 line.value === line[line.tableName][line.fieldName] // Checks for direct value assignment
             );
-                // TODO - 🔴 - If date field, expect a date value. Same for other types
-
+    
             // value should not be empty
             const valueIsValid = line.value !== undefined && line.value !== null && line.value !== '';
-
-            return tableFieldValue && operatorFieldIsValid && valueIsValid;
+    
+            // Check if fieldType is 'Date' and validate the date
+            const isDateValid = (
+                fieldType !== 'Date' ||
+                (fieldType === 'Date' && typeof line.value === 'string' && !isNaN(Date.parse(line.value)) && isNaN(Number(line.value)))
+            );
+    
+            return tableFieldValue && operatorFieldIsValid && valueIsValid && isDateValid;
         } catch (error) {
             return false;
         }
-    },
+    }
+    ,
     breakFilterInLines(queryFilter) {
         if (!queryFilter) return [];
         let lines = [];

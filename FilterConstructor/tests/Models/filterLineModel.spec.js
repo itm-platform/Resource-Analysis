@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, beforeEach } from 'vitest';
 import filterLineModel from '../../Models/filterLineModel';  // Adjust the import path as necessary
 
 describe("Getters and Setters", () => {
@@ -175,23 +175,89 @@ describe("IsValid Line", () => {
         const filterLine = null;  // Invalid input that should cause the method to throw
         expect(filterLineModel.isValidLine(filterLine)).toBeFalsy();
     });
-    
-    test ("returns false when the value is null", () => {
+
+    test("returns false when the value is null", () => {
         const filterLine = { projects: { Program: { $eq: null } } };
         filterLineModel.addGettersSetters(filterLine);
         expect(filterLineModel.isValidLine(filterLine)).toBeFalsy();
     });
 
-    test ("returns false when the value is undefined", () => {
+    test("returns false when the value is undefined", () => {
         const filterLine = { projects: { Program: { $eq: undefined } } };
         filterLineModel.addGettersSetters(filterLine);
         expect(filterLineModel.isValidLine(filterLine)).toBeFalsy();
     });
-    test ("returns false when the value is an empty string", () => {
+
+    test("returns false when the value is an empty string", () => {
         const filterLine = { projects: { Program: { $eq: "" } } };
         filterLineModel.addGettersSetters(filterLine);
         expect(filterLineModel.isValidLine(filterLine)).toBeFalsy();
     });
+    describe("Date Validation", () => {
+    
+        test("returns true for a valid date when fieldType is 'Date'", () => {
+            const filterLine = {
+                projects: {
+                    EndDate: {
+                        $lte: "2023-11-30"
+                    },
+                    "Status.IsCompleted": true
+                }
+            };
+            filterLineModel.addGettersSetters(filterLine);
+            expect(filterLineModel.isValidLine(filterLine, 'Date')).toBeTruthy();
+        });
+    
+        test("returns false for an invalid date -number- when fieldType is 'Date'", () => {
+            const filterLine = {
+                projects: {
+                    CreatedDate: {
+                        $gt: 10
+                    },
+                    "Status.IsCompleted": true
+                }
+            };
+            filterLineModel.addGettersSetters(filterLine);
+            expect(filterLineModel.isValidLine(filterLine, 'Date')).toBeFalsy();
+        });
+
+        test("returns false for an invalid date -string- when fieldType is 'Date'", () => {
+            const filterLine = {
+                projects: {
+                    CreatedDate: {
+                        $gt: "10"
+                    },
+                    "Status.IsCompleted": true
+                }
+            };
+            filterLineModel.addGettersSetters(filterLine);
+            expect(filterLineModel.isValidLine(filterLine, 'Date')).toBeFalsy();
+        });
+    
+        test("returns true for a non-date value when fieldType is not 'Date'", () => {
+            const filterLine = {
+                projects: {
+                    Status: "Active",
+                    "Status.IsCompleted": true
+                }
+            };
+            filterLineModel.addGettersSetters(filterLine);
+            expect(filterLineModel.isValidLine(filterLine, 'String')).toBeTruthy();
+        });
+    
+        test("returns false for a non-date value when fieldType is 'Date'", () => {
+            const filterLine = {
+                projects: {
+                    CreatedDate: "Not a date",
+                    "Status.IsCompleted": true
+                }
+            };
+            filterLineModel.addGettersSetters(filterLine);
+            expect(filterLineModel.isValidLine(filterLine, 'Date')).toBeFalsy();
+        });
+    });
+    
+
 });
 
 describe("Break Filter In Lines", () => {
@@ -238,10 +304,10 @@ describe("recomposeFilterFromLines", () => {
 
     test("recomposeFilterFromLines should return a valid queryFilter object 2", () => {
         const filterLines = [
-            {"projects":{"Duration":{"$gt":10}}},
-            {"projects":{"EndDate":{"$lte":"2023-11-30"}}},
-            {"projects":{"Status.IsCompleted":false}},
-            {"tasks":{"ProjectId":21}}]
+            { "projects": { "Duration": { "$gt": 10 } } },
+            { "projects": { "EndDate": { "$lte": "2023-11-30" } } },
+            { "projects": { "Status.IsCompleted": false } },
+            { "tasks": { "ProjectId": 21 } }];
         const queryFilter = filterLineModel.recomposeFilterFromLines(filterLines);
         expect(queryFilter.projects.Duration.$gt).toBe(10);
         expect(queryFilter.projects.EndDate.$lte).toBe("2023-11-30");

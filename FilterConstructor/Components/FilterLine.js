@@ -237,7 +237,9 @@ export class FilterLine {
     }
 
     #validateAndEmit() {
-        if (filterLineModel.isValidLine(this.filterLine)) {
+        if (filterLineModel.isValidLine(this.filterLine, this.fieldType)) {
+            console.log(`filterLine is valid: ${JSON.stringify(this.filterLine)}`);
+            console.log(`fieldType is ${this.fieldType}`);
             this.elements.filterLine.dispatchEvent(new CustomEvent('filterLineUpdated', {
                 detail: this.filterLine,
                 bubbles: true
