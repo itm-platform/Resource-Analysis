@@ -31,13 +31,7 @@ describe('Filter', () => {
     let dataServiceModelJSON;
     let parentDivId = 'parentDivId';
     let tablesAllowed = ['projects', 'tasks'];
-    let initialFilter = {
-        "projects": {
-            "Duration": { "$gt": 10 }, "EndDate": { "$lte": "2023-11-30" },
-            "Status.IsCompleted": true
-        },
-        "tasks": { "ProjectId": 21 }
-    };
+    let initialFilter;
 
     beforeEach(() => {
         // Set up the DOM element
@@ -48,6 +42,13 @@ describe('Filter', () => {
                 "tasks": {"fields": [{"name": "Id"}, {"name": "Duration"}, {"name": "Status", "location": "Status.Name"}]},
                 "risks": {"fields": [{"name": "Id"}, {"name": "Probability"}]}
             }
+        };
+        initialFilter =  {
+            "projects": {
+                "Duration": { "$gt": 10 }, "EndDate": { "$lte": "2023-11-30" },
+                "Status.IsCompleted": true
+            },
+            "tasks": { "ProjectId": 21 }
         };
         filter = new Filter(initialFilter, dataServiceModelJSON, parentDivId, tablesAllowed, 'es');
     });
@@ -74,7 +75,6 @@ describe('Filter', () => {
         expect(filterConstructor).toBeTruthy();
         expect(filterLinesDiv).toBeTruthy();
         expect(buttonAddFilterLine).toBeTruthy();
-        expect(buttonAddFilterLine.textContent).toBe('+');
     });
 
     it('should add a new filter line when the button is clicked', () => {
@@ -97,6 +97,17 @@ describe('Filter', () => {
         }, 100);
     });
     
+    it('should set the button text to "Add Filter" when there are no filter lines', () => {
+        // empty all existing filter lines
+        filter.filterLines = [];
+        const buttonAddFilterLine = document.getElementById('buttonAddFilterLine');
+        expect(buttonAddFilterLine.textContent).toBe('Add Filter');
+    });
+
+    it('should set the button text to "+" when there are filter lines', () => {
+        const buttonAddFilterLine = document.getElementById('buttonAddFilterLine');
+        expect(buttonAddFilterLine.textContent).toBe('+');
+    });
 
     it('should update filter with line', () => {
         const newFilterLine = { detail: { "newField": { "$eq": 20 } } };
