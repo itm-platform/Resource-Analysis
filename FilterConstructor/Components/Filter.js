@@ -47,7 +47,8 @@ export class Filter {
 
         const buttonAddFilterLine = document.createElement('button');
         buttonAddFilterLine.id = 'buttonAddFilterLine';
-        buttonAddFilterLine.textContent = '+';
+        buttonAddFilterLine.textContent = Object.keys(this.queryFilter).length==0?
+        '+ Add Filter': '+';
         this.elements.buttonAddFilterLine = buttonAddFilterLine;
 
         filterConstructor.appendChild(filterLinesDiv);
@@ -67,6 +68,7 @@ export class Filter {
 
     #setupEventListeners() {
         this.elements.buttonAddFilterLine.addEventListener('click', () => {
+            this.elements.buttonAddFilterLine.textContent = '+';
             this.addFilterLine();
         });
     }

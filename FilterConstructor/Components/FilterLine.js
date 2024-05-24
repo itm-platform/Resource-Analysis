@@ -27,7 +27,6 @@ export class FilterLine {
         this.#init();
         this.element = this.#createElement();
         this.#applyStyles();
-        this.#render();
     }
 
     /** Perform any initialization logic that doesn't depend on DOM elements. */
@@ -301,16 +300,13 @@ export class FilterLine {
             }
             .filter-line {
                 display: flex;
-                /* border: 1px solid red; */
-                width: 45em;
-                justify-content: space-between;
                 align-items: center;
                 margin-bottom: 5px;
             }
             .filter-line-options-wrapper {
                 display: flex;
                 flex-wrap: wrap;
-                /* border: 1px solid blue; */
+                width: 53em;
             }
             .filter-line-table {
                 display: flex;
@@ -322,21 +318,27 @@ export class FilterLine {
                 align-items: center;
                 
             }
-
-            .filter-line-field select {
-                margin-left: 10px;
-                padding: 3px;
-                border-color: var(--filter-select-border-color);
-                border-radius: var(--filter-select-border-radius);
-                width: 15em;
-            }
             .filter-line-table select {
-                margin-left: 10px;
+                margin-right: 10px;
                 padding: 3px;
                 border-color: var(--filter-select-border-color);
                 border-radius: var(--filter-select-border-radius);
                 max-width: 15em;
                 min-width: 5em;
+            }
+            .filter-line-field select {
+                margin-right: 10px;
+                padding: 3px;
+                border-color: var(--filter-select-border-color);
+                border-radius: var(--filter-select-border-radius);
+                width: 15em;
+            }
+           .filter-line-operator select {
+                margin-right: 10px;
+                padding: 3px;
+                border-color: var(--filter-select-border-color);
+                border-radius: var(--filter-select-border-radius);
+                width: 10em;
             }
 
             .filter-line-operator {
@@ -345,20 +347,13 @@ export class FilterLine {
                 
             }
 
-            .filter-line-operator select {
-                margin-left: 10px;
-                padding: 3px;
-                border-color: var(--filter-select-border-color);
-                border-radius: var(--filter-select-border-radius);
-                width: 10em;
-            }
+ 
             .filter-line-value {
                 display: flex;
                 align-items: center;
                 
             }
             .filter-line-value input {
-                margin-left: 10px;
                 padding: 3px;
                 border: 1px solid var(--filter-select-border-color);
                 border-radius: var(--filter-input-border-radius);
@@ -369,14 +364,12 @@ export class FilterLine {
                 width: 8em;
             }
             .filter-line-value select {
-                margin-left: 10px;
                 padding: 3px;
                 border: 1px solid var(--filter-select-border-color);
                 border-radius: var(--filter-select-border-radius);
                 width: var(--filter-standard-value-width);
             }
 
-            /* hove on select mouse pointer */
             .filter-line-value select:hover, .filter-line-field:hover, .filter-line-operator select:hover, .filter-line-table select:hover, .filter-line-value input[type="date"]:hover{
                 cursor: pointer;
             }
