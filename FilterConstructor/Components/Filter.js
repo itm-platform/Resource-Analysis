@@ -15,11 +15,14 @@ export class Filter {
      */
     constructor(queryFilter, dataServiceModelJSON, parentDivId, tablesAllowed, lang = "es") {
         this.queryFilter = queryFilter || {};
+
         this.dataServiceModel = new DataServiceModel(dataServiceModelJSON);
         this.parentDivId = parentDivId;
         this.tablesAllowed = tablesAllowed;
         this.lang = lang;
         this.filterLines = [];
+        this.filterLines = this._filterLines;  // Use setter to initialize and wrap
+
         this.elements = {};
 
         this.#init();
@@ -34,7 +37,35 @@ export class Filter {
         this.dataServiceModel.keepOnlyTables(this.tablesAllowed);
         this.filterLines = filterLineModel.breakFilterInLines(this.queryFilter);
     }
+    #proxyWrapFilterLines() {
+        this._filterLines = new Proxy(this._filterLines, {
+            set: (target, property, value) => {
+                target[property] = value;
+                this.#updateButtonLabel();
+                return true;
+            },
+            deleteProperty: (target, property) => {
+                delete target[property];
+                this.#updateButtonLabel();
+                return true;
+            },
+            apply: (target, thisArg, argumentsList) => {
+                const result = target.apply(thisArg, argumentsList);
+                this.#updateButtonLabel();
+                return result;
+            }
+        });
+    }
 
+    set filterLines(newFilterLines) {
+        this._filterLines = newFilterLines;
+        this.#proxyWrapFilterLines();
+        this.#updateButtonLabel();
+    }
+
+    get filterLines() {
+        return this._filterLines;
+    }
     #createElement() {
         const filterConstructor = document.createElement('div');
         filterConstructor.id = 'filterConstructor';
@@ -47,8 +78,6 @@ export class Filter {
 
         const buttonAddFilterLine = document.createElement('button');
         buttonAddFilterLine.id = 'buttonAddFilterLine';
-        buttonAddFilterLine.textContent = Object.keys(this.queryFilter).length==0?
-        '+ Add Filter': '+';
         this.elements.buttonAddFilterLine = buttonAddFilterLine;
 
         filterConstructor.appendChild(filterLinesDiv);
@@ -57,9 +86,16 @@ export class Filter {
         const parentDiv = document.getElementById(this.parentDivId);
         parentDiv.appendChild(filterConstructor);
 
+        this.#updateButtonLabel();
+
         return filterConstructor;
     }
-
+    #updateButtonLabel() {
+        if (this.elements?.buttonAddFilterLine) {
+            this.elements.buttonAddFilterLine.textContent = this.filterLines.length === 0 ? 'Add Filter' : '+';
+        }
+    }
+    
     #applyStyles() {
         const style = document.createElement('style');
         style.textContent = this.#getStyles();
@@ -68,7 +104,6 @@ export class Filter {
 
     #setupEventListeners() {
         this.elements.buttonAddFilterLine.addEventListener('click', () => {
-            this.elements.buttonAddFilterLine.textContent = '+';
             this.addFilterLine();
         });
     }
@@ -78,6 +113,7 @@ export class Filter {
         this.filterLines.forEach((filterLine, index) => {
             this.renderFilterLine(filterLine, index);
         });
+        this.#updateButtonLabel();
     }
 
     renderFilterLine(line, index) {
