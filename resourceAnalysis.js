@@ -124,7 +124,7 @@ export class ResourceAnalysis {
 
     #fetchViewTemplate(viewTemplateId) {
         // For now, return a promise that resolves to null. 
-        // The final version should call POST /retrieve view with payload. If the viewTemplateId is null,
+        // The final version should call GET /retrieve view with payload. (GET / constext/...) If the viewTemplateId is null,
         // it will return the active view for the user. If there is no active view, 
         // it can either return null and we manage it in the frontend (as we do here now),
         // or it can return a default view.
@@ -143,16 +143,19 @@ export class ResourceAnalysis {
 
         // We only need the `view` property from the viewTemplate, but we mock up the whole object
         // as definition for the templateManager we will build.
+
+        // Active view by user
         return {
             viewTemplateId: 'cbafa593-5ad9-4803-9d6e-e6490d9117d4',
             companyId: 15,
-            contextView: 'resourceAnalysis',
+            contextView: 'resourceAnalysis', 
             name: 'Totals Q1 2024',
             description: 'Projects live in Q1 2024',
             isPrivateToCreator: false,
             isDefaultViewInContext: true,
             createdDate: '2023-09-01T00:00:00.000Z',
             createdBy: { userId: 3890, displayName: 'Ben Li' },
+            owner: { userId: 3890, displayName: 'Ben Li' },
             lastUpdatedDate: '2023-12-01T00:00:00.000Z',
             lastUpdatedBy: { userId: 3890, displayName: 'Ben Li' },
             view: {
@@ -167,7 +170,13 @@ export class ResourceAnalysis {
                     startDate: '2024-01-01',
                     endDate: '2024-03-31'
                 },
-                filter: {},
+                filter: {
+                    "projects": {
+                      "Duration": {
+                        "$gt": 10
+                      }
+                    }
+                  },
                 pivotConfig: 'user'
             }
         };
@@ -252,7 +261,7 @@ export class ResourceAnalysis {
             filter: mixedFiltersForRequest,
             ...(analysisMode === VALID_ANALYSIS_MODES.intervals && { intervals }),
         };
-        console.log(`Payload: ${JSON.stringify(payloadMock, null, 2)}`);
+        //console.log(`Payload: ${JSON.stringify(payloadMock, null, 2)}`);
 
         let responseData;
 

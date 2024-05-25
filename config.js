@@ -1,3 +1,4 @@
+// TODO - 🟡 - organize in src folder keeping filter separate
 /* Set the following variables in local storage to test locally:
 localStorage.setItem('testingResourceAnalysisWithLocalFiles', true);
 localStorage.setItem('testingResourceAnalysisWithProxy', true);

@@ -8,7 +8,9 @@ export class FilterLineField {
      * @emits filterFieldUpdated
      */
     constructor(fields, fieldSelected) {
+        
         this.fields = fields;
+
         this.fieldSelected = fieldSelected;
         this.elements = {};
 

@@ -1,4 +1,10 @@
 import resourceAnalysisValidator from './resourceAnalysisValidator.js';
+/** 
+ * The "noop css tag function" is a no-operation (noop) function 
+ * that takes a tagged template literal and returns the raw string without modification. 
+ * This allows you to use VSCode's CSS formatting features  */
+export const css = (strings) => strings.raw[0];
+
 const VALID_ANALYSIS_MODES = { intervals: 'intervals', totals: 'totals' };
 const VALID_TOTALS_DATE_RANGE_MODES = { liveBetween: 'liveBetween', strictlyBetween: 'strictlyBetween' };  
 export class RequestConstructor {
@@ -36,6 +42,7 @@ export class RequestConstructor {
 
         this._initPromise = this.#initDependencies().then(() => {
             this.initUI();
+            this.#applyStyles();
         });
     }
 
@@ -71,10 +78,7 @@ export class RequestConstructor {
             return button;
         }
 
-        // Create and configure the main wrapper div
         const requestConstructorWrapper = createWrapper('req-constructor-wrapper', 'req-constructor-wrapper');
-
-        // Create and configure the modes wrapper div
         const requestConstructorModesWrapper = createWrapper('req-constructor-modesWrapper', 'req-constructor-modesWrapper');
 
         // Append sections to modes wrapper
@@ -108,9 +112,14 @@ export class RequestConstructor {
         // Append the update button to the parent div
         parentDiv.appendChild(updateButton);
     }
+    #applyStyles() {
+        const style = document.createElement('style');
+        style.textContent = this.#getStyles();
+        // TODO - 🟢 - Add the style to this element to make the style scoped
 
+        document.head.appendChild(style);
+    }
     #createFilterSection(filterWrapperDivId) {
-        //const tablesAllowed = ['projects', 'services', 'users']; // TODO - 🟡 - Include in the options object
         const filterConstructor = new this.FilterConstructor(
             this.state.filter, this.dataServiceModel,
             filterWrapperDivId, this.tablesAllowed, this._lang);
@@ -129,6 +138,9 @@ export class RequestConstructor {
         intervalsSection.id = 'req-constructor-intervalsSection';
         intervalsSection.className = 'req-constructor-modeWrapper';
 
+        const constructorModeRadio = document.createElement('div');
+        constructorModeRadio.className='req-constructor-mode-radio';
+
         const intervalsRadio = document.createElement('input');
         intervalsRadio.type = 'radio';
         intervalsRadio.id = 'req-constructor-intervals';
@@ -144,8 +156,11 @@ export class RequestConstructor {
         const intervalsLabel = document.createElement('label');
         intervalsLabel.htmlFor = 'intervals';
         intervalsLabel.textContent = this._langTranslations.t('intervals');
-        intervalsSection.appendChild(intervalsRadio);
-        intervalsSection.appendChild(intervalsLabel);
+
+        constructorModeRadio.appendChild(intervalsRadio);
+        constructorModeRadio.appendChild(intervalsLabel);
+
+        intervalsSection.appendChild(constructorModeRadio);
 
         const intervalOptionsWrapper = document.createElement('div');
         intervalOptionsWrapper.id = 'req-constructor-intervalOptionsWrapper';
@@ -195,6 +210,9 @@ export class RequestConstructor {
         totalsSection.id = 'req-constructor-totalsSection';
         totalsSection.className = 'req-constructor-modeWrapper';
 
+        const constructorModeRadio = document.createElement('div');
+        constructorModeRadio.className='req-constructor-mode-radio';
+
         const totalsRadio = document.createElement('input');
         totalsRadio.type = 'radio';
         totalsRadio.id = 'req-constructor-totals';
@@ -211,8 +229,11 @@ export class RequestConstructor {
         const totalsLabel = document.createElement('label');
         totalsLabel.htmlFor = 'totals';
         totalsLabel.textContent = this._langTranslations.t('totals');
-        totalsSection.appendChild(totalsRadio);
-        totalsSection.appendChild(totalsLabel);
+        
+        constructorModeRadio.appendChild(totalsRadio);
+        constructorModeRadio.appendChild(totalsLabel);
+
+        totalsSection.appendChild(constructorModeRadio);
 
         const totalOptionsWrapper = document.createElement('div');
         totalOptionsWrapper.id = 'req-constructor-totalOptionsWrapper';
@@ -258,8 +279,6 @@ export class RequestConstructor {
         return totalsSection;
     }
 
-
-
     #updateFilterStateForTotals() {
         const totalsDateRangeMode = document.getElementById('req-constructor-totalsDateRangeMode').value;
         const startDate = document.getElementById('req-constructor-totals-startDate').value;
@@ -293,5 +312,24 @@ export class RequestConstructor {
         });
         document.dispatchEvent(event);
     }
-
+    #getStyles() {
+        return css`
+            :root {
+                --req-constructor-primary-color: #007bff;
+            }
+            .req-constructor-modesWrapper{
+                border: 1px solid blue;
+            }
+            .req-constructor-modeWrapper {
+                display: flex;
+                align-items: center;
+                margin-bottom: 5px;
+                border: 1px solid green;
+            }
+            .req-constructor-mode-radio{
+                width: 10em;
+                border: 1px solid magenta;
+            }
+            `;
+            }
 }
