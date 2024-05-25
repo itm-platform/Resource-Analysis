@@ -1,3 +1,4 @@
+// TODO - 🟡 - make it accessible and tackle console issues
 import resourceAnalysisValidator from './resourceAnalysisValidator.js';
 /** 
  * The "noop css tag function" is a no-operation (noop) function 
@@ -164,10 +165,11 @@ export class RequestConstructor {
 
         const intervalOptionsWrapper = document.createElement('div');
         intervalOptionsWrapper.id = 'req-constructor-intervalOptionsWrapper';
-        intervalOptionsWrapper.className = 'req-constructor-intervalOptionsWrapper';
+        intervalOptionsWrapper.className = 'req-constructor-mode-options-wrapper';
 
         const intervalDropdown = document.createElement('select');
         intervalDropdown.id = 'req-constructor-intervalType';
+        intervalDropdown.className = 'req-constructor-mode-item';
         ['day', 'week', 'month', 'quarter'].forEach(interval => {
             const option = document.createElement('option');
             option.value = interval;
@@ -182,6 +184,8 @@ export class RequestConstructor {
 
         const numberInput = document.createElement('input');
         numberInput.id = 'req-constructor-noOfIntervals';
+        numberInput.className = 'req-constructor-mode-item';
+        numberInput
         numberInput.type = 'number';
         numberInput.min = '1';
         numberInput.max = '7';
@@ -194,6 +198,7 @@ export class RequestConstructor {
 
         const dateInput = document.createElement('input');
         dateInput.id = 'req-constructor-interval-startDate';
+        dateInput.className = 'req-constructor-mode-item';
         dateInput.type = 'date';
         dateInput.value = this.state.intervals.startDate || new Date().toISOString().split('T')[0];
         dateInput.addEventListener('change', (event) => {
@@ -237,11 +242,12 @@ export class RequestConstructor {
 
         const totalOptionsWrapper = document.createElement('div');
         totalOptionsWrapper.id = 'req-constructor-totalOptionsWrapper';
-        totalOptionsWrapper.className = 'req-constructor-totalOptionsWrapper';
+        totalOptionsWrapper.className = 'req-constructor-mode-options-wrapper';
 
 
         const totalsDateRangeModeDropdown = document.createElement('select');
         totalsDateRangeModeDropdown.id = 'req-constructor-totalsDateRangeMode';
+        totalsDateRangeModeDropdown.className = 'req-constructor-mode-item';
         Object.keys(VALID_TOTALS_DATE_RANGE_MODES).forEach(mode => {
             const option = document.createElement('option');
             option.value = mode;
@@ -259,6 +265,7 @@ export class RequestConstructor {
 
         const startDatePicker = document.createElement('input');
         startDatePicker.id = 'req-constructor-totals-startDate';
+        startDatePicker.className = 'req-constructor-mode-item';
         startDatePicker.type = 'date';
         startDatePicker.value = startDate;
         startDatePicker.addEventListener('change', () => {
@@ -268,6 +275,7 @@ export class RequestConstructor {
 
         const endDatePicker = document.createElement('input');
         endDatePicker.id = 'req-constructor-totals-endDate';
+        endDatePicker.className = 'req-constructor-mode-item';
         endDatePicker.type = 'date';
         endDatePicker.value = endDate;
         endDatePicker.addEventListener('change', () => {
@@ -315,20 +323,46 @@ export class RequestConstructor {
     #getStyles() {
         return css`
             :root {
-                --req-constructor-primary-color: #007bff;
+                --req-constructor-select-border-radius: 4px;
+                --req-constructor-select-border-color: #999;
+                --req-constructor-input-border-radius: 4px;
+                --req-constructor-standard-select-width: 10em;
+                --req-constructor-standard-input-width: 8em;
+
+                --req-constructor-close-cross-fill: #6d7d8f;
+                --req-constructor-close-cross-fill-hover: #3a4a5c;
             }
             .req-constructor-modesWrapper{
-                border: 1px solid blue;
             }
             .req-constructor-modeWrapper {
                 display: flex;
                 align-items: center;
                 margin-bottom: 5px;
-                border: 1px solid green;
+            }           
+            .req-constructor-mode-options-wrapper {
+                display: flex;
+                align-items: center;
+                margin-left: 10px;
             }
+
             .req-constructor-mode-radio{
                 width: 10em;
-                border: 1px solid magenta;
+            }
+            .req-constructor-mode-options-wrapper {
+                display: flex;
+                align-items: center;
+            }
+            .req-constructor-mode-options-wrapper select {
+                margin-right: .6em;
+                padding: 3px;
+                border-color: var(--req-constructor-select-border-color);
+                border-radius: var(--req-constructor-select-border-radius);
+            }
+            .req-constructor-mode-options-wrapper input {
+                margin-right: .6em;
+                padding: 3px;
+                border: 1px solid var(--filter-select-border-color);
+                border-radius: var(--filter-input-border-radius);
             }
             `;
             }
