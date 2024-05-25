@@ -44,6 +44,7 @@ export class RequestConstructor {
         this._initPromise = this.#initDependencies().then(() => {
             this.initUI();
             this.#applyStyles();
+            this.#toggleOptionsState();
         });
     }
 
@@ -140,7 +141,7 @@ export class RequestConstructor {
         intervalsSection.className = 'req-constructor-modeWrapper';
 
         const constructorModeRadio = document.createElement('div');
-        constructorModeRadio.className='req-constructor-mode-radio';
+        constructorModeRadio.className = 'req-constructor-mode-radio';
 
         const intervalsRadio = document.createElement('input');
         intervalsRadio.type = 'radio';
@@ -152,6 +153,7 @@ export class RequestConstructor {
         }
         intervalsRadio.addEventListener('change', () => {
             this.state.analysisMode = 'intervals';
+            this.#toggleOptionsState();
         });
 
         const intervalsLabel = document.createElement('label');
@@ -185,7 +187,6 @@ export class RequestConstructor {
         const numberInput = document.createElement('input');
         numberInput.id = 'req-constructor-noOfIntervals';
         numberInput.className = 'req-constructor-mode-item';
-        numberInput
         numberInput.type = 'number';
         numberInput.min = '1';
         numberInput.max = '7';
@@ -207,16 +208,16 @@ export class RequestConstructor {
         intervalOptionsWrapper.appendChild(dateInput);
         intervalsSection.appendChild(intervalOptionsWrapper);
 
-
         return intervalsSection;
     }
+
     #createTotalsSection() {
         const totalsSection = document.createElement('div');
         totalsSection.id = 'req-constructor-totalsSection';
         totalsSection.className = 'req-constructor-modeWrapper';
 
         const constructorModeRadio = document.createElement('div');
-        constructorModeRadio.className='req-constructor-mode-radio';
+        constructorModeRadio.className = 'req-constructor-mode-radio';
 
         const totalsRadio = document.createElement('input');
         totalsRadio.type = 'radio';
@@ -229,12 +230,13 @@ export class RequestConstructor {
         totalsRadio.addEventListener('change', () => {
             this.state.analysisMode = 'totals';
             this.#updateFilterStateForTotals();
+            this.#toggleOptionsState();
         });
 
         const totalsLabel = document.createElement('label');
         totalsLabel.htmlFor = 'totals';
         totalsLabel.textContent = this._langTranslations.t('totals');
-        
+
         constructorModeRadio.appendChild(totalsRadio);
         constructorModeRadio.appendChild(totalsLabel);
 
@@ -243,7 +245,6 @@ export class RequestConstructor {
         const totalOptionsWrapper = document.createElement('div');
         totalOptionsWrapper.id = 'req-constructor-totalOptionsWrapper';
         totalOptionsWrapper.className = 'req-constructor-mode-options-wrapper';
-
 
         const totalsDateRangeModeDropdown = document.createElement('select');
         totalsDateRangeModeDropdown.id = 'req-constructor-totalsDateRangeMode';
@@ -286,6 +287,23 @@ export class RequestConstructor {
         totalsSection.appendChild(totalOptionsWrapper);
         return totalsSection;
     }
+
+    #toggleOptionsState() {
+        const wrappers = document.querySelectorAll('.req-constructor-mode-options-wrapper');
+        wrappers.forEach(wrapper => {
+            const radio = wrapper.previousElementSibling.querySelector('input[type="radio"]');
+            const disabled = !radio.checked;
+            // if (disabled) {
+            //     wrapper.style.display = 'none';
+            // } else {
+            //     wrapper.style.display = 'flex';
+            // }
+            Array.from(wrapper.children).forEach(child => {
+                child.disabled = disabled;
+            });
+        });
+    }
+
 
     #updateFilterStateForTotals() {
         const totalsDateRangeMode = document.getElementById('req-constructor-totalsDateRangeMode').value;
