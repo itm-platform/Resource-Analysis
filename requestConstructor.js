@@ -7,7 +7,7 @@ import resourceAnalysisValidator from './resourceAnalysisValidator.js';
 export const css = (strings) => strings.raw[0];
 
 const VALID_ANALYSIS_MODES = { intervals: 'intervals', totals: 'totals' };
-const VALID_TOTALS_DATE_RANGE_MODES = { liveBetween: 'liveBetween', strictlyBetween: 'strictlyBetween' };  
+const VALID_TOTALS_DATE_RANGE_MODES = { liveBetween: 'liveBetween', strictlyBetween: 'strictlyBetween' };
 export class RequestConstructor {
     /** requestConstructor.js
 * @param {Object} requestObject - The request object. Example {analysisMode: "intervals", filter: {projects: {Duration: 10}},  "intervals": {"startDate": "2024-01-01", "intervalType": "week", noOfIntervals": 5}.    
@@ -25,12 +25,12 @@ export class RequestConstructor {
     };
     constructor(requestObject = {}, dataServiceModel, parentDivId, options = {}) {
         if (requestObject == {}) { resourceAnalysisValidator.validateRequest(requestObject); }
-         
+
         this.state.analysisMode = requestObject.analysisMode || VALID_ANALYSIS_MODES.intervals;
         this.state.filter = requestObject.filter || {};
         this.state.intervals = requestObject.intervals || {};
         this.state.totals = requestObject.totals || {};
-        
+
 
         this.dataServiceModel = dataServiceModel;
         this.parentDivId = parentDivId;
@@ -39,7 +39,7 @@ export class RequestConstructor {
         this._lang = typeof strLanguage !== 'undefined' ? strLanguage : 'en';
 
         this.shouldFilterBeVisible = options?.shouldFilterBeVisible;
-        this.tablesAllowed = options?.tablesAllowed
+        this.tablesAllowed = options?.tablesAllowed;
 
         this._initPromise = this.#initDependencies().then(() => {
             this.initUI();
@@ -113,6 +113,11 @@ export class RequestConstructor {
 
         // Append the update button to the parent div
         parentDiv.appendChild(updateButton);
+
+        // Add collapse/expand features to the mode and filter sections
+        this.#addToggleCollapseExpandFeatures(requestConstructorModesWrapper, 'Mode');
+        this.#addToggleCollapseExpandFeatures(requestConstructorFilterWrapper, 'Filter');
+
     }
     #applyStyles() {
         const style = document.createElement('style');
@@ -304,7 +309,73 @@ export class RequestConstructor {
         });
     }
 
+    #addToggleCollapseExpandFeatures(div, title, initialState = 'expanded') {
+        // Create title element
+        const titleElement = document.createElement('span');
+        titleElement.className = 'req-constructor-title';
+        titleElement.innerText = title;
 
+        // Create caret element
+        const caretElement = document.createElement('span');
+        caretElement.className = 'req-constructor-caret';
+        caretElement.innerText = initialState === 'collapsed' ? '▼' : '▲'; // set caret based on initialState
+        caretElement.title = initialState === 'collapsed' ? 'Expand' : 'Collapse';
+
+        // Append title and caret to the div
+        div.appendChild(titleElement);
+        div.appendChild(caretElement);
+
+        // Wrap the content inside a content div for smooth collapsing
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'req-constructor-content';
+
+        while (div.firstChild && div.firstChild !== titleElement && div.firstChild !== caretElement) {
+            contentDiv.appendChild(div.firstChild);
+        }
+
+        div.appendChild(contentDiv);
+
+        // Set initial state based on the parameter
+        if (initialState === 'collapsed') {
+            div.classList.add('collapsed');
+            contentDiv.style.maxHeight = '0';
+        } else {
+            div.classList.remove('collapsed');
+            contentDiv.style.maxHeight = contentDiv.scrollHeight + 'px';
+        }
+
+        // Add event listener for the caret
+        caretElement.addEventListener('click', () => {
+            if (div.classList.contains('collapsed')) {
+                div.classList.remove('collapsed');
+                caretElement.innerText = '▲';
+                caretElement.title = 'Collapse';
+                contentDiv.style.maxHeight = contentDiv.scrollHeight + 'px';
+            } else {
+                div.classList.add('collapsed');
+                caretElement.innerText = '▼';
+                caretElement.title = 'Expand';
+                contentDiv.style.maxHeight = '0';
+            }
+        });
+
+        // Ensure the initial maxHeight is set correctly after the content is loaded
+        setTimeout(() => {
+            if (!div.classList.contains('collapsed')) {
+                contentDiv.style.maxHeight = contentDiv.scrollHeight + 'px';
+            }
+        }, 0);
+
+        // Mutation Observer to watch for content changes
+        const observer = new MutationObserver(() => {
+            if (!div.classList.contains('collapsed')) {
+                contentDiv.style.maxHeight = contentDiv.scrollHeight + 'px';
+            }
+        });
+
+        // Observe the content changes inside the content div
+        observer.observe(contentDiv, { childList: true, subtree: true });
+    }
     #updateFilterStateForTotals() {
         const totalsDateRangeMode = document.getElementById('req-constructor-totalsDateRangeMode').value;
         const startDate = document.getElementById('req-constructor-totals-startDate').value;
@@ -331,7 +402,7 @@ export class RequestConstructor {
             filter: this.state.filter,
             intervals: this.state.intervals,
             totals: this.state.totals
-        }
+        };
         const event = new CustomEvent('requestUpdated', {
             detail: newRequestObject,
             bubbles: true
@@ -350,8 +421,45 @@ export class RequestConstructor {
                 --req-constructor-close-cross-fill: #6d7d8f;
                 --req-constructor-close-cross-fill-hover: #3a4a5c;
             }
-            .req-constructor-modesWrapper{
+            .req-constructor-modesWrapper {
+                border: 1px solid #ccc;
+                padding: 10px;
+                position: relative;
+                margin-bottom: 1em;
             }
+
+            .req-constructor-filterWrapper {
+                border: 1px solid #ccc;
+                padding: 10px;
+                position: relative;
+            }
+
+            .req-constructor-title {
+                position: absolute;
+                top: -10px;
+                left: 10px;
+                background: white;
+                padding: 0 5px;
+            }
+
+            .req-constructor-caret {
+                position: absolute;
+                top: -10px;
+                right: 10px;
+                cursor: pointer;
+                background: white;
+                padding: 0 5px;
+            }
+
+            .req-constructor-content {
+                overflow: hidden;
+                transition: max-height 0.3s ease-out;
+            }
+
+            .collapsed .req-constructor-content {
+                max-height: 0;
+            }
+
             .req-constructor-modeWrapper {
                 display: flex;
                 align-items: center;
@@ -383,5 +491,5 @@ export class RequestConstructor {
                 border-radius: var(--filter-input-border-radius);
             }
             `;
-            }
+    }
 }
