@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon-development.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resource Analysis</title>
+
+    <!--#region ITM pollutants  -->
+    <script src="https://kit.fontawesome.com/b24d1adb84.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://app.itmplatform.com/Content/jquery.contextMenu.min.css" />
+    <link rel="stylesheet" href="https://app.itmplatform.com/Content/tc-stylesheet.css" />
+    <link rel="stylesheet" href="https://app.itmplatform.com/Content/dropkick.css" />
+    <link rel="stylesheet" href="https://app.itmplatform.com/fontawesome6/pro/css/fontawesome.css" />
+    <link rel="stylesheet" href="https://app.itmplatform.com/Content/style.css" />
+    <link rel="stylesheet" href="https://new.itmplatform.com/revamping/Content/jquery.jscrollpane.css" />
+    <link rel="stylesheet" href="https://new.itmplatform.com/revamping/Content/bootstrap-datepicker.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rock+Salt&subset=latin" />
+    <link rel="stylesheet" href="https://new.itmplatform.com/revamping/Content/tc-stylesheet.css" />
+    <link rel="stylesheet" href="https://cdn-itmplatform.azureedge.net/javascript/kendo.common.min.css" />
+    <link rel="stylesheet" href="https://new.itmplatform.com/revamping/Content/kendo/kendo.uniform.min.css" />
+    <link rel="stylesheet" href="https://new.itmplatform.com/revamping/Content/kendo/kendo.uniform.mobile.min.css" />
+
+    <!--#endregion ITM pollutants  -->
+
+    <!-- Mock ITM Platform Begin-->
+    <script src="MockITMPlatform/general.js"></script>
+    <script>
+        window.strLanguage = localStorage.getItem('strLanguage') || 'en';
+    </script>
+    <style>
+        .leftMenu {
+            width: 200px;
+            background-color: #f7f8fa;
+            padding-top: 10px;
+        }
+
+        .leftMenu h2 {
+            background-color: #f7c45c;
+            color: #495d73;
+            padding: 10px;
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .leftMenu ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .leftMenu li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .leftMenu li a {
+            text-decoration: none;
+            color: #495d73;
+            display: flex;
+            align-items: center;
+        }
+
+        .leftMenu li a .icon {
+            width: 24px;
+            text-align: center;
+            margin-right: 10px;
+        }
+
+        .leftMenu li a:hover {
+            background-color: #ccc;
+        }
+
+        .shortcut {
+            background-color: #f7c45c;
+            padding: 10px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+        }
+
+        .shortcut a {
+            text-decoration: none;
+            color: #495d73;
+            font-weight: bold;
+        }
+    </style>
+    <!-- Mock ITM Platform Begin-->
+
+    <link rel="stylesheet" href="flexiTable.css">
+    <link rel="stylesheet" href="resourceAnalysis.css">
+    <script src="resourceAnalysis.js" type="module" defer></script>
+
+
+</head>
+
+<body style="height: 100%;">
+    <!-- A page structure with a left menu, a header, and a main contend based in flex -->
+    <div id="bodycontainer" style="display: flex; flex-direction: column;">
+        <div id="topheader"
+            style="background: #495d73;height: 5rem;padding: 0rem;display: flex;flex-direction: row;justify-content: space-between; align-items: center;">
+            <div id="logoWrapper">
+                <img src="	https://app.itmplatform.com/itmrozas/images/logo.png" alt="" style="margin-left: 3em;">
+
+            </div>
+            <div id="headerOptionsWrapper" style="display: flex; align-items: center;">
+                <!-- insert three 1.5em sized fontawesome icons: magnifier, chat, question mark in a circle -->
+                <!-- next to is a dropdown with the options English and Spanish. On selection they will change window.strLanguage='es'; or to 'en' -->
+                <div style="margin-right: 1em; color: #ccc;" >
+                    <i class="fa-solid fa-magnifying-glass" style="font-size: 1.8em; margin-left: .6em;"></i>
+                    <i class="fa-duotone fa-comments" style="font-size: 1.8em; margin-left: .6em;"></i>
+                    <i class="fa-regular fa-circle-question" style="font-size: 1.8em; margin-left: .6em;"></i>
+                </div>
+                    <select name="language" id="language" 
+                    style="background-color: whitesmoke; padding: 8px; border-radius: 3px; margin: 0 1em;" 
+                    onchange="localStorage.setItem('strLanguage', value);location.reload();">
+                        <option value="es">Spanish</option>
+                        <option value="en">English</option>
+                    </select>
+                    <script>
+                        document.getElementById('language').value = window.strLanguage || 'en';
+                    </script>
+
+            </div>
+        </div>
+            <div id="MenuContentSocialcontainer" style="display: flex; flex-grow: 1;height: 100vh;">
+                <div id="MenuWrapper" style="background-color: white;padding: 1em; border-right: solid 1px #ccc;">
+                    <div id="menucontainer" class="leftMenu">
+                        <h2>MANAGEMENT</h2>
+                        <ul>
+                            <li><a href="#"><span class="icon"><i class="fas fa-tachometer-alt"></i></span>Main
+                                    Dashboard</a>
+                            </li>
+                            <li><a href="#"><span class="icon"><i class="fas fa-briefcase"></i></span>Portfolio</a></li>
+                            <li><a href="#"><span class="icon"><i class="fas fa-th-large"></i></span>Programs</a></li>
+                            <li><a href="#"><span class="icon"><i class="fas fa-folder"></i></span>Projects</a></li>
+                            <li><a href="#"><span class="icon"><i class="fas fa-cogs"></i></span>Services</a></li>
+                            <li><a href="#"><span class="icon"><i class="fas fa-handshake"></i></span>Clients</a></li>
+                            <li><a href="#"><span class="icon"><i class="fas fa-users"></i></span>Resources</a></li>
+                            <li><a href="#"><span class="icon"><i class="fas fa-wallet"></i></span>Budget</a></li>
+                            <li><a href="#"><span class="icon"><i class="fas fa-sitemap"></i></span>Organization Tree
+                                    View</a>
+                            </li>
+                            <li><a href="#"><span class="icon"><i class="fas fa-chart-bar"></i></span>Reporting</a></li>
+                            <li><a href="#"><span class="icon"><i class="fas fa-chart-pie"></i></span>Dashboards</a>
+                            </li>
+                        </ul>
+                        <div class="shortcut">
+                            <a href="#"><i class="fas fa-plus-circle"></i> Create a new project</a>
+                        </div>
+                    </div>
+                </div>
+                <div id="maincontentcontainer"
+                    style=" display: flex; flex-grow: 1; flex-wrap: nowrap; align-items: flex-start; flex-direction: column; padding: 0.5rem 1rem 0.5rem 1rem; overflow-y: auto;">
+
+                    <h3 class="main-heading">
+                        <i class="fa fa-star-o"></i> Resources
+                    </h3>
+                    <div id="tabs" style="padding: .5em; margin-bottom: 1.5em;">
+                        <div style="display: inline-block; color: #5e6779; background-color: f5f5f5; border: 1px solid #dedede;     border-top-left-radius: 3px;
+                        border-top-right-radius: 3px;padding: 10px 20px; cursor: pointer;">
+                            Planning</div>
+                        <div style="display: inline-block; color: #5e6779; background-color: #f7b75d; border: 1px solid lightgray;    border-top-left-radius: 3px;
+                        border-top-right-radius: 3px; padding: 10px 20px; cursor: pointer;">
+                            Analysis</div>
+
+                    </div>
+
+                    <!-- Custom code begin-->
+                    <div id="requestConstructorContainer"></div>
+                    <div id="separator"
+                        style="height:20px; width: 100%; border-top-style: solid;border-top-width: 1px;border-top-color: #cccccc;border-bottom-style: solid;border-bottom-width: 1px;border-bottom-color: #ccc;background: whitesmoke;margin: 1em 0;">
+                    </div>
+                    <div id="rowSelectorContainer"></div>
+                    <div id="tableContainer"></div>
+                    <button id="loadAnalysisBtn">Load Analysis</button>
+                    <script type="module">
+                        import { ResourceAnalysis } from './resourceAnalysis.js';
+                        const parentDivIds = {
+                            requestConstructorContainer: 'requestConstructorContainer',
+                            rowSelectorContainer: 'rowSelectorContainer',
+                            tableContainer: 'tableContainer'
+                        };
+                        // TODO - 🟡 - Add services and users to v2, add them to dataServiceModel, 
+                        // and review dashboards since it depends on the dataServiceModel
+                        let options = {
+                            tablesAllowed: [
+                                { 'projects': ['Id', 'Name', 'Duration', 'StartDate', 'EndDate', 'Status.Name', 'Status.IsCompleted'] },
+                                { 'services': ['Id', 'Name'] },
+                                { 'users': ['Id', 'Name'] },],
+                            preFilter: null,
+                            viewTemplateId: null
+                        };
+                        const resourceAnalysis = new ResourceAnalysis(parentDivIds, options);
+                    </script>
+                    <!-- Custom code end-->
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- <script type="module" src="/dist/dashboard-frontend.min.es.js"></script> -->
+</body>
+
+</html>

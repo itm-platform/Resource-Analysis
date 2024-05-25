@@ -159,7 +159,7 @@ export class ResourceAnalysis {
             lastUpdatedDate: '2023-12-01T00:00:00.000Z',
             lastUpdatedBy: { userId: 3890, displayName: 'Ben Li' },
             view: {
-                analysisMode: 'totals',
+                analysisMode: 'intervals',
                 intervals: {
                     startDate: '2024-02-01',
                     intervalType: 'day',
