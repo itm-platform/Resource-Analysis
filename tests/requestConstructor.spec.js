@@ -66,7 +66,7 @@ describe('RequestConstructor Initialization', () => {
                     intervals: requestObject.intervals,
                     totals: requestObject.totals},
                 dataServiceModel, parentDivId);
-            await new Promise(r => setTimeout(r, 100)); // Wait 100ms for the DOM to update
+            await requestConstructor._initPromise; // Wait for the initialization to complete
         });
 
         test('should reflect in state.totals what came in requestObject.totals', async () => {
@@ -79,7 +79,7 @@ describe('RequestConstructor Initialization', () => {
         });
 
         test('should dispatch "resourceAnalysisRequestUpdated" event with filter details when the button is clicked', async () => {
-            await new Promise(r => setTimeout(r, 100)); // Wait 100ms for the DOM to update
+            await requestConstructor._initPromise
             const updateRequestButton = document.getElementById('req-constructor-updateButton');
             const eventListener = vi.fn();
             document.addEventListener('resourceAnalysisRequestUpdated', eventListener);
@@ -149,7 +149,7 @@ describe('RequestConstructor public methods', () => {
         });
 
         test('should initialize with correct state', async () => {
-            await new Promise(r => setTimeout(r, 100));
+            await requestConstructor._initPromise
 
             expect(requestConstructor.state.analysisMode).toBe(requestObject.analysisMode);
             expect(requestConstructor.state.filter).toEqual(requestObject.filter);

@@ -80,7 +80,7 @@ describe('FlexiRowSelector integration', () => {
         initialFilters = { project: true, workItem: true, user: true };
         dataRows = [{ type: "project", children: [{ type: "workItem", children: [{ type: "user", children: [] }] }] }];
         flexiRowSelector = new FlexiRowSelector('rowSelectorDiv', initialFilters, dataRows);
-        await new Promise(r => setTimeout(r, 100)); // Wait 100ms for the DOM to update
+        await flexiRowSelector._initPromise;
     });
 
     test('should handle resourceAnalysisDataUpdated event correctly', async() => {
