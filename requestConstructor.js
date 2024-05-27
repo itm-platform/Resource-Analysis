@@ -4,7 +4,7 @@ import resourceAnalysisValidator from './resourceAnalysisValidator.js';
  * The "noop css tag function" is a no-operation (noop) function 
  * that takes a tagged template literal and returns the raw string without modification. 
  * This allows you to use VSCode's CSS formatting features  */
-export const css = (strings) => strings.raw[0];
+const css = (strings) => strings.raw[0];
 
 const VALID_ANALYSIS_MODES = { intervals: 'intervals', totals: 'totals' };
 const VALID_TOTALS_DATE_RANGE_MODES = { liveBetween: 'liveBetween', strictlyBetween: 'strictlyBetween' };

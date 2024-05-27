@@ -1,10 +1,15 @@
-import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { FlexiRowSelector } from '../flexiRowSelector'; 
+import { describe, test, expect, beforeEach, beforeAll, vi } from 'vitest';
+import { FlexiRowSelector } from '../flexiRowSelector';
+import mockGeneralJS from './mockGeneralJS';
+
 describe('FlexiRowSelector basics', () => {
     let flexiRowSelector;
     let initialFilters;
     let dataRows;
-    beforeEach(() => {
+    beforeAll(async () => {
+        await mockGeneralJS();
+    });
+    beforeEach(async () => {
         document.body.innerHTML = '';   
         const div = document.createElement('div');
         div.id = 'rowSelectorDiv';
@@ -14,14 +19,17 @@ describe('FlexiRowSelector basics', () => {
         initialFilters = { project: true, workItem: true, user: true };
         dataRows = [{type:"project",children:[{type:"workItem",children:[{type:"user",children:[]}]}]}];;
         flexiRowSelector = new FlexiRowSelector('rowSelectorDiv', initialFilters, dataRows);
+        await flexiRowSelector._initPromise; // Wait for the initialization to complete
     });
 
     test('should initialize with the given filter settings', () => {
         expect(flexiRowSelector.getRows()).toEqual(initialFilters, dataRows);
     });
 
-    test('should create filter checkboxes based on initialFilters', () => {
+    test('should create filter checkboxes based on initialFilters', async () => {
+        await flexiRowSelector._initPromise;
         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        console.log(checkboxes.length);
         expect(checkboxes.length).toBe(Object.keys(initialFilters).length);
         Object.keys(initialFilters).forEach(type => {
             const checkbox = document.getElementById(type);
@@ -29,7 +37,8 @@ describe('FlexiRowSelector basics', () => {
         });
     });
 
-    test('should update filter value on checkbox change', () => {
+    test('should update filter value on checkbox change', async () => {
+        await flexiRowSelector._initPromise;
         const checkbox = document.getElementById('workItem');
         checkbox.checked = true;
         checkbox.dispatchEvent(new window.Event('change'));
@@ -37,7 +46,8 @@ describe('FlexiRowSelector basics', () => {
         expect(flexiRowSelector.getRows().workItem).toBe(true);
     });
 
-    test('should dispatch custom event when filters are updated', () => {
+    test('should dispatch custom event when filters are updated', async () => {
+        await flexiRowSelector._initPromise;
         const spy = vi.fn();
         document.addEventListener('resourceAnalysisRowSelectionUpdated', spy);
 
@@ -58,7 +68,10 @@ describe('FlexiRowSelector integration', () => {
     let flexiRowSelector;
     let initialFilters;
     let dataRows;
-    beforeEach(() => {
+    beforeAll(async () => {
+        await mockGeneralJS();
+    });
+    beforeEach(async() => {
         document.body.innerHTML = '';
         const div = document.createElement('div');
         div.id = 'rowSelectorDiv';
@@ -67,9 +80,11 @@ describe('FlexiRowSelector integration', () => {
         initialFilters = { project: true, workItem: true, user: true };
         dataRows = [{ type: "project", children: [{ type: "workItem", children: [{ type: "user", children: [] }] }] }];
         flexiRowSelector = new FlexiRowSelector('rowSelectorDiv', initialFilters, dataRows);
+        await new Promise(r => setTimeout(r, 100)); // Wait 100ms for the DOM to update
     });
 
-    test('should handle resourceAnalysisDataUpdated event correctly', () => {
+    test('should handle resourceAnalysisDataUpdated event correctly', async() => {
+        await flexiRowSelector._initPromise;
         // Simulate new data order
         const newDataRows = [{ type: "user", children: [{ type: "project", children: [{ type: "workItem", children: [] }] }] }];
 

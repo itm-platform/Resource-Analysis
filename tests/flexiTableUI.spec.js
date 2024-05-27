@@ -1,10 +1,15 @@
 // tests/UI/flexiTableUI.spec.js
-import { describe, test, expect, beforeEach } from 'vitest';
+import { describe, test, expect, beforeEach, beforeAll } from 'vitest';
 import { FlexiTable } from '../flexiTable.js';
 import { FlexiRowSelector } from '../flexiRowSelector.js';
 import data from './dataSamples/intervalsByEntityAndWorkItem.json';
 
+import mockGeneralJS from './mockGeneralJS';
+
 describe('UI Tests for flexiTable', async () => {
+    beforeAll(async () => {
+        await mockGeneralJS();
+    });
     beforeEach(async () => {
         // Setup the initial HTML structure
         document.body.innerHTML = `
@@ -85,6 +90,9 @@ describe('UI Tests for flexiTable', async () => {
 });
 
 describe('Row Interaction Tests', async () => {
+    beforeAll(async () => {
+        await mockGeneralJS();
+    });
     beforeEach(async () => {
         // Setup the initial HTML structure
         document.body.innerHTML = `
@@ -153,6 +161,9 @@ describe('Row Interaction Tests', async () => {
 });
 
 describe('Interaction Tests for FlexiTable Filters', () => {
+    beforeAll(async () => {
+        await mockGeneralJS();
+    });
     beforeEach(() => {
         // Set up the DOM structure as it would be in the live environment
         document.body.innerHTML = `
@@ -175,6 +186,7 @@ describe('Interaction Tests for FlexiTable Filters', () => {
     });
 
     test('Check that unchecking "user" removes users from the table', async () => {
+        await new Promise(r => setTimeout(r, 100));
         const userCheckbox = document.querySelector('#user');
         userCheckbox.click(); // Simulate unchecking the "user" checkbox
         await new Promise(r => setTimeout(r, 100)); // Wait a bit for the DOM updates to apply
@@ -184,16 +196,19 @@ describe('Interaction Tests for FlexiTable Filters', () => {
     });
 
     // these two don't pass but work in the UI
-    test.skip('Check that checking "user" again brings back users', async () => {
+    test.only('Check that checking "user" again brings back users', async () => {
         await new Promise(r => setTimeout(r, 100)); // Wait a bit for the DOM updates to apply
         let users = document.querySelectorAll('tr[data-type="user"]');
+        console.log(`users.length: ${users.length}`);
         const userCheckbox = document.querySelector('#user');
         userCheckbox.click(); // Uncheck
         await new Promise(r => setTimeout(r, 100)); // Wait a bit for the DOM updates to apply
         users = document.querySelectorAll('tr[data-type="user"]');
+        console.log(`users.length after first click: ${users.length}`);
         userCheckbox.click(); // Check again
         await new Promise(r => setTimeout(r, 100)); // Wait a bit for the DOM updates to apply
         users = document.querySelectorAll('tr[data-type="user"]');
+        console.log(`users.length after second click: ${users.length}`);
         expect(users.length).toBeGreaterThan(0); // Check that user entries are back
     });
 

@@ -2,6 +2,8 @@ import { describe, test, expect, beforeEach, beforeAll, vi } from 'vitest';
 import { RequestConstructor } from '../requestConstructor';
 import mockGeneralJS from './mockGeneralJS';
 
+import './web-components/itm-common-components.min.js'
+
 
 describe('RequestConstructor Initialization', () => {
     beforeAll(async () => {

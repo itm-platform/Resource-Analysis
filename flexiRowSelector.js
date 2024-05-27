@@ -1,19 +1,45 @@
 // flexiRowSelector.js
 import { retrieveTypeOrder } from "./utils.js";
+const css = (strings) => strings.raw[0];
 export class FlexiRowSelector {
     constructor(targetDivId, initialRowSelection = {}, dataRows) {
         this.targetDiv = document.getElementById(targetDivId);
         this.dataRows = dataRows;
         this.rowSelectionOrder = this.#getRowSelectionOrder(dataRows, initialRowSelection);
         this.rowSelection = this.#reorderRowSelection(initialRowSelection);
-        this.initRowSelectorUI();
-        this.#registerDataUpdatedListener(); // Register listener for data updates
-    }
 
+        this._langTranslations = {};
+        this._lang = typeof strLanguage !== 'undefined' ? strLanguage : 'en';
+
+        this._initPromise = this.#initDependencies().then(() => {
+            this.initRowSelectorUI();
+            this.#applyStyles();
+            this.#registerDataUpdatedListener(); // Register listener for data updates
+        });
+    }
+    async #initDependencies() {
+        await itmGlobal.ensureDiContainerReady();
+        this.getTranslations = window.diContainer.get('getTranslations');
+        await this.#loadTranslations();
+
+    }
+    async #loadTranslations() {
+        this._langTranslations = await this.getTranslations('flexitable', this._lang);
+    }
+    #applyStyles() {
+        const style = document.createElement('style');
+        style.textContent = this.#getStyles();
+        document.head.appendChild(style);
+    }
     initRowSelectorUI() {
         this.rowSelectorContainer = this.targetDiv.querySelector('.row-selector-container') || document.createElement('div');
         this.rowSelectorContainer.className = 'row-selector-container';
-        this.rowSelectorContainer.innerHTML = ''; // Clear existing content
+        // const rowSelectorLabel = document.createElement('span');
+        // rowSelectorLabel.innerHTML= this._langTranslations.t('include') + ' ';
+        // rowSelectorLabel.className = 'ftbl-row-selector-main-label';
+
+        this.rowSelectorContainer.innerHTML = '';
+        // this.rowSelectorContainer.appendChild(rowSelectorLabel);
 
         this.#createCheckboxes();
 
@@ -23,8 +49,10 @@ export class FlexiRowSelector {
     #createCheckboxes() {
         Object.keys(this.rowSelection).forEach(type => {
             const label = document.createElement('label');
+            label.classList.add('ftbl-row-selector-label');
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
+            // TODO - 🟡 - Change the id name, it cannot be "user", it affects the whole document
             checkbox.id = type;
             checkbox.checked = this.rowSelection[type];
 
@@ -33,7 +61,8 @@ export class FlexiRowSelector {
             });
 
             label.appendChild(checkbox);
-            label.append(` ${type}`);
+            
+            label.append(this._langTranslations.t(type));
             this.rowSelectorContainer.appendChild(label);
         });
     }
@@ -55,7 +84,7 @@ export class FlexiRowSelector {
             }
         });
     }
-    #getRowSelectionOrder(dataRows,  initialFilters = {}) {
+    #getRowSelectionOrder(dataRows, initialFilters = {}) {
         if (dataRows && dataRows.length > 0) {
             return retrieveTypeOrder(dataRows);
         } else {
@@ -66,10 +95,10 @@ export class FlexiRowSelector {
             }
         }
     };
-    
+
     #reorderRowSelection(previousFilters) {
         if (this.rowSelectionOrder) {
-        const reorderedFilters = {};
+            const reorderedFilters = {};
             this.rowSelectionOrder.forEach(type => {
                 reorderedFilters[type] = type in previousFilters ? previousFilters[type] : false;
             });
@@ -92,7 +121,7 @@ export class FlexiRowSelector {
 
     #registerDataUpdatedListener() {
         document.addEventListener('resourceAnalysisDataUpdated', (event) => {
-            this.#handleDataUpdated(event.detail.rows); 
+            this.#handleDataUpdated(event.detail.rows);
         });
     }
 
@@ -110,7 +139,20 @@ export class FlexiRowSelector {
         this.rowSelection[type] = value;
         this.rowSelection = this.#setSubsequentFiltersFalse(this.rowSelection);
         this.initRowSelectorUI(); // Reinitialize UI to reflect changes
-        document.dispatchEvent(new CustomEvent('resourceAnalysisRowSelectionUpdated', { detail: this.rowSelection, bubbles: true}));
+        document.dispatchEvent(new CustomEvent('resourceAnalysisRowSelectionUpdated', { detail: this.rowSelection, bubbles: true }));
+    }
+    #getStyles() {
+        return css`
+            .ftbl-row-selector-label {
+                margin-right: .4em;
+            }
+            .ftbl-row-selector-label input {
+                margin-right: .2em;
+            }
+            .ftbl-row-selector-main-label {
+                font-weight: bold;
+            }
+        `;
     }
 
 }
