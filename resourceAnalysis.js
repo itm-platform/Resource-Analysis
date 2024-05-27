@@ -7,6 +7,8 @@ import { EffortTransformer } from './effortTransformer.js';
 import { mergeDeep } from './utils.js';
 // TODO - 🔴 - Translations
 // TODO - 🟡 - retrieve pivotConfig from the viewTemplate
+// TODO - 🟡 - Add a spinner
+// TODO - 🟡 - Review browser's issues
 
 const VALID_ANALYSIS_MODES = { intervals: 'intervals', totals: 'totals' };
 const VALID_TOTALS_DATE_RANGE_MODES = { liveBetween: 'liveBetween', strictlyBetween: 'strictlyBetween' };

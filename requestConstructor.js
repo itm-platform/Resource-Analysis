@@ -115,8 +115,10 @@ export class RequestConstructor {
         parentDiv.appendChild(updateButton);
 
         // Add collapse/expand features to the mode and filter sections
-        this.#addToggleCollapseExpandFeatures(requestConstructorModesWrapper, 'Mode');
-        this.#addToggleCollapseExpandFeatures(requestConstructorFilterWrapper, 'Filter');
+        const constructorModesWrapperInitiallyCollapsed = localStorage.getItem(requestConstructorModesWrapper.id + 'InitiallyCollapsed');
+        const constructorFilterWrapperInitiallyCollapsed = localStorage.getItem(requestConstructorFilterWrapper.id + 'InitiallyCollapsed');
+        this.#addToggleCollapseExpandFeatures(requestConstructorModesWrapper, 'Mode', constructorModesWrapperInitiallyCollapsed);
+        this.#addToggleCollapseExpandFeatures(requestConstructorFilterWrapper, 'Filter', constructorFilterWrapperInitiallyCollapsed);
 
     }
     #applyStyles() {
@@ -316,9 +318,9 @@ export class RequestConstructor {
         titleElement.innerText = title;
 
         // Create caret element
-        const caretElement = document.createElement('span');
+        const caretElement = document.createElement('itm-caret-up-down');
         caretElement.className = 'req-constructor-caret';
-        caretElement.innerText = initialState === 'collapsed' ? '▼' : '▲'; // set caret based on initialState
+        caretElement.value = initialState === 'collapsed' ? 'down' : 'up'; // set caret based on initialState
         caretElement.title = initialState === 'collapsed' ? 'Expand' : 'Collapse';
 
         // Append title and caret to the div
@@ -351,11 +353,13 @@ export class RequestConstructor {
                 caretElement.innerText = '▲';
                 caretElement.title = 'Collapse';
                 contentDiv.style.maxHeight = contentDiv.scrollHeight + 'px';
+                localStorage.setItem(div.id + 'InitiallyCollapsed', 'expanded');
             } else {
                 div.classList.add('collapsed');
                 caretElement.innerText = '▼';
                 caretElement.title = 'Expand';
                 contentDiv.style.maxHeight = '0';
+                localStorage.setItem(div.id + 'InitiallyCollapsed', 'collapsed');
             }
         });
 
@@ -423,14 +427,16 @@ export class RequestConstructor {
             }
             .req-constructor-modesWrapper {
                 border: 1px solid #ccc;
-                padding: 10px;
+                border-radius: 3px;
+                padding: 1.8em;
                 position: relative;
                 margin-bottom: 1em;
             }
 
             .req-constructor-filterWrapper {
                 border: 1px solid #ccc;
-                padding: 10px;
+                border-radius: 3px;
+                padding: 1.8em;
                 position: relative;
             }
 
