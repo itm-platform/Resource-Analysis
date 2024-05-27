@@ -31,7 +31,7 @@ describe('FlexiRowSelector basics', () => {
         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
         expect(checkboxes.length).toBe(Object.keys(initialFilters).length);
         Object.keys(initialFilters).forEach(type => {
-            const checkbox = document.getElementById(type);
+            const checkbox = document.getElementById(`row-selector-${type}`);
             expect(checkbox.checked).toBe(initialFilters[type]);
         });
     });
@@ -62,7 +62,7 @@ describe('FlexiRowSelector basics', () => {
 
     test('should update filter value on checkbox change', async () => {
         await flexiRowSelector._initPromise;
-        const checkbox = document.getElementById('workItem');
+        const checkbox = document.getElementById('row-selector-workItem');
         checkbox.checked = true;
         checkbox.dispatchEvent(new window.Event('change'));
 
@@ -74,7 +74,7 @@ describe('FlexiRowSelector basics', () => {
         const spy = vi.fn();
         document.addEventListener('resourceAnalysisRowSelectionUpdated', spy);
 
-        const checkbox = document.getElementById('workItem');
+        const checkbox = document.getElementById('row-selector-workItem');
         checkbox.checked = true;
         checkbox.dispatchEvent(new window.Event('change'));
 
@@ -124,8 +124,8 @@ describe('FlexiRowSelector integration', () => {
         // Ensure the checkboxes are reordered accordingly in the UI
         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
         expect(checkboxes.length).toBe(3);
-        expect(checkboxes[0].id).toBe('user');
-        expect(checkboxes[1].id).toBe('project');
-        expect(checkboxes[2].id).toBe('workItem');
+        expect(checkboxes[0].id).toBe('row-selector-user');
+        expect(checkboxes[1].id).toBe('row-selector-project');
+        expect(checkboxes[2].id).toBe('row-selector-workItem');
     });
 });

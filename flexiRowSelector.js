@@ -49,7 +49,7 @@ export class FlexiRowSelector {
             label.classList.add('ftbl-row-selector-label');
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.id = type;
+            checkbox.id = `row-selector-${type}`;
             checkbox.checked = this.rowSelection[type];
             
             if (isFirst) {
@@ -71,7 +71,7 @@ export class FlexiRowSelector {
         let firstUncheckedFound = false;
         let enableNext = false;
         Object.keys(this.rowSelection).forEach((type, index) => {
-            const checkbox = document.getElementById(type);
+            const checkbox = document.getElementById(`row-selector-${type}`);
             if (index === 0) {
                 checkbox.checked = true;
                 checkbox.disabled = true;
