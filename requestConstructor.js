@@ -115,12 +115,32 @@ export class RequestConstructor {
         parentDiv.appendChild(updateButton);
 
         // Add collapse/expand features to the mode and filter sections
-        const constructorModesWrapperInitiallyCollapsed = localStorage.getItem(requestConstructorModesWrapper.id + 'InitiallyCollapsed');
-        const constructorFilterWrapperInitiallyCollapsed = localStorage.getItem(requestConstructorFilterWrapper.id + 'InitiallyCollapsed');
-        this.#addToggleCollapseExpandFeatures(requestConstructorModesWrapper, 'Mode', constructorModesWrapperInitiallyCollapsed);
-        this.#addToggleCollapseExpandFeatures(requestConstructorFilterWrapper, 'Filter', constructorFilterWrapperInitiallyCollapsed);
+        const modesWrapperToggleState = this.#wrapperInitialToggleState(requestConstructorModesWrapper);
+        const filterWrapperToggleState = this.#wrapperInitialToggleState(requestConstructorFilterWrapper);
+
+        this.#addToggleCollapseExpandFeatures(requestConstructorModesWrapper, this.#modesWrapperTitle(modesWrapperToggleState), modesWrapperToggleState);
+        this.#addToggleCollapseExpandFeatures(requestConstructorFilterWrapper, this.#filterWrapperTitle(filterWrapperToggleState), filterWrapperToggleState);
 
     }
+    #wrapperInitialToggleState(div) {
+        const toggleState = localStorage.getItem(div.id + 'ToggleState');
+        return toggleState;
+    };
+    #modesWrapperTitle(toggleState) {
+        if (toggleState=='collapsed') {
+            return this.state.analysisMode == 'intervals' ? `${this._langTranslations.t('mode')}: ${this._langTranslations.t('intervals')}` : `${this._langTranslations.t('mode')}: ${this._langTranslations.t('totals')})`;
+        }
+        else {
+            return this._langTranslations.t('mode');
+        }
+    }
+    #filterWrapperTitle(toggleState) {
+        return toggleState=='collapsed'? 
+        this._langTranslations.t('filtersApplied') :
+        this._langTranslations.t('filter');
+
+    }
+
     #applyStyles() {
         const style = document.createElement('style');
         style.textContent = this.#getStyles();
@@ -242,7 +262,7 @@ export class RequestConstructor {
         });
 
         const totalsLabel = document.createElement('label');
-        totalsLabel.htmlFor =  totalsRadio.id;
+        totalsLabel.htmlFor = totalsRadio.id;
         totalsLabel.className = 'req-constructor-label';
         totalsLabel.textContent = this._langTranslations.t('totals');
 
@@ -355,13 +375,13 @@ export class RequestConstructor {
                 caretElement.innerText = '▲';
                 caretElement.title = 'Collapse';
                 contentDiv.style.maxHeight = contentDiv.scrollHeight + 'px';
-                localStorage.setItem(div.id + 'InitiallyCollapsed', 'expanded');
+                localStorage.setItem(div.id + 'ToggleState', 'expanded');
             } else {
                 div.classList.add('collapsed');
                 caretElement.innerText = '▼';
                 caretElement.title = 'Expand';
                 contentDiv.style.maxHeight = '0';
-                localStorage.setItem(div.id + 'InitiallyCollapsed', 'collapsed');
+                localStorage.setItem(div.id + 'ToggleState', 'collapsed');
             }
         });
 
