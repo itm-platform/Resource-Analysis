@@ -172,13 +172,7 @@ export class ResourceAnalysis {
                     startDate: '2024-01-01',
                     endDate: '2024-03-31'
                 },
-                filter: {
-                    "projects": {
-                      "Duration": {
-                        "$gt": 10
-                      }
-                    }
-                  },
+                filter: {},
                 pivotConfig: 'user'
             }
         };

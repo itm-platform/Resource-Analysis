@@ -164,7 +164,8 @@ export class RequestConstructor {
         });
 
         const intervalsLabel = document.createElement('label');
-        intervalsLabel.htmlFor = 'intervals';
+        intervalsLabel.htmlFor = intervalsRadio.id;
+        intervalsLabel.className = 'req-constructor-label';
         intervalsLabel.textContent = this._langTranslations.t('intervals');
 
         constructorModeRadio.appendChild(intervalsRadio);
@@ -241,7 +242,8 @@ export class RequestConstructor {
         });
 
         const totalsLabel = document.createElement('label');
-        totalsLabel.htmlFor = 'totals';
+        totalsLabel.htmlFor =  totalsRadio.id;
+        totalsLabel.className = 'req-constructor-label';
         totalsLabel.textContent = this._langTranslations.t('totals');
 
         constructorModeRadio.appendChild(totalsRadio);
@@ -478,7 +480,7 @@ export class RequestConstructor {
             }
 
             .req-constructor-mode-radio{
-                width: 10em;
+                width: 8em;
             }
             .req-constructor-mode-options-wrapper {
                 display: flex;
@@ -495,6 +497,9 @@ export class RequestConstructor {
                 padding: 3px;
                 border: 1px solid var(--filter-select-border-color);
                 border-radius: var(--filter-input-border-radius);
+            }
+            .req-constructor-label {
+                margin-left: .4em;
             }
             `;
     }
