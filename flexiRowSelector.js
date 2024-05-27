@@ -34,12 +34,8 @@ export class FlexiRowSelector {
     initRowSelectorUI() {
         this.rowSelectorContainer = this.targetDiv.querySelector('.row-selector-container') || document.createElement('div');
         this.rowSelectorContainer.className = 'row-selector-container';
-        // const rowSelectorLabel = document.createElement('span');
-        // rowSelectorLabel.innerHTML= this._langTranslations.t('include') + ' ';
-        // rowSelectorLabel.className = 'ftbl-row-selector-main-label';
 
         this.rowSelectorContainer.innerHTML = '';
-        // this.rowSelectorContainer.appendChild(rowSelectorLabel);
 
         this.#createCheckboxes();
 
@@ -47,21 +43,26 @@ export class FlexiRowSelector {
         this.#manageCheckboxes(); // Initial setup for checkbox states
     }
     #createCheckboxes() {
+        let isFirst = true;
         Object.keys(this.rowSelection).forEach(type => {
             const label = document.createElement('label');
             label.classList.add('ftbl-row-selector-label');
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            // TODO - 🟡 - Change the id name, it cannot be "user", it affects the whole document
             checkbox.id = type;
             checkbox.checked = this.rowSelection[type];
+            
+            if (isFirst) {
+                checkbox.checked = true;
+                checkbox.disabled = true;
+                isFirst = false;
+            }
 
             checkbox.addEventListener('change', () => {
                 this.updateFilter(type, checkbox.checked);
             });
 
             label.appendChild(checkbox);
-            
             label.append(this._langTranslations.t(type));
             this.rowSelectorContainer.appendChild(label);
         });
@@ -69,8 +70,13 @@ export class FlexiRowSelector {
     #manageCheckboxes() {
         let firstUncheckedFound = false;
         let enableNext = false;
-        Object.keys(this.rowSelection).forEach(type => {
+        Object.keys(this.rowSelection).forEach((type, index) => {
             const checkbox = document.getElementById(type);
+            if (index === 0) {
+                checkbox.checked = true;
+                checkbox.disabled = true;
+                return; // Skip the first checkbox
+            }
             if (enableNext) {
                 checkbox.disabled = false;
                 enableNext = false;
@@ -102,6 +108,11 @@ export class FlexiRowSelector {
             this.rowSelectionOrder.forEach(type => {
                 reorderedFilters[type] = type in previousFilters ? previousFilters[type] : false;
             });
+
+            // Ensure the first checkbox is always checked
+            const firstType = this.rowSelectionOrder[0];
+            reorderedFilters[firstType] = true;
+
             return this.#setSubsequentFiltersFalse(reorderedFilters);
         }
         return this.#setSubsequentFiltersFalse(previousFilters);
@@ -136,6 +147,9 @@ export class FlexiRowSelector {
     }
 
     updateFilter(type, value) {
+        if (Object.keys(this.rowSelection).indexOf(type) === 0) {
+            return; // Prevent changes to the first checkbox
+        }
         this.rowSelection[type] = value;
         this.rowSelection = this.#setSubsequentFiltersFalse(this.rowSelection);
         this.initRowSelectorUI(); // Reinitialize UI to reflect changes

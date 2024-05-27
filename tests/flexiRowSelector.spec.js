@@ -10,14 +10,14 @@ describe('FlexiRowSelector basics', () => {
         await mockGeneralJS();
     });
     beforeEach(async () => {
-        document.body.innerHTML = '';   
+        document.body.innerHTML = '';
         const div = document.createElement('div');
         div.id = 'rowSelectorDiv';
         document.body.appendChild(div);
 
         // Setting initial filters state
         initialFilters = { project: true, workItem: true, user: true };
-        dataRows = [{type:"project",children:[{type:"workItem",children:[{type:"user",children:[]}]}]}];;
+        dataRows = [{ type: "project", children: [{ type: "workItem", children: [{ type: "user", children: [] }] }] }];;
         flexiRowSelector = new FlexiRowSelector('rowSelectorDiv', initialFilters, dataRows);
         await flexiRowSelector._initPromise; // Wait for the initialization to complete
     });
@@ -29,12 +29,35 @@ describe('FlexiRowSelector basics', () => {
     test('should create filter checkboxes based on initialFilters', async () => {
         await flexiRowSelector._initPromise;
         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        console.log(checkboxes.length);
         expect(checkboxes.length).toBe(Object.keys(initialFilters).length);
         Object.keys(initialFilters).forEach(type => {
             const checkbox = document.getElementById(type);
             expect(checkbox.checked).toBe(initialFilters[type]);
         });
+    });
+    test('should always have the first checkbox checked and disabled', async () => {
+        await flexiRowSelector._initPromise;
+        const firstCheckbox = document.querySelector('input[type="checkbox"]');
+        expect(firstCheckbox.checked).toBe(true);
+        expect(firstCheckbox.disabled).toBe(true);
+    });
+
+    test('should not allow unchecking the first checkbox through UI', async () => {
+        await flexiRowSelector._initPromise;
+        const firstCheckbox = document.querySelector('input[type="checkbox"]');
+        firstCheckbox.click();
+        expect(firstCheckbox.checked).toBe(true);
+        expect(firstCheckbox.disabled).toBe(true);
+    });
+
+    test('should ensure the first checkbox remains checked after reordering', async () => {
+        dataRows = [{ type: "user", children: [{ type: "project", children: [{ type: "workItem", children: [] }] }] }];
+        document.dispatchEvent(new CustomEvent('resourceAnalysisDataUpdated', { detail: { rows: dataRows } }));
+        await flexiRowSelector._initPromise;
+
+        const reorderedFirstCheckbox = document.querySelector('input[type="checkbox"]');
+        expect(reorderedFirstCheckbox.checked).toBe(true);
+        expect(reorderedFirstCheckbox.disabled).toBe(true);
     });
 
     test('should update filter value on checkbox change', async () => {
@@ -42,7 +65,7 @@ describe('FlexiRowSelector basics', () => {
         const checkbox = document.getElementById('workItem');
         checkbox.checked = true;
         checkbox.dispatchEvent(new window.Event('change'));
-        
+
         expect(flexiRowSelector.getRows().workItem).toBe(true);
     });
 
@@ -61,7 +84,7 @@ describe('FlexiRowSelector basics', () => {
         }));
     });
 
-    
+
 });
 
 describe('FlexiRowSelector integration', () => {
@@ -71,7 +94,7 @@ describe('FlexiRowSelector integration', () => {
     beforeAll(async () => {
         await mockGeneralJS();
     });
-    beforeEach(async() => {
+    beforeEach(async () => {
         document.body.innerHTML = '';
         const div = document.createElement('div');
         div.id = 'rowSelectorDiv';
@@ -83,7 +106,7 @@ describe('FlexiRowSelector integration', () => {
         await flexiRowSelector._initPromise;
     });
 
-    test('should handle resourceAnalysisDataUpdated event correctly', async() => {
+    test('should handle resourceAnalysisDataUpdated event correctly', async () => {
         await flexiRowSelector._initPromise;
         // Simulate new data order
         const newDataRows = [{ type: "user", children: [{ type: "project", children: [{ type: "workItem", children: [] }] }] }];
