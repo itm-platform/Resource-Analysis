@@ -1,4 +1,5 @@
 // FilterLineValueSingle.js
+// TODO - 🔴 - When value is 0 like  projects: {Duration: { $gt: 10 }}, it is blank
 import { css } from '../Modules/helperFunctions.js';
 
 export class FilterLineValueSingle {

@@ -118,28 +118,31 @@ export class RequestConstructor {
         const modesWrapperToggleState = this.#wrapperInitialToggleState(requestConstructorModesWrapper);
         const filterWrapperToggleState = this.#wrapperInitialToggleState(requestConstructorFilterWrapper);
 
-        this.#addToggleCollapseExpandFeatures(requestConstructorModesWrapper, this.#modesWrapperTitle(modesWrapperToggleState), modesWrapperToggleState);
-        this.#addToggleCollapseExpandFeatures(requestConstructorFilterWrapper, this.#filterWrapperTitle(filterWrapperToggleState), filterWrapperToggleState);
-
+        this.#addToggleCollapseExpandFeatures(requestConstructorModesWrapper, this.#modesWrapperTitle(modesWrapperToggleState), modesWrapperToggleState, 'mode');
+        this.#addToggleCollapseExpandFeatures(requestConstructorFilterWrapper, this.#filterWrapperTitle(filterWrapperToggleState), filterWrapperToggleState, 'filter');
     }
+
     #wrapperInitialToggleState(div) {
         const toggleState = localStorage.getItem(div.id + 'ToggleState');
         return toggleState;
-    };
+    }
+
     #modesWrapperTitle(toggleState) {
-        if (toggleState=='collapsed') {
-            return this.state.analysisMode == 'intervals' ? `${this._langTranslations.t('mode')}: ${this._langTranslations.t('intervals')}` : `${this._langTranslations.t('mode')}: ${this._langTranslations.t('totals')})`;
-        }
-        else {
+        if (toggleState == 'collapsed') {
+            return this.state.analysisMode == 'intervals' ? `${this._langTranslations.t('mode')}: ${this._langTranslations.t('intervals')}` : `${this._langTranslations.t('mode')}: ${this._langTranslations.t('totals')}`;
+        } else {
             return this._langTranslations.t('mode');
         }
     }
-    #filterWrapperTitle(toggleState) {
-        return toggleState=='collapsed'? 
-        this._langTranslations.t('filtersApplied') :
-        this._langTranslations.t('filter');
 
+    #filterWrapperTitle(toggleState) {
+        const areFiltersApplied = (this.state.filter && typeof this.state.filter === 'object' && Object.keys(this.state.filter).length > 0);
+        if (toggleState == 'collapsed') {
+            return areFiltersApplied ? this._langTranslations.t('filtersApplied') : this._langTranslations.t('filter');
+        }
+        else { return this._langTranslations.t('filter'); };
     }
+
 
     #applyStyles() {
         const style = document.createElement('style');
@@ -333,7 +336,7 @@ export class RequestConstructor {
         });
     }
 
-    #addToggleCollapseExpandFeatures(div, title, initialState = 'expanded') {
+    #addToggleCollapseExpandFeatures(div, title, initialState = 'expanded', type) {
         // Create title element
         const titleElement = document.createElement('span');
         titleElement.className = 'req-constructor-title';
@@ -362,9 +365,11 @@ export class RequestConstructor {
         // Set initial state based on the parameter
         if (initialState === 'collapsed') {
             div.classList.add('collapsed');
+            div.classList.add('req-constructor-toggle-reduced-padding');
             contentDiv.style.maxHeight = '0';
         } else {
             div.classList.remove('collapsed');
+            div.classList.remove('req-constructor-toggle-reduced-padding');
             contentDiv.style.maxHeight = contentDiv.scrollHeight + 'px';
         }
 
@@ -372,17 +377,22 @@ export class RequestConstructor {
         caretElement.addEventListener('click', () => {
             if (div.classList.contains('collapsed')) {
                 div.classList.remove('collapsed');
+                div.classList.remove('req-constructor-toggle-reduced-padding');
                 caretElement.innerText = '▲';
                 caretElement.title = 'Collapse';
                 contentDiv.style.maxHeight = contentDiv.scrollHeight + 'px';
                 localStorage.setItem(div.id + 'ToggleState', 'expanded');
             } else {
                 div.classList.add('collapsed');
+                div.classList.add('req-constructor-toggle-reduced-padding');
                 caretElement.innerText = '▼';
                 caretElement.title = 'Expand';
                 contentDiv.style.maxHeight = '0';
                 localStorage.setItem(div.id + 'ToggleState', 'collapsed');
             }
+
+            // Update title based on new state
+            titleElement.innerText = type === 'mode' ? this.#modesWrapperTitle(localStorage.getItem(div.id + 'ToggleState')) : this.#filterWrapperTitle(localStorage.getItem(div.id + 'ToggleState'));
         });
 
         // Ensure the initial maxHeight is set correctly after the content is loaded
@@ -460,6 +470,10 @@ export class RequestConstructor {
                 border-radius: 3px;
                 padding: 1.8em;
                 position: relative;
+            }
+
+            .req-constructor-toggle-reduced-padding{
+                padding: .8em;
             }
 
             .req-constructor-title {
