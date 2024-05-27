@@ -238,7 +238,6 @@ export class ResourceAnalysis {
         return result;
     }
 
-
     async #fetchEffortData() {
         //console.log(`State before fetching data:, ${JSON.stringify(this.state.request, null, 2)}`);
         const testingResourceAnalysisWithLocalFiles = localStorage.getItem('testingResourceAnalysisWithLocalFiles') === 'true';
@@ -338,7 +337,6 @@ export class ResourceAnalysis {
 
     #addEventListeners() {
         document.addEventListener('requestUpdated', event => {
-            console.log('Request updated:', event.detail);
             this.#setState({ request: event.detail });
             this.#fetchEffortData().then(() => {
                 this.#renderFlexiTable();

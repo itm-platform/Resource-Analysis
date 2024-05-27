@@ -71,14 +71,7 @@ export class RequestConstructor {
             return wrapper;
         }
 
-        // Helper function to create and append a button
-        function createButton(id, text, onClick) {
-            const button = document.createElement('button');
-            button.id = id;
-            button.textContent = text;
-            button.addEventListener('click', onClick);
-            return button;
-        }
+
 
         const requestConstructorWrapper = createWrapper('req-constructor-wrapper', 'req-constructor-wrapper');
         const requestConstructorModesWrapper = createWrapper('req-constructor-modesWrapper', 'req-constructor-modesWrapper');
@@ -105,14 +98,36 @@ export class RequestConstructor {
             requestConstructorFilterWrapper.appendChild(filterSection);
         }
 
+
+        // Button div wrapper
+        const buttonWrapper = document.createElement('div');
+        buttonWrapper.className = 'req-constructor-buttonDiv-wrapper';
+        
         // Create and configure the update button
-        const updateButton = createButton('req-constructor-updateButton', 'Change Request', (event) => {
+        const updateButton = document.createElement('itm-button');
+        updateButton.type = 'primary';
+        updateButton.id = 'req-constructor-updateButton';
+        updateButton.textContent = 'Change Request';
+        updateButton.addEventListener('click', (event) => {
             event.preventDefault();
             this.#updateRequest();
         });
-
         // Append the update button to the parent div
-        parentDiv.appendChild(updateButton);
+
+        buttonWrapper.appendChild(updateButton);
+
+        // Create and configure the cancel button
+        const cancelButton = document.createElement('itm-button');
+        cancelButton.type = 'secondary';
+        cancelButton.id = 'req-constructor-cancelButton';
+        cancelButton.textContent = 'Cancel';
+        cancelButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            // TODO - 🟢 - Add the cancel logic
+        });
+        buttonWrapper.appendChild(cancelButton);
+
+        parentDiv.appendChild(buttonWrapper);
 
         // Add collapse/expand features to the mode and filter sections
         const modesWrapperToggleState = this.#wrapperInitialToggleState(requestConstructorModesWrapper);
@@ -129,7 +144,7 @@ export class RequestConstructor {
 
     #modesWrapperTitle(toggleState) {
         if (toggleState == 'collapsed') {
-            return this.state.analysisMode == 'intervals' ? `${this._langTranslations.t('mode')}: ${this._langTranslations.t('intervals')}` : `${this._langTranslations.t('mode')}: ${this._langTranslations.t('totals')}`;
+            return this.state.analysisMode == 'interals' ? `${this._langTranslations.t('mode')}: ${this._langTranslations.t('intervals')}` : `${this._langTranslations.t('mode')}: ${this._langTranslations.t('totals')}`;
         } else {
             return this._langTranslations.t('mode');
         }
@@ -138,7 +153,7 @@ export class RequestConstructor {
     #filterWrapperTitle(toggleState) {
         const areFiltersApplied = (this.state.filter && typeof this.state.filter === 'object' && Object.keys(this.state.filter).length > 0);
         if (toggleState == 'collapsed') {
-            return areFiltersApplied ? this._langTranslations.t('filtersApplied') : this._langTranslations.t('filter');
+            return areFviltersApplied ? this._langTranslations.t('filtersApplied') : this._langTranslations.t('filter');
         }
         else { return this._langTranslations.t('filter'); };
     }
@@ -215,14 +230,15 @@ export class RequestConstructor {
         });
         intervalOptionsWrapper.appendChild(intervalDropdown);
 
+        // TODO - 🟡 - intervals limit not working
         const numberInput = document.createElement('input');
         numberInput.id = 'req-constructor-noOfIntervals';
         numberInput.className = 'req-constructor-mode-item';
         numberInput.type = 'number';
         numberInput.min = '1';
         numberInput.max = '7';
-        numberInput.placeholder = 'Number';
-        numberInput.value = this.state.intervals.noOfIntervals || 1;
+        numberInput.placeholder = '2';
+        numberInput.value = this.state.intervals.noOfIntervals || 3;
         numberInput.addEventListener('change', (event) => {
             this.state.intervals.noOfIntervals = event.target.value;
         });
@@ -529,11 +545,17 @@ export class RequestConstructor {
             .req-constructor-mode-options-wrapper input {
                 margin-right: .6em;
                 padding: 3px;
-                border: 1px solid var(--filter-select-border-color);
-                border-radius: var(--filter-input-border-radius);
+                border: 1px solid var(--req-constructor-select-border-color);
+                border-radius: var(--req-constructor-input-border-radius);
             }
             .req-constructor-label {
                 margin-left: .4em;
+            }
+            .req-constructor-buttonDiv-wrapper{
+                display: flex;
+                justify-content: flex-start;
+                margin: 1em 0;
+                align-items: center;
             }
             `;
     }
