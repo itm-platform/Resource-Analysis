@@ -24,9 +24,24 @@ export default {
         es: 'Filtros aplicados',
         pt: 'Filtros aplicados'
     },
+    noFiltersApplied:{
+        en: 'No filters applied',
+        es: 'No hay filtros aplicados',
+        pt: 'Nenhum filtro aplicado'
+    },
     filter:{
         en: 'Filter',
         es: 'Filtro',
         pt: 'Filtro'
     },
+    apply:{
+        en: 'Apply',
+        es: 'Aplicar',
+        pt: 'Aplicar'
+    },
+    reset:{
+        en: 'Reset',
+        es: 'Restablecer',
+        pt: 'Reset'
+    },  
 };

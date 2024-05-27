@@ -1,7 +1,7 @@
 /** flexiPivotSelector.js
  * Renders SVG icons in a toolbar and emits the selected option
  * @param {Object} options - The options to render, such as [{ svg: 'svg1.svg', name: 'Option 1', tooltip: 'Option 1 tooltip', selected: false}]
- * @emits optionSelected - The selected option
+ * @emits flexiTablePivotOptionSelected - The selected option
  */
 export class PivotSelector {
     constructor(options) {
@@ -67,7 +67,7 @@ export class PivotSelector {
             selectedIconWrapper.classList.add('reslysis-pivot-selector-icon-selected');
         }
     
-        const event = new CustomEvent('optionSelected', { detail: option.name, bubbles: true });
+        const event = new CustomEvent('flexiTablePivotOptionSelected', { detail: option.name, bubbles: true });
         this.element.dispatchEvent(event);
     }
     

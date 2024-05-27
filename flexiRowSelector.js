@@ -91,7 +91,7 @@ export class FlexiRowSelector {
     }
 
     #registerDataUpdatedListener() {
-        document.addEventListener('dataUpdated', (event) => {
+        document.addEventListener('resourceAnalysisDataUpdated', (event) => {
             this.#handleDataUpdated(event.detail.rows); 
         });
     }

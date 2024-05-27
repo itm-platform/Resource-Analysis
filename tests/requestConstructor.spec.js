@@ -76,11 +76,11 @@ describe('RequestConstructor Initialization', () => {
 
         });
 
-        test('should dispatch "requestUpdated" event with filter details when the button is clicked', async () => {
+        test('should dispatch "resourceAnalysisRequestUpdated" event with filter details when the button is clicked', async () => {
             await new Promise(r => setTimeout(r, 100)); // Wait 100ms for the DOM to update
             const updateRequestButton = document.getElementById('req-constructor-updateButton');
             const eventListener = vi.fn();
-            document.addEventListener('requestUpdated', eventListener);
+            document.addEventListener('resourceAnalysisRequestUpdated', eventListener);
 
             updateRequestButton.click();
 
@@ -195,7 +195,7 @@ describe('RequestConstructor public methods', () => {
             expect(requestConstructor.state.totals.endDate).toBe('2022-12-31');
         });
 
-        test('should dispatch "requestUpdated" event with totals details when the button is clicked', async () => {
+        test('should dispatch "resourceAnalysisRequestUpdated" event with totals details when the button is clicked', async () => {
             const totalsRadio = document.getElementById('req-constructor-totals');
             totalsRadio.checked = true;
             totalsRadio.dispatchEvent(new Event('change'));
@@ -214,7 +214,7 @@ describe('RequestConstructor public methods', () => {
 
             const updateRequestButton = document.getElementById('req-constructor-updateButton');
             const eventListener = vi.fn();
-            document.addEventListener('requestUpdated', eventListener);
+            document.addEventListener('resourceAnalysisRequestUpdated', eventListener);
 
             updateRequestButton.click();
 

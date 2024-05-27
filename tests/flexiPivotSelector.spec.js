@@ -30,9 +30,9 @@ describe('PivotSelector basics', () => {
         });
     });
 
-    test('should emit "optionSelected" event with option name when an option is clicked', () => {
+    test('should emit "flexiTablePivotOptionSelected" event with option name when an option is clicked', () => {
         const spy = vi.fn();
-        parentDiv.addEventListener('optionSelected', spy);
+        parentDiv.addEventListener('flexiTablePivotOptionSelected', spy);
         pivotSelector.attachTo(parentDiv);
 
         const firstIconWrapper = parentDiv.querySelector('.reslysis-pivot-selector-iconWrapper');
@@ -63,14 +63,14 @@ describe('PivotSelector basics', () => {
     });
     test('should ensure custom events bubble up the DOM', () => {
         const spy = vi.fn();
-        document.addEventListener('optionSelected', spy);
+        document.addEventListener('flexiTablePivotOptionSelected', spy);
         pivotSelector.attachTo(parentDiv);
     
         const firstIconWrapper = parentDiv.querySelector('.reslysis-pivot-selector-iconWrapper');
         firstIconWrapper.click();
     
         expect(spy).toHaveBeenCalled();
-        document.removeEventListener('optionSelected', spy); // Clean up
+        document.removeEventListener('flexiTablePivotOptionSelected', spy); // Clean up
     });
     test('should handle rapid clicks across different options', () => {
         pivotSelector.attachTo(parentDiv);

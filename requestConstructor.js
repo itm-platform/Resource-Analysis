@@ -8,6 +8,11 @@ export const css = (strings) => strings.raw[0];
 
 const VALID_ANALYSIS_MODES = { intervals: 'intervals', totals: 'totals' };
 const VALID_TOTALS_DATE_RANGE_MODES = { liveBetween: 'liveBetween', strictlyBetween: 'strictlyBetween' };
+const DIV_ID_MAP = {
+    updateButtonId: 'req-constructor-updateButton',
+    cancelButtonId: 'req-constructor-cancelButton'
+};
+
 export class RequestConstructor {
     /** requestConstructor.js
 * @param {Object} requestObject - The request object. Example {analysisMode: "intervals", filter: {projects: {Duration: 10}},  "intervals": {"startDate": "2024-01-01", "intervalType": "week", noOfIntervals": 5}.    
@@ -45,6 +50,7 @@ export class RequestConstructor {
             this.initUI();
             this.#applyStyles();
             this.#toggleOptionsState();
+            this.#addEventListeners();
         });
     }
 
@@ -58,6 +64,11 @@ export class RequestConstructor {
 
     async #loadTranslations() {
         this._langTranslations = await this.getTranslations('requestConstructor', this._lang);
+    }
+    #addEventListeners() {
+        document.addEventListener('resourceAnalysisRequestFulfilled', (event) => {
+            this.#stopSpin(DIV_ID_MAP.updateButtonId, event.detail);
+        });
     }
 
     initUI() {
@@ -102,14 +113,15 @@ export class RequestConstructor {
         // Button div wrapper
         const buttonWrapper = document.createElement('div');
         buttonWrapper.className = 'req-constructor-buttonDiv-wrapper';
-        
+
         // Create and configure the update button
         const updateButton = document.createElement('itm-button');
         updateButton.type = 'primary';
-        updateButton.id = 'req-constructor-updateButton';
-        updateButton.textContent = 'Change Request';
+        updateButton.id = DIV_ID_MAP.updateButtonId;
+        updateButton.textContent = this._langTranslations.t('apply');
         updateButton.addEventListener('click', (event) => {
             event.preventDefault();
+            this.#startSpin (DIV_ID_MAP.updateButtonId);
             this.#updateRequest();
         });
         // Append the update button to the parent div
@@ -119,8 +131,8 @@ export class RequestConstructor {
         // Create and configure the cancel button
         const cancelButton = document.createElement('itm-button');
         cancelButton.type = 'secondary';
-        cancelButton.id = 'req-constructor-cancelButton';
-        cancelButton.textContent = 'Cancel';
+        cancelButton.id = DIV_ID_MAP.cancelButtonId;
+        cancelButton.textContent = this._langTranslations.t('reset');
         cancelButton.addEventListener('click', (event) => {
             event.preventDefault();
             // TODO - 🟢 - Add the cancel logic
@@ -136,7 +148,19 @@ export class RequestConstructor {
         this.#addToggleCollapseExpandFeatures(requestConstructorModesWrapper, this.#modesWrapperTitle(modesWrapperToggleState), modesWrapperToggleState, 'mode');
         this.#addToggleCollapseExpandFeatures(requestConstructorFilterWrapper, this.#filterWrapperTitle(filterWrapperToggleState), filterWrapperToggleState, 'filter');
     }
-
+    #startSpin (buttonId) {
+        const button = document.getElementById(buttonId);
+        if (button) {
+            button.startSpin();
+        }
+    }
+    #stopSpin(buttonId, responseStatus) {
+        const button = document.getElementById(buttonId);
+        if (button) {
+            button.stopSpin({success: responseStatus.success});
+        }
+        console.log('Stop spinner with response status:', responseStatus.success);
+    }
     #wrapperInitialToggleState(div) {
         const toggleState = localStorage.getItem(div.id + 'ToggleState');
         return toggleState;
@@ -153,7 +177,7 @@ export class RequestConstructor {
     #filterWrapperTitle(toggleState) {
         const areFiltersApplied = (this.state.filter && typeof this.state.filter === 'object' && Object.keys(this.state.filter).length > 0);
         if (toggleState == 'collapsed') {
-            return areFviltersApplied ? this._langTranslations.t('filtersApplied') : this._langTranslations.t('filter');
+            return areFiltersApplied ? this._langTranslations.t('filtersApplied') : this._langTranslations.t('noFiltersApplied');
         }
         else { return this._langTranslations.t('filter'); };
     }
@@ -455,12 +479,15 @@ export class RequestConstructor {
             intervals: this.state.intervals,
             totals: this.state.totals
         };
-        const event = new CustomEvent('requestUpdated', {
+        const event = new CustomEvent('resourceAnalysisRequestUpdated', {
             detail: newRequestObject,
             bubbles: true
         });
         document.dispatchEvent(event);
     }
+
+
+
     #getStyles() {
         return css`
             :root {

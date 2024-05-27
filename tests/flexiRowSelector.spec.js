@@ -69,12 +69,12 @@ describe('FlexiRowSelector integration', () => {
         flexiRowSelector = new FlexiRowSelector('rowSelectorDiv', initialFilters, dataRows);
     });
 
-    test('should handle dataUpdated event correctly', () => {
+    test('should handle resourceAnalysisDataUpdated event correctly', () => {
         // Simulate new data order
         const newDataRows = [{ type: "user", children: [{ type: "project", children: [{ type: "workItem", children: [] }] }] }];
 
-        // Dispatch the dataUpdated event
-        const dataUpdatedEvent = new CustomEvent('dataUpdated', { detail: { rows: newDataRows } });
+        // Dispatch the resourceAnalysisDataUpdated event
+        const dataUpdatedEvent = new CustomEvent('resourceAnalysisDataUpdated', { detail: { rows: newDataRows } });
         document.dispatchEvent(dataUpdatedEvent);
 
         // Check if the rowSelectionOrder is updated

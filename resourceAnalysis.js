@@ -9,6 +9,8 @@ import { mergeDeep } from './utils.js';
 // TODO - 🟡 - retrieve pivotConfig from the viewTemplate
 // TODO - 🟡 - Add a spinner
 // TODO - 🟡 - Review browser's issues
+// TODO - 🟢 - request Constructor separator thickness changes upon pivot selection. Only with console open. Test with many rows
+
 
 const VALID_ANALYSIS_MODES = { intervals: 'intervals', totals: 'totals' };
 const VALID_TOTALS_DATE_RANGE_MODES = { liveBetween: 'liveBetween', strictlyBetween: 'strictlyBetween' };
@@ -329,22 +331,47 @@ export class ResourceAnalysis {
     #renderFlexiTable() {
         document.getElementById(this.tableContainerDivId).innerHTML = '';
         this.flexiRowSelector = new FlexiRowSelector(this.rowSelectorDivId, {
-            user: true, project: true, workItem: true // inject from tha parent HTML getting for the saved preferences for the user
+            // TODO - 🟢 - // inject row selection from viewTemplate
+            user: true, project: true, workItem: true 
         }, this.transformedData.rows);
 
         this.flexiTable = new FlexiTable(this.tableContainerDivId, this.transformedData, this.flexiRowSelector.getRows(), this.pivotSelector);
     }
 
     #addEventListeners() {
-        document.addEventListener('requestUpdated', event => {
+        /* TODO - 🟢 - scope events to requestConstructor. 
+                The technique is to add:
+                addEventListener(event, callback) {
+                if (!this.events[event]) {
+                    this.events[event] = [];
+                }
+                this.events[event].push(callback);
+            }
+
+            dispatchEvent(event, data) {
+                if (this.events[event]) {
+                    this.events[event].forEach(callback => callback(data));
+                }
+            }
+    
+            and then ` this.requestConstructor.addEventListener('resourceAnalysisRequestUpdated'
+            Problem is the component is not yet created.
+    */
+        document.addEventListener('resourceAnalysisRequestUpdated', event => {
             this.#setState({ request: event.detail });
             this.#fetchEffortData().then(() => {
                 this.#renderFlexiTable();
+                document.dispatchEvent(new CustomEvent('resourceAnalysisRequestFulfilled', { detail: { success: true } }));
+                // TODO - 🟡 - error fetching is fatal an needs communication to user. Saving template just report to development.
+
                 this.#saveViewTemplate();
-            }).catch(error => console.error('Error updating data:', error));
+            }).catch(
+                error => {console.error('Error updating data:', error);
+            document.dispatchEvent(new CustomEvent('resourceAnalysisRequestFulfilled', { detail: { success: false } }));
+        });
         });
 
-        document.addEventListener('optionSelected', event => {
+        document.addEventListener('flexiTablePivotOptionSelected', event => {
             this.#setState({ pivotConfig: event.detail });
             this.#saveViewTemplate();
             this.#loadEffortTable();
@@ -357,7 +384,7 @@ export class ResourceAnalysis {
     #loadEffortTable() {
         if (this.state.responseData) {
             const transformedData = this.#transformData(this.state.responseData, this.state.request.analysisMode, this.state.pivotConfig);
-            const event = new CustomEvent('dataUpdated', { detail: transformedData, bubbles: true });
+            const event = new CustomEvent('resourceAnalysisDataUpdated', { detail: transformedData, bubbles: true });
             document.dispatchEvent(event);
         }
     }
