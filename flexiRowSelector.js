@@ -110,7 +110,7 @@ export class FlexiRowSelector {
         this.rowSelection[type] = value;
         this.rowSelection = this.#setSubsequentFiltersFalse(this.rowSelection);
         this.initRowSelectorUI(); // Reinitialize UI to reflect changes
-        document.dispatchEvent(new CustomEvent('rowSelectionUpdated', { detail: this.rowSelection, bubbles: true}));
+        document.dispatchEvent(new CustomEvent('resourceAnalysisRowSelectionUpdated', { detail: this.rowSelection, bubbles: true}));
     }
 
 }

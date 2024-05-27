@@ -39,7 +39,7 @@ describe('FlexiRowSelector basics', () => {
 
     test('should dispatch custom event when filters are updated', () => {
         const spy = vi.fn();
-        document.addEventListener('rowSelectionUpdated', spy);
+        document.addEventListener('resourceAnalysisRowSelectionUpdated', spy);
 
         const checkbox = document.getElementById('workItem');
         checkbox.checked = true;
