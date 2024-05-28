@@ -260,8 +260,9 @@ export class FlexiTable {
         };
 
         const createHeaderToolbar = () => {
+            // TODO - 🔴 - buttons are smaller because of ITM pollution
             const headerToolbar = document.createElement('div');
-            headerToolbar.id = 'headerToolbar';
+            headerToolbar.id = 'ftbl-headerToolbar';
             headerToolbar.classList.add('ftbl-header-toolbar');
             toolbarCell.appendChild(headerToolbar);
             return headerToolbar;
