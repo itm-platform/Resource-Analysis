@@ -377,7 +377,7 @@ export class ResourceAnalysis {
             this.#loadEffortTable();
         });
 
-        document.getElementById('loadAnalysisBtn').addEventListener('click', () => this.#fetchEffortData());
+        //document.getElementById('loadAnalysisBtn').addEventListener('click', () => this.#fetchEffortData());
     }
 
 

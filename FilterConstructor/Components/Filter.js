@@ -76,7 +76,18 @@ export class Filter {
         filterLinesDiv.id = 'filterLines';
         this.elements.filterLinesDiv = filterLinesDiv;
 
-        const buttonAddFilterLine = document.createElement('button');
+        let buttonAddFilterLine;
+        //if (customElements.get('itm-button')) {
+        if (true) {
+            buttonAddFilterLine = document.createElement('itm-button');
+            buttonAddFilterLine.type = "secondary";
+            buttonAddFilterLine.size = "small";
+        }
+        else {
+            buttonAddFilterLine = document.createElement('button');
+        }
+
+
         buttonAddFilterLine.id = 'buttonAddFilterLine';
         this.elements.buttonAddFilterLine = buttonAddFilterLine;
 
@@ -95,7 +106,7 @@ export class Filter {
             this.elements.buttonAddFilterLine.textContent = this.filterLines.length === 0 ? 'Add Filter' : '+';
         }
     }
-    
+
     #applyStyles() {
         const style = document.createElement('style');
         style.textContent = this.#getStyles();
@@ -161,6 +172,7 @@ export class Filter {
             .filter-class {
                 display: flex;
                 flex-direction: column;
+                padding-bottom: 1px; 
             }
             #filterLines {
                 margin-bottom: 10px;
