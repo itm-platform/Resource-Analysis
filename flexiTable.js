@@ -3,7 +3,6 @@ import { cacheIconPaths, resolveIconPath, cacheUserImagePaths, pathCache } from 
 import { renderUserName, renderEntityName, renderDuration } from './renderFunctions.js';
 // TODO - 🔴 - translations
 // TODO - 🟡- Export
-// TODO - 🔴 - User avatar too small
 export class FlexiTable {
     constructor(containerId, dataset, rowFilters = {}, pivotSelector) {
         cacheIconPaths().catch(error => {

@@ -6,8 +6,9 @@ import { FlexiRowSelector } from './flexiRowSelector.js';
 import { EffortTransformer } from './effortTransformer.js';
 import { mergeDeep } from './utils.js';
 // TODO - 🔴 - Translations
+// TODO - 🟡 - Date formats. Consider using usr config instead of browser's
 // TODO - 🟡 - retrieve pivotConfig from the viewTemplate
-// TODO - 🟡 - Add a spinner
+// TODO - 🟡 - Add a spinner when loading first time. Following loads use the button
 // TODO - 🟡 - Review browser's issues
 // TODO - 🟢 - request Constructor separator thickness changes upon pivot selection. Only with console open. Test with many rows
 

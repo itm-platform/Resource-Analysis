@@ -1,5 +1,5 @@
-// TODO - 🔴 - New line have empty operator al undefined value
 
+// TODO - 🟡 - Remove invalid filter lines when "Apply". Prob. in Filter.js upon the dispatch
 import { FilterLineTable } from './FilterLineTable.js';
 import { FilterLineField } from './FilterLineField.js';
 import { FilterLineOperator } from './FilterLineOperator.js';
@@ -53,7 +53,7 @@ export class FilterLine {
         lineOptionsWrapper.className = 'filter-line-options-wrapper';
         this.elements.lineOptionsWrapper = lineOptionsWrapper; // Store reference to the wrapper
     
-        // TODO - 🔴 - If only one table, don't show the table dropdown, but also remove the line that has 
+        // TODO - 🟡 - If only one table, don't show the table dropdown, but also remove the line that has 
         // unwanted tables. Useful for single project, for example
         this.#render('filterLineTable');
         lineOptionsWrapper.appendChild(this.elements.filterLineTable);
