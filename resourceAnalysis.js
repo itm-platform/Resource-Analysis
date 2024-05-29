@@ -67,10 +67,10 @@ export class ResourceAnalysis {
         const viewTemplate = await this.#getViewTemplate(this.viewTemplateId);
         const requestObject = this.#extractRequestObjectFromViewTemplate(viewTemplate);
         this.#setState({ request: requestObject });
-        const rcOptions = { 
+        const rcOptions = {
             tablesAllowed: this.tablesAllowed,
-            shouldFilterBeVisible: true            
-         };
+            shouldFilterBeVisible: true
+        };
 
         this.requestConstructor = new RequestConstructor(
             this.state.request,
@@ -152,7 +152,7 @@ export class ResourceAnalysis {
         return {
             viewTemplateId: 'cbafa593-5ad9-4803-9d6e-e6490d9117d4',
             companyId: 15,
-            contextView: 'resourceAnalysis', 
+            contextView: 'resourceAnalysis',
             name: 'Totals Q1 2024',
             description: 'Projects live in Q1 2024',
             isPrivateToCreator: false,
@@ -175,7 +175,7 @@ export class ResourceAnalysis {
                     endDate: '2024-03-31'
                 },
                 filter: {
-                    //projects: {Duration: { $gt: 10 }},
+                    projects: {Duration: { $gt: 10 }},
                 },
                 pivotConfig: 'user'
             }
@@ -241,6 +241,37 @@ export class ResourceAnalysis {
     }
 
     async #fetchEffortData() {
+        const getResponseDataFromServer = async () => {
+            try {
+                let url = `/v2/${window.companyId}/resourceAnalysis`;
+                const testingResourceAnalysisWithProxy = localStorage.getItem('testingResourceAnalysisWithProxy') === 'true';
+                if (testingResourceAnalysisWithProxy) {
+                    url = `/proxy${url}`;
+                }
+                if (!this.APIToken) { throw new Error('No token provided to fetch data.'); }
+
+                url = 'http://localhost/ITM.API/v2/itmrozas/resourceAnalysis/';
+
+                const payload = {
+                    analysisMode,
+                    filter: mixedFiltersForRequest,
+                    ...(analysisMode === VALID_ANALYSIS_MODES.intervals && { intervals }),
+                };
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Token': this.APIToken
+                    },
+                    body: JSON.stringify(payload)
+                });
+                return await response.json();
+            } catch (err) {
+                console.error('Error fetching data from server:', err);
+                throw err;
+            }
+        };
         //console.log(`State before fetching data:, ${JSON.stringify(this.state.request, null, 2)}`);
         const testingResourceAnalysisWithLocalFiles = localStorage.getItem('testingResourceAnalysisWithLocalFiles') === 'true';
 
@@ -280,35 +311,7 @@ export class ResourceAnalysis {
             throw err;
         }
 
-        async function getResponseDataFromServer() {
-            try {
-                let url = `/v2/${window.companyId}/resourceAnalysis`;
-                const testingResourceAnalysisWithProxy = localStorage.getItem('testingResourceAnalysisWithProxy') === 'true';
-                if (testingResourceAnalysisWithProxy) {
-                    url = `/proxy${url}`;
-                }
-                if (!this.APIToken) { throw new Error('No token provided to fetch data.'); }
 
-                const payload = {
-                    analysisMode,
-                    filter: mixedFiltersForRequest,
-                    ...(analysisMode === VALID_ANALYSIS_MODES.intervals && { intervals }),
-                };
-
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Token': this.APIToken
-                    },
-                    body: JSON.stringify(payload)
-                });
-                return await response.json();
-            } catch (err) {
-                console.error('Error fetching data from server:', err);
-                throw err;
-            }
-        }
 
         async function getResponseDataFromLocalTestingFiles() {
             let fileURL;
@@ -332,7 +335,7 @@ export class ResourceAnalysis {
         document.getElementById(this.tableContainerDivId).innerHTML = '';
         this.flexiRowSelector = new FlexiRowSelector(this.rowSelectorDivId, {
             // TODO - 🟢 - // inject row selection from viewTemplate
-            user: true, project: true, workItem: true 
+            user: true, project: true, workItem: true
         }, this.transformedData.rows);
 
         this.flexiTable = new FlexiTable(this.tableContainerDivId, this.transformedData, this.flexiRowSelector.getRows(), this.pivotSelector);
@@ -366,9 +369,10 @@ export class ResourceAnalysis {
 
                 this.#saveViewTemplate();
             }).catch(
-                error => {console.error('Error updating data:', error);
-            document.dispatchEvent(new CustomEvent('resourceAnalysisRequestFulfilled', { detail: { success: false } }));
-        });
+                error => {
+                    console.error('Error updating data:', error);
+                    document.dispatchEvent(new CustomEvent('resourceAnalysisRequestFulfilled', { detail: { success: false } }));
+                });
         });
 
         document.addEventListener('flexiTablePivotOptionSelected', event => {
