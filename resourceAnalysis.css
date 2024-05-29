@@ -4,13 +4,18 @@
     justify-content: start;
 }
 
+
 .reslysis-pivot-selector-iconWrapper {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
     margin: 5px;
     cursor: pointer;
     border: 1px solid transparent; /* Add border to maintain layout */
-    fill:#666; /* Default color, can be changed */
+    fill: #666; /* Default color, can be changed */
 }
+
 
 .reslysis-pivot-selector-icon-separator{
     width: 1px;

@@ -159,7 +159,6 @@ export class RequestConstructor {
         if (button) {
             button.stopSpin({success: responseStatus.success});
         }
-        console.log('Stop spinner with response status:', responseStatus.success);
     }
     #wrapperInitialToggleState(div) {
         const toggleState = localStorage.getItem(div.id + 'ToggleState');

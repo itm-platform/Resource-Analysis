@@ -3,6 +3,7 @@
 import { resolveIconPath, pathCache } from './pathResolver.js';
 
 function renderUserName(params) {
+    // TODO - 🟢 - Initials have title, photo doesn't. Either or.
     const imagePath = pathCache[params.id];
     if (imagePath) {
         return `
