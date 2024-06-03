@@ -41,16 +41,14 @@ This is an example of "liveBetween" filter. We're requesting that the StartDate 
 ```json
 {
     "analysisMode": "totals",
-    "filter": {
-        "projects": {
-            "StartDate": { "$lte": "2023-11-30" },
-            "EndDate": { "$gte": "2023-09-01" }
-        },
+    "totals": {
+        "StartDate": { "$lte": "2023-11-30" },
+        "EndDate": { "$gte": "2023-09-01" }
     }
 }
 ```
 #### `analysisMode` 
-Can be `intervals` or `totals`. Defaults to `totals`.
+Must be `intervals` or `totals`. 
 
 #### `intervals` 
 Mandatory if `analysisMode` is `intervals`.   
@@ -66,6 +64,15 @@ In this example, we are requesting five weeks starting on 2024-01-01. The respon
 > 👉🏼 Note: In the existing `/resourceCapacity` we use numbers for `intervalType` which is misleading. 
 
 > 👉🏼 Note: Copy the current way of calculating intervals of `/resourceCapacity`: weeks are 7 days, months are sensitive to whether they have 28, 29, 03 or 31 days. 
+
+#### `totals`
+Mandatory if `analysisMode` is `totals`.
+```json
+"totals": {
+        "StartDate": { "$lte": "2023-11-30" },
+        "EndDate": { "$gte": "2023-09-01" }
+    }
+```
 
 #### `Filter` 
     filter:{project, service, user}
@@ -90,13 +97,11 @@ Because we need to map the filters to the database, we will limit the filters to
 
 ```
 - Name
-- PerformingUnit.Id 
+- PerformingUnit.Id
 - ApprovalStatus.Id
 - Status.Id
 - Priority.Id
 - Type.Id
-- StartDate
-- EndDate
 - Id
 - No
 - Code
@@ -105,11 +110,16 @@ Because we need to map the filters to the database, we will limit the filters to
 - Sponsor.Id
 - InternalClient.Id
 - ExternalClient.Id
+- ExternalClient.Name
+- Program.Id
+- Program.Name
 - ProcessAffected.Id
 - Asset.Id
-- JiraId
-- IsActive (edited)
+- IsActive
+- IsService
 ```
+
+`StartDate` and `EndDate` will not be part of the allowed filters at all, neither for projects or services, intervals or totals since they are part of the interval or total request.
 **Filter examples**
 
 All projects and services of the program Ids 12 and 23
@@ -127,7 +137,6 @@ Projects whose start date is within a range and are assigned to clients 21 and 2
 ```json
 "filter":{
     "projects":{
-		"StartDate":{"$bt":["2023-09-01","2023-11-30"]},
 	    "Client.Id":{"$in":[21, 223]}
 	}}
 ```
