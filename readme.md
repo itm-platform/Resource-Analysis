@@ -61,18 +61,30 @@ In this example, we are requesting five weeks starting on 2024-01-01. The respon
    }
 }
 ```
+**`noOfIntervals` limits**:
+- 31 days
+- 12 weeks
+- 6 months
+- 2 years
+
+Error code: If any of the limits are breached, the response will be a 400 error with the message including the limit breached.
+
 > 👉🏼 Note: In the existing `/resourceCapacity` we use numbers for `intervalType` which is misleading. 
 
 > 👉🏼 Note: Copy the current way of calculating intervals of `/resourceCapacity`: weeks are 7 days, months are sensitive to whether they have 28, 29, 03 or 31 days. 
 
 #### `totals`
-Mandatory if `analysisMode` is `totals`.
+
+Mandatory if `analysisMode` is `totals`. The dates correspond to the entities (projects or services) start and end dates (not the effort dates)
+
 ```json
 "totals": {
         "StartDate": { "$lte": "2023-11-30" },
         "EndDate": { "$gte": "2023-09-01" }
     }
 ```
+**Date range limit**: Maximum date range is one year.
+Error code: If the date range is breached, the response will be a 400 error with the message including the limit breached.
 
 #### `Filter` 
     filter:{project, service, user}
