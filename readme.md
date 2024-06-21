@@ -64,7 +64,7 @@ In this example, we are requesting five weeks starting on 2024-01-01. The respon
 **`noOfIntervals` limits**:
 - 31 days
 - 12 weeks
-- 6 months
+- 12 months
 - 2 years
 
 Error code: If any of the limits are breached, the response will be a 400 error with the message including the limit breached.
