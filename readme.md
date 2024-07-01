@@ -105,7 +105,7 @@ Because we need to map the filters to the database, we will limit the filters to
 
 :point_right: @Fawad, All properties with `Id` should also have `Name` allowed. See point #2 above
 :point_right: Add `Program` (`.Id`, `.Name`)
-:point_right: You can remove JiraId
+
 
 ```
 - Name
