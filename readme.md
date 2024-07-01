@@ -114,6 +114,7 @@ Because we need to map the filters to the database, we will limit the filters to
 - Status.Id
 - Priority.Id
 - Type.Id
+- Duration
 - Id
 - No
 - Code
