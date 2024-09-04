@@ -103,33 +103,43 @@ Because we need to map the filters to the database, we will limit the filters to
 
 `projects` and `services` filters:
 
-:point_right: @Fawad, All properties with `Id` should also have `Name` allowed. See point #2 above
-:point_right: Add `Program` (`.Id`, `.Name`)
 
-
-```
-- Name
-- PerformingUnit.Id
-- ApprovalStatus.Id
-- Status.Id
-- Priority.Id
-- Type.Id
-- Duration
-- Id
-- No
-- Code
-- BusinessGoal.Id
-- Category.Id
-- Sponsor.Id
-- InternalClient.Id
-- ExternalClient.Id
-- ExternalClient.Name
-- Program.Id
-- Program.Name
-- ProcessAffected.Id
-- Asset.Id
-- IsActive
-- IsService
+```js
+[
+    "Name",
+    "PerformingUnit.Id",
+    "PerformingUnit.Name",
+    "ApprovalStatus.Id",
+    "ApprovalStatus.Name",
+    "Status.Id",
+    "Status.Name",
+    "Priority.Id",
+    "Priority.Name",
+    "Type.Id",
+    "Type.Name",
+    "Duration",
+    "Id",
+    "No",
+    "Code",
+    "BusinessGoal.Id",
+    "BusinessGoal.Name",
+    "Category.Id",
+    "Category.Name",
+    "Sponsor.Id",
+    "Sponsor.Name",
+    "InternalClient.Id",
+    "InternalClient.Name",
+    "ExternalClient.Id",
+    "ExternalClient.Name",
+    "Program.Id",
+    "Program.Name",
+    "ProcessAffected.Id",
+    "ProcessAffected.Name",
+    "Asset.Id",
+    "Asset.Name",
+    "IsActive",
+    "IsService"
+]
 ```
 
 `StartDate` and `EndDate` will not be part of the allowed filters at all, neither for projects or services, intervals or totals since they are part of the interval or total request.
