@@ -65,7 +65,7 @@ In this example, we are requesting five weeks starting on 2024-01-01. The respon
 - 31 days
 - 12 weeks
 - 12 months
-- 2 years
+- 4 quarters
 
 Error code: If any of the limits are breached, the response will be a 400 error with the message including the limit breached.
 
