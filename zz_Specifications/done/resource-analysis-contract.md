@@ -10,7 +10,7 @@ Properties between `< >` denote optional
 - `WorkItem`: A task or activity. Has the properties `{Id, Name, {Entity}Id, <StartDate>, <EndDate>}`
 - `Category`: Professional category a user has `{Id, Name}`
 - `Estimated effort`, in minutes: It can apply to a user in a task ("assigned effort"), or to a category in a task or a project ("unassigned effort").
-- `Capacity`, in minutes: working time per user per day. 
+- `Capacity`, in minutes: working time per user per day.
 - `Interval`: Accumulates efforts and capacities in time periods (day, week, month, or quarter)
 - - `ActualEffort` refers to the reported effort, which can be by intervals
 - `AcceptedEffort` refers to the total accepted effort for the user in the task. It can be the same as `ActualEffort` or different.
@@ -34,7 +34,7 @@ Interval example:
         }
     }
 }
-```	
+```
 Totals example:
 
 This is an example of "liveBetween" filter. We're requesting that the StartDate is before the range end date and the EndDate is after the range start date.
@@ -47,11 +47,11 @@ This is an example of "liveBetween" filter. We're requesting that the StartDate 
     }
 }
 ```
-#### `analysisMode` 
-Must be `intervals` or `totals`. 
+#### `analysisMode`
+Must be `intervals` or `totals`.
 
-#### `intervals` 
-Mandatory if `analysisMode` is `intervals`.   
+#### `intervals`
+Mandatory if `analysisMode` is `intervals`.
 In this example, we are requesting five weeks starting on 2024-01-01. The response will give us the efforts and capacity summarized for weeks 1 to 5.
 ```json
  {"intervals": {
@@ -69,9 +69,9 @@ In this example, we are requesting five weeks starting on 2024-01-01. The respon
 
 Error code: If any of the limits are breached, the response will be a 400 error with the message including the limit breached.
 
-> 👉🏼 Note: In the existing `/resourceCapacity` we use numbers for `intervalType` which is misleading. 
+> 👉🏼 Note: In the existing `/resourceCapacity` we use numbers for `intervalType` which is misleading.
 
-> 👉🏼 Note: Copy the current way of calculating intervals of `/resourceCapacity`: weeks are 7 days, months are sensitive to whether they have 28, 29, 03 or 31 days. 
+> 👉🏼 Note: Copy the current way of calculating intervals of `/resourceCapacity`: weeks are 7 days, months are sensitive to whether they have 28, 29, 03 or 31 days.
 
 #### `totals`
 
@@ -86,9 +86,9 @@ Mandatory if `analysisMode` is `totals`. The dates correspond to the entities (p
 **Date range limit**: Maximum date range is one year.
 Error code: If the date range is breached, the response will be a 400 error with the message including the limit breached.
 
-#### `Filter` 
+#### `Filter`
     filter:{project, service, user}
-Optional. Determines which entities and users are requested. Filters can apply to entities (`projects`, `services`) and users (`users`). 
+Optional. Determines which entities and users are requested. Filters can apply to entities (`projects`, `services`) and users (`users`).
 
 1. The general form is:
     ```js
@@ -174,13 +174,13 @@ Tasks with a start date between some values and only users of category 21
 > 👉🏼 Note on filter and `analysisMode`: `totals`. The UI will force to filter entities by dates to prevent server overload. Depending on the final performance tests, we will decide whether to make filter mandatory and limited in the API.
 
 ### Response
-The response structure will be the like so. You can see a [full example below](#response-examples). 
+The response structure will be the like so. You can see a [full example below](#response-examples).
 ```js
 {
     Intervals?: [{ IntervalId, IntervalName, StartDate, EndDate }],
     Entities: [
         {
-            Id, Name, EntityType: 'project' | 'service', 
+            Id, Name, EntityType: 'project' | 'service',
             EntitySubType?:'waterfall' | 'agile',
             RequestedProperty?: { Id, Name },
             WorkItems: [
@@ -209,11 +209,11 @@ The response structure will be the like so. You can see a [full example below](#
 Explanation:
 - `Intervals` will be present depending on `analysisMode`. StartDate and EndDate include time, although the time is always 00:00:00 for the start and 23:59:59 for the end.
 - Totals (such as `UserWorkItemTotals`, `WorkItemTotals`, and `EntityTotals`) will not consider intervals; they are the totals. (beware of double calculations)
-  
+
 Note: we removed the unassigned efforts from the response. `UnassignedEfforts: { CategoryN: Integer, ...others},` If needed, we can add them back
 
 #### Response testing
-The response must pass the validation. 
+The response must pass the validation.
 Use the [Postman testing](https://planetary-moon-805575.postman.co/workspace/ITM-Platform~0a69d185-fab5-48c3-890b-e619b2acb113/request/26760249-d7ac2203-36ec-4e48-977e-c6f5a2ae0fc9?ctx=documentation) to validate the response.
 
 Otherwise you can use the local JS. Simplified example:
@@ -226,7 +226,7 @@ const result = await fetch('http://localhost:3000/resourceAnalysis', {
 });
 const response = await result.json();
 resourceAnalysisValidator.validateResponse(response);
-``` 
+```
 
 
 ### Query approach
@@ -247,7 +247,7 @@ We need to decide if filtering will happen before, after or it will be a join.
 
 
 ### Response examples
-In this example we requested two week intervals. 
+In this example we requested two week intervals.
 ```js
 {
     Intervals: [
@@ -442,7 +442,7 @@ In this example we requested two week intervals.
 }
 ```
 
-In this example we requested totals. 
+In this example we requested totals.
 ```js
 {
     Entities: [
@@ -564,5 +564,3 @@ In this example we requested totals.
     ]
 }
 ```
-
-
